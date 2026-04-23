@@ -1,0 +1,8 @@
+mongoDB URI
+
+mongodb+srv://subhashkuril2004_db_user:ZzCKswZImDuU9Faf@cluster0.3mq4iqg.mongodb.net/
+
+
+password
+
+ZzCKswZImDuU9Faf
