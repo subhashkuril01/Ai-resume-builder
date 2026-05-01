@@ -83,7 +83,7 @@ const resumeSchema = new mongoose.Schema({
   },
   template: {
     type: String,
-    enum: ['modern', 'classic', 'minimal', 'executive', 'creative', 'tech'],
+    enum: ['modern', 'classic', 'minimal', 'executive', 'creative', 'tech', 'ats', 'academic', 'functional', 'portfolio', 'minimalist', 'colorful', 'healthcare', 'finance', 'sales', 'timeline', 'dark', 'gradient', 'twocolumn', 'retro', 'bold', 'elegant', 'minimalist2', 'industech', 'startup', 'artistic', 'corporate', 'greenergy', 'purple', 'datadriven', 'wave', 'professional', 'techwave', 'educational', 'consultant', 'creative2'],
     default: 'modern'
   },
   content: resumeContentSchema,
