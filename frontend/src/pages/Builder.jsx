@@ -4,16 +4,8 @@ import { resumeAPI } from '../api'
 import { PersonalInfoStep, EducationStep, ExperienceStep, SkillsStep, ProjectsStep } from '../components/builder/FormSteps'
 import ResumePreview from '../components/builder/ResumePreview'
 import { exportToPDF } from '../utils/exportPDF'
+import { BUILDER_TEMPLATES } from '../constants/templateCatalog'
 import toast from 'react-hot-toast'
-
-const TEMPLATES = [
-  { id: 'modern', label: 'Modern', color: '#0f766e' },
-  { id: 'classic', label: 'Classic', color: '#1e3a5f' },
-  { id: 'minimal', label: 'Minimal', color: '#64748b' },
-  { id: 'executive', label: 'Executive', color: '#8B0000' },
-  { id: 'creative', label: 'Creative', color: '#7c3aed' },
-  { id: 'tech', label: 'Tech', color: '#00b4d8' },
-]
 
 const STEPS = [
   { id: 'personal', label: 'Personal Info', icon: '👤' },
@@ -240,7 +232,7 @@ export default function Builder() {
           <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--border)' }}>
             <p className="section-title">Template</p>
             <div className="flex gap-2 flex-wrap">
-              {TEMPLATES.map(t => (
+              {BUILDER_TEMPLATES.map(t => (
                 <button key={t.id} onClick={() => handleTemplateChange(t.id)}
                   className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all"
                   style={{

@@ -75,13 +75,50 @@ app.use('*', (req, res) => {
 // Error handler
 app.use(errorHandler);
 
+const ensureResumeIndexes = async () => {
+  const collection = mongoose.connection.collection('resumes');
+  let indexes = [];
+
+  try {
+    indexes = await collection.indexes();
+  } catch (error) {
+    if (error.codeName !== 'NamespaceNotFound') {
+      throw error;
+    }
+  }
+
+  const publicSlugIndex = indexes.find((index) => index.name === 'publicSlug_1');
+  const needsRepair = publicSlugIndex && (
+    !publicSlugIndex.partialFilterExpression ||
+    publicSlugIndex.partialFilterExpression.isPublic !== true
+  );
+
+  if (needsRepair) {
+    console.log('Repairing publicSlug index for shared resumes...');
+    await collection.dropIndex('publicSlug_1');
+  }
+
+  await collection.createIndex(
+    { publicSlug: 1 },
+    {
+      name: 'publicSlug_1',
+      unique: true,
+      partialFilterExpression: {
+        isPublic: true,
+        publicSlug: { $type: 'string' }
+      }
+    }
+  );
+};
+
 // Database connection
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/resume-builder');
-    console.log('✅ MongoDB connected successfully');
+    console.log('MongoDB connected successfully');
+    await ensureResumeIndexes();
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error.message);
+    console.error('MongoDB connection error:', error.message);
     process.exit(1);
   }
 };
@@ -90,7 +127,7 @@ const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+    console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
   });
 });
 

@@ -83,16 +83,19 @@ const resumeSchema = new mongoose.Schema({
   },
   template: {
     type: String,
-    enum: ['modern', 'classic', 'minimal', 'executive', 'creative', 'tech', 'ats', 'academic', 'functional', 'portfolio', 'minimalist', 'colorful', 'healthcare', 'finance', 'sales', 'timeline', 'dark', 'gradient', 'twocolumn', 'retro', 'bold', 'elegant', 'minimalist2', 'industech', 'startup', 'artistic', 'corporate', 'greenergy', 'purple', 'datadriven', 'wave', 'professional', 'techwave', 'educational', 'consultant', 'creative2'],
+    trim: true,
+    lowercase: true,
+    validate: {
+      validator: (value) => !value || /^[a-z0-9-]+$/.test(value),
+      message: 'Template slug can only contain lowercase letters, numbers, and hyphens.'
+    },
     default: 'modern'
   },
   content: resumeContentSchema,
   versions: [versionSchema],
   publicSlug: {
     type: String,
-    unique: true,
-    sparse: true,
-    default: null
+    trim: true
   },
   isPublic: {
     type: Boolean,
@@ -111,6 +114,18 @@ const resumeSchema = new mongoose.Schema({
   lastAnalyzed: Date,
   autoSaveEnabled: { type: Boolean, default: true }
 }, { timestamps: true });
+
+// Only shared resumes should require a unique slug.
+resumeSchema.index(
+  { publicSlug: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      isPublic: true,
+      publicSlug: { $type: 'string' }
+    }
+  }
+);
 
 // Generate public slug
 resumeSchema.methods.generatePublicSlug = function() {

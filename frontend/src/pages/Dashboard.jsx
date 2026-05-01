@@ -13,7 +13,6 @@ const templateColors = {
 
 function ResumeCard({ resume, onDelete, onDuplicate }) {
   const navigate = useNavigate()
-  const [menuOpen, setMenuOpen] = useState(false)
   const color = templateColors[resume.template] || '#f59e0b'
 
   return (
@@ -32,34 +31,6 @@ function ResumeCard({ resume, onDelete, onDuplicate }) {
             <p className="text-xs mt-0.5 capitalize" style={{ color: 'var(--text-muted)' }}>
               {resume.template} template
             </p>
-          </div>
-          <div className="relative ml-2">
-            <button
-              onClick={e => { e.stopPropagation(); setMenuOpen(!menuOpen) }}
-              className="btn-icon w-7 h-7 opacity-0 group-hover:opacity-100 transition-opacity">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
-              </svg>
-            </button>
-            {menuOpen && (
-              <div className="absolute right-0 top-8 z-10 w-40 rounded-lg shadow-xl overflow-hidden"
-                style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
-                onClick={e => e.stopPropagation()}>
-                {[
-                  { label: 'Edit', action: () => navigate(`/builder/${resume._id}`) },
-                  { label: 'Duplicate', action: () => { onDuplicate(resume._id); setMenuOpen(false) } },
-                  { label: 'Delete', action: () => { onDelete(resume._id); setMenuOpen(false) }, danger: true },
-                ].map(({ label, action, danger }) => (
-                  <button key={label} onClick={action}
-                    className="w-full text-left px-3 py-2 text-xs transition-colors"
-                    style={{ color: danger ? 'var(--danger)' : 'var(--text-secondary)' }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-secondary)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                    {label}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 
@@ -81,6 +52,34 @@ function ResumeCard({ resume, onDelete, onDuplicate }) {
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
             {formatDistanceToNow(new Date(resume.updatedAt), { addSuffix: true })}
           </p>
+        </div>
+
+        <div className="flex items-center gap-2 mt-4 pt-4"
+          style={{ borderTop: '1px solid var(--border)' }}
+          onClick={e => e.stopPropagation()}>
+          <button
+            onClick={() => navigate(`/builder/${resume._id}`)}
+            className="btn-ghost text-xs py-1.5 px-3"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => onDuplicate(resume._id)}
+            className="btn-ghost text-xs py-1.5 px-3"
+          >
+            Duplicate
+          </button>
+          <button
+            onClick={() => onDelete(resume._id)}
+            className="text-xs py-1.5 px-3 rounded-lg transition-colors"
+            style={{
+              background: 'rgba(220, 38, 38, 0.1)',
+              color: 'var(--danger)',
+              border: '1px solid rgba(220, 38, 38, 0.2)'
+            }}
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>
