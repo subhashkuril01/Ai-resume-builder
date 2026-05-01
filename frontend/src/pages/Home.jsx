@@ -5,7 +5,7 @@ const features = [
   { icon: '⚡', title: 'ATS Score Analysis', desc: 'Get real-time ATS compatibility scores powered by GPT-4. Know exactly where you stand before applying.' },
   { icon: '🎯', title: 'Job Match Engine', desc: 'Paste any job description and instantly see your match percentage, missing skills, and tailored recommendations.' },
   { icon: '✨', title: 'AI Content Enhancer', desc: 'Transform basic descriptions into compelling, professional resume language that stands out.' },
-  { icon: '📄', title: '6 Pro Templates', desc: 'Modern, Classic, Minimal, Executive, Creative, and Tech — switch instantly without losing data.' },
+  { icon: '📄', title: '30+ Pro Templates', desc: 'Modern, Classic, Minimal, Executive, Creative, and Tech — switch instantly without losing data.' },
   { icon: '🔗', title: 'Public Share Link', desc: 'Generate a unique URL to share your resume publicly. Perfect for LinkedIn or direct applications.' },
   { icon: '📦', title: 'Version History', desc: 'Save snapshots of your resume at any point and restore previous versions with one click.' },
 ]
@@ -13,7 +13,7 @@ const features = [
 const stats = [
   { value: '94%', label: 'ATS Pass Rate' },
   { value: '3x', label: 'More Interviews' },
-  { value: '6', label: 'Pro Templates' },
+  { value: '30+', label: 'Pro Templates' },
   { value: '∞', label: 'AI Requests' },
 ]
 

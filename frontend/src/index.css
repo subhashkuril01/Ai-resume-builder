@@ -188,6 +188,158 @@
   /* Glow */
   .glow-accent { box-shadow: 0 0 30px rgba(245,158,11,0.2); }
 
+  .brand-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+  .brand-mark {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 215, 138, 0.26), transparent 38%),
+      linear-gradient(145deg, rgba(245, 158, 11, 0.22), rgba(180, 83, 9, 0.08)),
+      var(--bg-card);
+    border: 1px solid var(--accent-border);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.06),
+      0 10px 30px rgba(0,0,0,0.18),
+      0 0 22px rgba(245, 158, 11, 0.10);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    overflow: hidden;
+  }
+  .brand-mark::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: 13px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.02));
+    filter: blur(0.5px);
+    pointer-events: none;
+  }
+  .brand-mark-compact {
+    border-radius: 12px;
+  }
+  .brand-mark-core {
+    position: relative;
+    z-index: 1;
+    width: 76%;
+    height: 76%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .brand-mark-lettering {
+    width: 100%;
+    height: 100%;
+    gap: 0.05em;
+    font-family: 'Clash Display', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    font-style: normal;
+    letter-spacing: -0.02em;
+  }
+  .brand-mark-c,
+  .brand-mark-v {
+    display: inline-block;
+    line-height: 1;
+    transform-origin: center;
+  }
+  .brand-mark-c {
+    color: #fff8ea;
+    text-shadow:
+      0 0 18px rgba(255, 248, 234, 0.22),
+      0 8px 18px rgba(0, 0, 0, 0.24);
+    animation: brandFloatC 3.2s ease-in-out infinite;
+  }
+  .brand-mark-v {
+    margin-left: 0;
+    background: linear-gradient(180deg, #fff0c2 0%, #f5b134 50%, #d97706 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 8px 16px rgba(245, 158, 11, 0.24));
+    animation: brandFloatV 3.2s ease-in-out infinite;
+  }
+  .brand-mark-glow {
+    position: absolute;
+    width: 64%;
+    height: 64%;
+    bottom: -18%;
+    right: -12%;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.38), rgba(245, 158, 11, 0.10) 34%, transparent 74%);
+    filter: blur(8px);
+    pointer-events: none;
+  }
+  .brand-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .brand-wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.08em;
+    font-family: 'Clash Display', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 0.95;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .brand-wordmark-cv {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.02em;
+    color: var(--text-primary);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .brand-wordmark-c {
+    position: relative;
+    color: var(--text-primary);
+  }
+  .brand-wordmark-v {
+    color: #ffd78a;
+    text-shadow:
+      0 0 14px rgba(245, 158, 11, 0.22),
+      0 1px 0 rgba(255,255,255,0.16);
+  }
+  .brand-wordmark-ision {
+    position: relative;
+    background: linear-gradient(180deg, #fff6df 0%, #f7bd54 45%, #d97706 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 18px rgba(245, 158, 11, 0.12);
+    letter-spacing: 0.16em;
+  }
+  .brand-wordmark-ision::after {
+    content: '';
+    position: absolute;
+    left: 0.08em;
+    right: 0.02em;
+    bottom: -0.18em;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0), rgba(245, 158, 11, 0.85), rgba(245, 158, 11, 0));
+    opacity: 0.8;
+  }
+  .brand-tagline {
+    margin-top: 0.18rem;
+    font-size: 0.62rem;
+    line-height: 1.1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
   /* Section heading */
   .section-title {
     @apply text-xs font-semibold uppercase tracking-widest mb-3;
@@ -270,6 +422,14 @@
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
+}
+@keyframes brandFloatC {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes brandFloatV {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
 }
 @keyframes slideRight {
   from { transform: translateX(-100%); }

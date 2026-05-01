@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { publicAPI } from '../api'
 import ResumePreview from '../components/builder/ResumePreview'
 import { exportToPDF } from '../utils/exportPDF'
+import BrandLogo from '../components/common/BrandLogo'
 
 export default function PublicResume() {
   const { slug } = useParams()
@@ -55,11 +56,7 @@ export default function PublicResume() {
       {/* Header bar */}
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 h-12"
         style={{ background: 'var(--bg-primary)', borderBottom: '1px solid var(--border)' }}>
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold"
-            style={{ background: 'var(--accent)', color: '#0d0c0a' }}>R</div>
-          <span className="font-display text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>ResumeAI</span>
-        </Link>
+        <BrandLogo to="/" compact />
         <div className="flex items-center gap-2">
           <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{resume?.title}</span>
           <button onClick={handleDownload} className="btn-primary text-xs py-1" disabled={exporting}>
