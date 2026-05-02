@@ -5,8 +5,8 @@
 ### Backend `.env` File
 **Before (UNSAFE):**
 ```
-MONGODB_URI=mongodb+srv://subhashkuril2004_db_user:ZzCKswZImDuU9Faf@cluster0.3mq4iqg.mongodb.net/
-ADMIN_PASSWORD=Admin@123  ❌ EXPOSED
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.3mq4iqg.mongodb.net/
+ADMIN_PASSWORD=<password>  ❌ EXPOSED
 ```
 
 **After (SAFE):**

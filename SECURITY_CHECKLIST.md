@@ -42,7 +42,7 @@ ADMIN_NAME=Admin
 ```
 
 **Issues Fixed:**
-- ✅ Removed real MongoDB credentials (was: `mongodb+srv://subhashkuril2004_db_user:ZzCKswZImDuU9Faf@...`)
+- ✅ Removed real MongoDB credentials
 - ✅ Removed admin password from .env
 - ✅ Removed duplicate MONGODB_URI entries
 - ✅ Kept placeholder JWT_SECRET (to be changed in production)

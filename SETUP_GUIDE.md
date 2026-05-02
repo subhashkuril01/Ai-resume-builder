@@ -22,7 +22,7 @@ OPENAI_API_KEY=mock_mode
 FRONTEND_URL=http://localhost:5173
 ADMIN_EMAIL=admin@gmail.com
 ADMIN_NAME=Admin
-ADMIN_PASSWORD=Admin@123  # For setup script only
+ADMIN_PASSWORD=<your_admin_password>  # For setup script only
 ```
 
 ### 2. Frontend Configuration
@@ -260,7 +260,7 @@ cd frontend
 npm run dev
 
 # Visit http://localhost:5173
-# Login with: admin@gmail.com / Admin@123
+# Login with: admin@gmail.com / <your_admin_password>
 # Access admin panel at: /admin
 ```
 
