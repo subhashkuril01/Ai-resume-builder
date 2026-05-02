@@ -28,9 +28,9 @@ export default function Login() {
   return (
     <div className="min-h-screen flex" style={{ background: 'var(--bg-primary)' }}>
       {/* Left panel */}
-      <div className="hidden lg:flex flex-col justify-between w-1/2 p-12"
+      <div className="hidden lg:flex flex-col justify-center relative w-1/2 p-12"
         style={{ background: 'var(--bg-secondary)', borderRight: '1px solid var(--border)' }}>
-        <div className="space-y-8">
+        <div className="space-y-8 max-w-lg mx-auto w-full">
           <div>
             <p className="font-display text-4xl font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>
               Build resumes that<br />
@@ -54,7 +54,7 @@ export default function Login() {
             ))}
           </div>
         </div>
-        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>© 2026 CVISION. All rights reserved.</p>
+        <p className="absolute bottom-12 left-12 text-xs" style={{ color: 'var(--text-muted)' }}>© 2026 CVISION. All rights reserved.</p>
       </div>
 
       {/* Right panel - Form */}
