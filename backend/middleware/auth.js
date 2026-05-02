@@ -39,4 +39,25 @@ const generateToken = (id) => {
   });
 };
 
-module.exports = { protect, generateToken };
+const isAdmin = async (req, res, next) => {
+  try {
+    // Ensure protect middleware was called first
+    if (!req.user) {
+      return res.status(401).json({ error: 'Access denied. No token provided.' });
+    }
+
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+    }
+
+    if (req.user.status === 'blocked') {
+      return res.status(403).json({ error: 'Access denied. Your account is blocked.' });
+    }
+
+    next();
+  } catch (error) {
+    res.status(500).json({ error: 'Server error.' });
+  }
+};
+
+module.exports = { protect, generateToken, isAdmin };

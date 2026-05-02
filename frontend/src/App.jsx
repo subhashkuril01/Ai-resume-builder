@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
 import BrandLogo from './components/common/BrandLogo'
 import ProtectedRoute from './components/common/ProtectedRoute'
+import ProtectedAdminRoute from './components/common/ProtectedAdminRoute'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -15,6 +16,10 @@ import ResumeTest from './pages/ResumeTest'
 import Templates from './pages/Templates'
 import Profile from './pages/Profile'
 import PublicResume from './pages/PublicResume'
+import AdminDashboard from './pages/AdminDashboard'
+import AdminUsers from './pages/AdminUsers'
+import AdminResumes from './pages/AdminResumes'
+import AdminAnalytics from './pages/AdminAnalytics'
 
 function ShellNav() {
   const { user, logout } = useAuth()
@@ -30,6 +35,7 @@ function ShellNav() {
     ['/job-match', 'Job Match'],
     ['/resume-test', 'Resume Test'],
     ['/templates', 'Templates'],
+    ...(user.role === 'admin' ? [['/admin', 'Admin']] : [])
   ] : []
 
   return (
@@ -98,6 +104,10 @@ export default function App() {
             <Route path="/resume-test" element={<ProtectedRoute><Layout><ResumeTest /></Layout></ProtectedRoute>} />
             <Route path="/templates" element={<ProtectedRoute><Layout><Templates /></Layout></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
+            <Route path="/admin/users" element={<ProtectedAdminRoute><AdminUsers /></ProtectedAdminRoute>} />
+            <Route path="/admin/resumes" element={<ProtectedAdminRoute><AdminResumes /></ProtectedAdminRoute>} />
+            <Route path="/admin/analytics" element={<ProtectedAdminRoute><AdminAnalytics /></ProtectedAdminRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>

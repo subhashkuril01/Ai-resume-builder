@@ -13,6 +13,7 @@ const analyzerRoutes = require('./routes/analyzer');
 const jobMatchRoutes = require('./routes/jobMatch');
 const publicRoutes = require('./routes/public');
 const resumeTestRoutes = require('./routes/resumeTests');
+const adminRoutes = require('./routes/admin');
 const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -64,6 +65,7 @@ app.use('/api/analyzer', analyzerRoutes);
 app.use('/api/job-match', jobMatchRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/resume-tests', resumeTestRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

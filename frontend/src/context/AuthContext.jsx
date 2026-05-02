@@ -5,17 +5,19 @@ const AuthContext = createContext(null)
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
+  const [token, setToken] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    const savedToken = localStorage.getItem('token')
     const savedUser = localStorage.getItem('user')
-    if (token && savedUser) {
+    if (savedToken && savedUser) {
+      setToken(savedToken)
       setUser(JSON.parse(savedUser))
       // Verify token is still valid
       authAPI.getMe()
         .then(res => { setUser(res.user); localStorage.setItem('user', JSON.stringify(res.user)) })
-        .catch(() => { localStorage.removeItem('token'); localStorage.removeItem('user'); setUser(null) })
+        .catch(() => { localStorage.removeItem('token'); localStorage.removeItem('user'); setUser(null); setToken(null) })
         .finally(() => setLoading(false))
     } else {
       setLoading(false)
@@ -26,6 +28,7 @@ export const AuthProvider = ({ children }) => {
     const res = await authAPI.login({ email, password })
     localStorage.setItem('token', res.token)
     localStorage.setItem('user', JSON.stringify(res.user))
+    setToken(res.token)
     setUser(res.user)
     return res
   }
@@ -34,6 +37,7 @@ export const AuthProvider = ({ children }) => {
     const res = await authAPI.register({ name, email, password })
     localStorage.setItem('token', res.token)
     localStorage.setItem('user', JSON.stringify(res.user))
+    setToken(res.token)
     setUser(res.user)
     return res
   }
@@ -42,6 +46,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     setUser(null)
+    setToken(null)
   }
 
   const updateUser = (updatedUser) => {
@@ -50,7 +55,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   )
