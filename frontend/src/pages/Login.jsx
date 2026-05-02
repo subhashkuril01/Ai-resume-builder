@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
-import BrandLogo from '../components/common/BrandLogo'
 
 export default function Login() {
   const { login } = useAuth()
@@ -31,9 +30,6 @@ export default function Login() {
       {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-12"
         style={{ background: 'var(--bg-secondary)', borderRight: '1px solid var(--border)' }}>
-        <div className="flex items-center gap-2">
-          <BrandLogo to="/" showTagline />
-        </div>
         <div className="space-y-8">
           <div>
             <p className="font-display text-4xl font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>

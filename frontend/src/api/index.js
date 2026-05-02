@@ -62,6 +62,18 @@ export const jobMatchAPI = {
   extractKeywords: (jobDescription) => api.post('/job-match/keywords', { jobDescription }),
 }
 
+export const resumeTestAPI = {
+  getAll: () => api.get('/resume-tests'),
+  getOne: (id) => api.get(`/resume-tests/${id}`),
+  generate: (resumeId) => api.post('/resume-tests/generate', { resumeId }),
+  start: (id) => api.post(`/resume-tests/${id}/start`),
+  saveAnswer: (id, data) => api.patch(`/resume-tests/${id}/answer`, data),
+  submit: (id) => api.post(`/resume-tests/${id}/submit`),
+  retake: (id) => api.post(`/resume-tests/${id}/retake`),
+  update: (id, data) => api.put(`/resume-tests/${id}`, data),
+  delete: (id) => api.delete(`/resume-tests/${id}`),
+}
+
 // Public
 export const publicAPI = {
   getResume: (slug) => api.get(`/public/resume/${slug}`),

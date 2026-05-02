@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
-import BrandLogo from '../components/common/BrandLogo'
 
 export default function Register() {
   const { register } = useAuth()
@@ -44,10 +43,6 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center p-6" style={{ background: 'var(--bg-primary)' }}>
       <div className="w-full max-w-sm animate-fade-up">
-        <div className="flex items-center gap-2 mb-8">
-          <BrandLogo to="/" />
-        </div>
-
         <div className="mb-6">
           <h1 className="font-display text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Create account</h1>
           <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Free forever. No credit card required.</p>

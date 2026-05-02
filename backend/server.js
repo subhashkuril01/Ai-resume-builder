@@ -12,6 +12,7 @@ const resumeRoutes = require('./routes/resumes');
 const analyzerRoutes = require('./routes/analyzer');
 const jobMatchRoutes = require('./routes/jobMatch');
 const publicRoutes = require('./routes/public');
+const resumeTestRoutes = require('./routes/resumeTests');
 const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -36,12 +37,13 @@ const limiter = rateLimit({
 });
 const aiLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 50,
+  max: 500,
   message: { error: 'AI rate limit exceeded. Try again in an hour.' }
 });
 app.use('/api/', limiter);
 app.use('/api/analyzer', aiLimiter);
 app.use('/api/job-match', aiLimiter);
+app.use('/api/resume-tests', aiLimiter);
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
@@ -61,6 +63,7 @@ app.use('/api/resumes', resumeRoutes);
 app.use('/api/analyzer', analyzerRoutes);
 app.use('/api/job-match', jobMatchRoutes);
 app.use('/api/public', publicRoutes);
+app.use('/api/resume-tests', resumeTestRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
