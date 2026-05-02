@@ -20,9 +20,7 @@ JWT_SECRET=your_local_test_secret_key_123
 JWT_EXPIRE=7d
 OPENAI_API_KEY=mock_mode
 FRONTEND_URL=http://localhost:5173
-ADMIN_EMAIL=admin@gmail.com
-ADMIN_NAME=Admin
-ADMIN_PASSWORD=Admin@123  # For setup script only
+
 ```
 
 ### 2. Frontend Configuration
