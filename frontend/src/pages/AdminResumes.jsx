@@ -50,189 +50,128 @@ export default function AdminResumes() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-          Resume Management
-        </h2>
-
-        {/* Search */}
-        <div className="flex gap-4">
-          <input
-            type="text"
-            placeholder="Search resumes by title..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              setPage(1)
-            }}
-            className="flex-1 px-4 py-2 rounded-lg border"
-            style={{
-              borderColor: 'var(--border)',
-              background: 'var(--bg-card)',
-              color: 'var(--text-primary)'
-            }}
-          />
-          <div style={{ color: 'var(--text-secondary)' }} className="text-sm py-2">
-            Total: {total} resumes
+      <div className="space-y-10 pb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500">Document Management</p>
+            <h2 className="font-display text-4xl font-black text-white">System <span className="text-zinc-600">Artifacts</span></h2>
+          </div>
+          <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/5">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Total Resumes: </span>
+            <span className="text-sm font-black text-white">{total}</span>
           </div>
         </div>
 
+        {/* Search */}
+        <div className="animate-fade-up">
+           <div className="relative group max-w-2xl">
+             <input
+                type="text"
+                placeholder="Search by resume title or ID..."
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                className="w-full h-14 bg-white/[0.03] border border-white/10 rounded-2xl px-6 pl-12 text-sm text-white focus:border-amber-500/50 transition-all outline-none group-hover:bg-white/[0.05]"
+              />
+              <span className="absolute left-5 top-1/2 -translate-y-1/2 opacity-30 group-hover:opacity-60 transition-opacity">📄</span>
+           </div>
+        </div>
+
         {/* Resumes Table */}
-        {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin text-4xl mb-4">⏳</div>
-            <p style={{ color: 'var(--text-secondary)' }}>Loading resumes...</p>
-          </div>
-        ) : error ? (
-          <div className="p-4 rounded-lg bg-red-100 text-red-700">
-            Error: {error}
-          </div>
-        ) : resumes.length === 0 ? (
-          <div className="text-center py-8">
-            <p style={{ color: 'var(--text-secondary)' }}>No resumes found</p>
-          </div>
-        ) : (
-          <div
-            className="rounded-lg border overflow-hidden"
-            style={{ borderColor: 'var(--border)', background: 'var(--bg-card)' }}
-          >
+        <div className="card border-white/5 overflow-hidden animate-fade-up delay-100">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 space-y-4">
+              <div className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Analyzing Archive...</p>
+            </div>
+          ) : error ? (
+            <div className="m-6 p-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+              Archival Error: {error}
+            </div>
+          ) : resumes.length === 0 ? (
+            <div className="py-20 text-center">
+              <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">No artifacts found in the database.</p>
+            </div>
+          ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full border-collapse">
                 <thead>
-                  <tr
-                    style={{
-                      background: 'var(--bg-primary)',
-                      borderBottom: '1px solid var(--border)'
-                    }}
-                  >
-                    <th
-                      className="px-6 py-3 text-left font-medium"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Title
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left font-medium"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      User
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left font-medium"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Email
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left font-medium"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Created
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left font-medium"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Actions
-                    </th>
+                  <tr className="bg-white/[0.02] border-b border-white/5">
+                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Document Title</th>
+                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Ownership</th>
+                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Creation Date</th>
+                    <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Operations</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-white/5">
                   {resumes.map((resume) => (
-                    <tr
-                      key={resume._id}
-                      style={{
-                        borderBottom: '1px solid var(--border)',
-                        background: 'var(--bg-card)'
-                      }}
-                    >
-                      <td className="px-6 py-3" style={{ color: 'var(--text-primary)' }}>
-                        <div>
-                          <p className="font-medium">{resume.title}</p>
-                          <p
-                            className="text-xs"
-                            style={{ color: 'var(--text-secondary)' }}
-                          >
-                            ID: {resume._id.substring(0, 8)}...
-                          </p>
+                    <tr key={resume._id} className="group hover:bg-white/[0.01] transition-colors">
+                      <td className="px-8 py-6">
+                        <div className="flex flex-col">
+                          <p className="font-bold text-sm text-white group-hover:text-amber-500 transition-colors uppercase tracking-tight">{resume.title}</p>
+                          <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest mt-1">UUID: {resume._id}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-3" style={{ color: 'var(--text-primary)' }}>
-                        {resume.userId?.name || 'Unknown'}
+                      <td className="px-8 py-6">
+                         <div className="flex flex-col">
+                            <p className="font-bold text-[11px] text-zinc-300 uppercase tracking-wide">{resume.userId?.name || 'Deactivated User'}</p>
+                            <p className="text-[10px] font-medium text-zinc-600 mt-0.5">{resume.userId?.email || 'N/A'}</p>
+                         </div>
                       </td>
-                      <td className="px-6 py-3" style={{ color: 'var(--text-secondary)' }}>
-                        {resume.userId?.email || 'N/A'}
+                      <td className="px-8 py-6">
+                        <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">
+                          {new Date(resume.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </p>
                       </td>
-                      <td className="px-6 py-3" style={{ color: 'var(--text-secondary)' }}>
-                        {new Date(resume.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-3">
-                        <button
-                          onClick={() => deleteResume(resume._id)}
-                          disabled={actionLoading[resume._id]}
-                          className="text-red-600 hover:text-red-700 text-sm font-medium"
-                        >
-                          {actionLoading[resume._id] ? '...' : 'Delete'}
-                        </button>
+                      <td className="px-8 py-6 text-right">
+                        <div className="flex items-center justify-end gap-3">
+                          <button
+                            onClick={() => deleteResume(resume._id)}
+                            disabled={actionLoading[resume._id]}
+                            className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
+                          >
+                            {actionLoading[resume._id] ? '•••' : 'Purge'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-3 animate-fade-up">
             <button
               onClick={() => setPage(prev => Math.max(1, prev - 1))}
               disabled={page === 1}
-              className="px-3 py-2 rounded-lg border disabled:opacity-50"
-              style={{
-                borderColor: 'var(--border)',
-                background: 'var(--bg-card)',
-                color: 'var(--text-primary)'
-              }}
+              className="px-6 py-3 rounded-2xl border border-white/10 text-[10px] font-bold uppercase tracking-[0.2em] text-white hover:border-amber-500/50 hover:text-amber-500 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
             >
-              Previous
+              ← PREV
             </button>
-            {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-              const pageNum = page > 3 ? page - 2 + i : i + 1
-              if (pageNum > totalPages) return null
-              return (
-                <button
-                  key={pageNum}
-                  onClick={() => setPage(pageNum)}
-                  className={`px-3 py-2 rounded-lg border ${
-                    page === pageNum ? 'bg-accent text-white' : ''
-                  }`}
-                  style={
-                    page === pageNum
-                      ? { background: 'var(--accent)', color: 'white', borderColor: 'var(--accent)' }
-                      : {
-                          borderColor: 'var(--border)',
-                          background: 'var(--bg-card)',
-                          color: 'var(--text-primary)'
-                        }
-                  }
-                >
-                  {pageNum}
-                </button>
-              )
-            })}
+            <div className="flex gap-2">
+              {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
+                const pageNum = page > 3 ? page - 2 + i : i + 1
+                if (pageNum > totalPages || pageNum < 1) return null
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setPage(pageNum)}
+                    className={`w-12 h-12 rounded-2xl text-[10px] font-bold transition-all border ${page === pageNum ? 'bg-amber-500 text-black border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : 'bg-white/5 text-zinc-500 border-white/5 hover:text-white hover:border-white/20'}`}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              })}
+            </div>
             <button
               onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
               disabled={page === totalPages}
-              className="px-3 py-2 rounded-lg border disabled:opacity-50"
-              style={{
-                borderColor: 'var(--border)',
-                background: 'var(--bg-card)',
-                color: 'var(--text-primary)'
-              }}
+              className="px-6 py-3 rounded-2xl border border-white/10 text-[10px] font-bold uppercase tracking-[0.2em] text-white hover:border-amber-500/50 hover:text-amber-500 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
             >
-              Next
+              NEXT →
             </button>
           </div>
         )}

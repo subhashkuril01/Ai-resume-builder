@@ -15,7 +15,7 @@ export default function PublicResume() {
   useEffect(() => {
     publicAPI.getResume(slug)
       .then(res => setResume(res.resume))
-      .catch(() => setError('Resume not found or is no longer publicly shared.'))
+      .catch(() => setError('Artifact access denied or document no longer exists.'))
       .finally(() => setLoading(false))
   }, [slug])
 
@@ -24,52 +24,83 @@ export default function PublicResume() {
     try {
       await exportToPDF('public-resume-preview', `${resume?.title || 'resume'}.pdf`)
     } catch {
-      alert('PDF export failed')
+      toast.error('Artifact export failed')
     } finally {
       setExporting(false)
     }
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
-      <div className="flex flex-col items-center gap-3">
-        <svg className="w-8 h-8 animate-spin" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="var(--accent)" strokeWidth="3" opacity="0.3"/>
-          <path fill="var(--accent)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-        </svg>
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading resume...</p>
+    <div className="min-h-screen bg-[#080807] flex items-center justify-center">
+      <div className="flex flex-col items-center gap-6">
+        <div className="w-12 h-12 border-2 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 animate-pulse">Syncing Secure Artifact</p>
       </div>
     </div>
   )
 
   if (error) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6" style={{ background: 'var(--bg-primary)' }}>
-      <div className="text-4xl">🔍</div>
-      <h1 className="font-display text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Resume Not Found</h1>
-      <p className="text-sm text-center max-w-sm" style={{ color: 'var(--text-muted)' }}>{error}</p>
-      <Link to="/" className="btn-primary text-sm">Go to ResumeAI →</Link>
+    <div className="min-h-screen bg-[#080807] flex flex-col items-center justify-center gap-8 p-10">
+      <div className="w-20 h-20 rounded-3xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-4xl shadow-[0_0_50px_rgba(239,68,68,0.1)]">
+        🔒
+      </div>
+      <div className="text-center space-y-3">
+        <h1 className="font-display text-3xl font-black text-white tracking-tight">Restricted Access</h1>
+        <p className="text-zinc-500 text-sm max-w-sm leading-relaxed">{error}</p>
+      </div>
+      <Link to="/" className="h-14 px-10 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] flex items-center transition-all hover:scale-105">
+        Return to Home →
+      </Link>
     </div>
   )
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg-secondary)' }}>
+    <div className="min-h-screen bg-[#080807]">
       {/* Header bar */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 h-12"
-        style={{ background: 'var(--bg-primary)', borderBottom: '1px solid var(--border)' }}>
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 h-20 bg-black/60 backdrop-blur-2xl border-b border-white/5">
         <BrandLogo to="/" compact />
-        <div className="flex items-center gap-2">
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{resume?.title}</span>
-          <button onClick={handleDownload} className="btn-primary text-xs py-1" disabled={exporting}>
-            {exporting ? '⟳' : '⬇'} Download PDF
-          </button>
-          <Link to="/register" className="btn-ghost text-xs py-1">Build yours free →</Link>
+        <div className="flex items-center gap-6">
+          <div className="hidden md:flex flex-col items-end mr-4">
+             <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Document Status</span>
+             <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">● Public Live Artifact</span>
+          </div>
+          <div className="h-10 w-px bg-white/5" />
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={handleDownload} 
+              className="h-12 px-8 rounded-xl bg-amber-500 text-black text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50" 
+              disabled={exporting}
+            >
+              {exporting ? 'Processing...' : 'Download PDF'}
+            </button>
+            <Link to="/register" className="h-12 px-8 rounded-xl bg-white/[0.03] border border-white/10 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all hidden sm:flex items-center">
+              Create Your Own →
+            </Link>
+          </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Resume */}
-      <div className="pt-16 pb-12 flex justify-center px-4">
-        <div className="w-full" style={{ maxWidth: 794 }}>
-          <ResumePreview resume={{ content: resume?.content, template: resume?.template }} id="public-resume-preview" />
+      {/* Resume Container */}
+      <div className="pt-32 pb-20 flex flex-col items-center px-6">
+        <div className="w-full max-w-[850px] space-y-6 animate-fade-up">
+          <div className="flex items-center justify-between px-4">
+             <div className="flex flex-col">
+                <h2 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] mb-1">Shared Identity</h2>
+                <p className="text-sm font-bold text-white uppercase tracking-tighter">{resume?.title}</p>
+             </div>
+             <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">A4 Professional Render</span>
+             </div>
+          </div>
+          
+          <div className="shadow-[0_40px_100px_rgba(0,0,0,0.6)] rounded-2xl overflow-hidden border border-white/5 bg-white">
+            <ResumePreview resume={{ content: resume?.content, template: resume?.template }} id="public-resume-preview" />
+          </div>
+          
+          <div className="py-10 text-center">
+             <p className="text-[10px] font-bold text-zinc-700 uppercase tracking-[0.4em]">Powered by ResumeAI Advanced Systems</p>
+          </div>
         </div>
       </div>
     </div>

@@ -27,206 +27,129 @@ export default function AdminAnalytics() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-            Analytics
-          </h2>
-          <select
-            value={days}
-            onChange={(e) => setDays(parseInt(e.target.value))}
-            className="px-4 py-2 rounded-lg border"
-            style={{
-              borderColor: 'var(--border)',
-              background: 'var(--bg-card)',
-              color: 'var(--text-primary)'
-            }}
-          >
-            <option value={7}>Last 7 Days</option>
-            <option value={30}>Last 30 Days</option>
-            <option value={90}>Last 90 Days</option>
-            <option value={365}>Last Year</option>
-          </select>
+      <div className="space-y-10 pb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500">Business Intelligence</p>
+            <h2 className="font-display text-4xl font-black text-white">Advanced <span className="text-zinc-600">Analytics</span></h2>
+          </div>
+          <div className="relative group">
+            <select
+              value={days}
+              onChange={(e) => setDays(parseInt(e.target.value))}
+              className="h-12 bg-white/[0.03] border border-white/10 rounded-xl px-6 text-[10px] font-bold uppercase tracking-widest text-white focus:border-amber-500/50 transition-all outline-none appearance-none cursor-pointer pr-12"
+            >
+              <option value={7}>LAST 7 DAYS</option>
+              <option value={30}>LAST 30 DAYS</option>
+              <option value={90}>LAST 90 DAYS</option>
+              <option value={365}>LAST YEAR</option>
+            </select>
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">▼</span>
+          </div>
         </div>
 
         {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin text-4xl mb-4">⏳</div>
-            <p style={{ color: 'var(--text-secondary)' }}>Loading analytics...</p>
+          <div className="flex flex-col items-center justify-center py-20 space-y-4">
+            <div className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+            <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Processing Data Stream...</p>
           </div>
         ) : error ? (
-          <div className="p-4 rounded-lg bg-red-100 text-red-700">
-            Error: {error}
+          <div className="p-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+            Data Retrieval Error: {error}
           </div>
         ) : !analytics ? (
-          <div className="text-center py-8">
-            <p style={{ color: 'var(--text-secondary)' }}>No data available</p>
+          <div className="py-20 text-center">
+             <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">No data streams detected for this period.</p>
           </div>
         ) : (
-          <>
+          <div className="space-y-10 animate-fade-up">
             {/* Usage by Type */}
-            {analytics.usageByType.length > 0 && (
-              <div
-                className="p-6 rounded-lg border"
-                style={{ borderColor: 'var(--border)', background: 'var(--bg-card)' }}
-              >
-                <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
-                  AI Usage by Type
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {analytics.usageByType.map((item) => (
-                    <div
-                      key={item._id}
-                      className="p-4 rounded-lg"
-                      style={{ background: 'var(--bg-primary)' }}
-                    >
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-                        {item._id.charAt(0).toUpperCase() + item._id.slice(1)}
-                      </p>
-                      <p className="text-3xl font-bold mt-2" style={{ color: 'var(--accent)' }}>
-                        {item.count}
-                      </p>
-                      <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
-                        <span className="block">Tokens: {item.tokensUsed}</span>
-                        <span className="block">Cost: ${item.totalCost.toFixed(2)}</span>
-                      </p>
-                    </div>
-                  ))}
-                </div>
+            <div className="card p-8 border-white/5 space-y-8">
+              <div className="flex items-center justify-between">
+                <h3 className="font-display text-xl font-bold text-white">AI Distribution</h3>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Metric: Requests</span>
               </div>
-            )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {analytics.usageByType.map((item) => (
+                  <div key={item._id} className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 group hover:border-amber-500/30 transition-all">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-amber-500 transition-colors">
+                      {item._id.replace('_', ' ')}
+                    </p>
+                    <p className="text-3xl font-black text-white mt-4">{item.count}</p>
+                    <div className="mt-6 pt-6 border-t border-white/5 space-y-2">
+                       <div className="flex justify-between items-center">
+                          <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Tokens</span>
+                          <span className="text-[10px] font-bold text-zinc-400">{item.tokensUsed.toLocaleString()}</span>
+                       </div>
+                       <div className="flex justify-between items-center">
+                          <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Revenue</span>
+                          <span className="text-[10px] font-bold text-amber-500">${item.totalCost.toFixed(2)}</span>
+                       </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-            {/* Daily Usage Chart */}
-            {analytics.dailyUsage.length > 0 && (
-              <div
-                className="p-6 rounded-lg border"
-                style={{ borderColor: 'var(--border)', background: 'var(--bg-card)' }}
-              >
-                <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
-                  Daily Usage Trend
-                </h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr
-                        style={{
-                          background: 'var(--bg-primary)',
-                          borderBottom: '1px solid var(--border)'
-                        }}
-                      >
-                        <th
-                          className="px-4 py-2 text-left font-medium"
-                          style={{ color: 'var(--text-secondary)' }}
-                        >
-                          Date
-                        </th>
-                        <th
-                          className="px-4 py-2 text-left font-medium"
-                          style={{ color: 'var(--text-secondary)' }}
-                        >
-                          Requests
-                        </th>
-                        <th
-                          className="px-4 py-2 text-left font-medium"
-                          style={{ color: 'var(--text-secondary)' }}
-                        >
-                          Tokens Used
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {analytics.dailyUsage.map((item) => (
-                        <tr
-                          key={item._id}
-                          style={{
-                            borderBottom: '1px solid var(--border)',
-                            background: 'var(--bg-card)'
-                          }}
-                        >
-                          <td className="px-4 py-2" style={{ color: 'var(--text-primary)' }}>
-                            {item._id}
-                          </td>
-                          <td className="px-4 py-2" style={{ color: 'var(--text-primary)' }}>
-                            <div className="flex items-center gap-2">
-                              <div
-                                className="h-6 rounded"
-                                style={{
-                                  background: 'var(--accent)',
-                                  width: `${(item.count / Math.max(...analytics.dailyUsage.map(d => d.count))) * 100}px`
-                                }}
-                              ></div>
-                              {item.count}
-                            </div>
-                          </td>
-                          <td className="px-4 py-2" style={{ color: 'var(--text-secondary)' }}>
-                            {item.tokensUsed}
-                          </td>
+            <div className="grid grid-cols-1 xl:grid-cols-5 gap-10">
+               {/* Daily Usage Trend */}
+               <div className="xl:col-span-3 card p-8 border-white/5">
+                 <h3 className="font-display text-xl font-bold text-white mb-8">Performance Trend</h3>
+                 <div className="overflow-x-auto custom-scrollbar">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b border-white/5">
+                          <th className="py-4 text-left text-[10px] font-black uppercase tracking-widest text-zinc-500">Date</th>
+                          <th className="py-4 text-left text-[10px] font-black uppercase tracking-widest text-zinc-500">Load Factor</th>
+                          <th className="py-4 text-right text-[10px] font-black uppercase tracking-widest text-zinc-500">Requests</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {analytics.dailyUsage.map((item) => {
+                          const maxCount = Math.max(...analytics.dailyUsage.map(d => d.count), 1);
+                          const percentage = (item.count / maxCount) * 100;
+                          return (
+                            <tr key={item._id} className="group hover:bg-white/[0.01]">
+                              <td className="py-4 text-[11px] font-bold text-zinc-400 uppercase tracking-widest">{item._id}</td>
+                              <td className="py-4 pr-10">
+                                <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                  <div className="h-full bg-amber-500 glow-orange transition-all duration-1000" style={{ width: `${percentage}%` }} />
+                                </div>
+                              </td>
+                              <td className="py-4 text-right font-black text-white text-xs">{item.count}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                 </div>
+               </div>
 
-            {/* Top Users */}
-            {analytics.topUsers.length > 0 && (
-              <div
-                className="p-6 rounded-lg border"
-                style={{ borderColor: 'var(--border)', background: 'var(--bg-card)' }}
-              >
-                <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
-                  Top AI Users
-                </h3>
-                <div className="space-y-2">
-                  {analytics.topUsers.map((user, index) => (
-                    <div
-                      key={user.userId}
-                      className="p-4 rounded-lg flex items-center justify-between"
-                      style={{ background: 'var(--bg-primary)' }}
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span
-                            className="text-lg font-bold px-2 py-0.5 rounded"
-                            style={{
-                              background: 'var(--accent)',
-                              color: 'white',
-                              minWidth: '28px',
-                              textAlign: 'center'
-                            }}
-                          >
-                            {index + 1}
-                          </span>
-                          <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
-                            {user.userName}
-                          </p>
-                          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                            {user.userEmail}
-                          </p>
+               {/* Top Users */}
+               <div className="xl:col-span-2 card p-8 border-white/5">
+                 <h3 className="font-display text-xl font-bold text-white mb-8">Power Users</h3>
+                 <div className="space-y-4">
+                    {analytics.topUsers.map((user, index) => (
+                      <div key={user.userId} className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between group hover:bg-white/[0.04] transition-all">
+                        <div className="flex items-center gap-4">
+                           <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-black font-black text-xs shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                             {index + 1}
+                           </div>
+                           <div className="min-w-0">
+                              <p className="font-bold text-xs text-white truncate uppercase tracking-tight">{user.userName}</p>
+                              <p className="text-[10px] font-bold text-zinc-600 truncate">{user.userEmail}</p>
+                           </div>
                         </div>
-                        <div className="ml-10 text-xs" style={{ color: 'var(--text-secondary)' }}>
-                          {user.count} requests • {user.tokensUsed} tokens • ${user.totalCost.toFixed(2)}
+                        <div className="text-right">
+                           <p className="text-sm font-black text-amber-500 group-hover:scale-110 transition-transform">{user.count}</p>
+                           <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">REQ</p>
                         </div>
                       </div>
-                      <div
-                        className="text-2xl font-bold"
-                        style={{ color: 'var(--accent)' }}
-                      >
-                        {user.count}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {analytics.topUsers.length === 0 && analytics.usageByType.length === 0 && (
-              <div className="text-center py-8">
-                <p style={{ color: 'var(--text-secondary)' }}>No analytics data available for this period</p>
-              </div>
-            )}
-          </>
+                    ))}
+                 </div>
+               </div>
+            </div>
+          </div>
         )}
       </div>
     </AdminLayout>

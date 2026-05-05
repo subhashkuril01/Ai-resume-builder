@@ -5,11 +5,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Clash Display"', 'sans-serif'],
-        body: ['"Cabinet Grotesk"', 'sans-serif'],
+        display: ['"Cabinet Grotesk"', 'sans-serif'],
+        body: ['"Inter"', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       colors: {
+        primary: '#080807',
+        secondary: '#0d0c0a',
+        accent: '#f59e0b',
+        glass: 'rgba(255, 255, 255, 0.03)',
         ink: {
           50: '#f4f3f0',
           100: '#e8e6e0',

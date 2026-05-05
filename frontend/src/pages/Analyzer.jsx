@@ -12,7 +12,10 @@ export default function Analyzer() {
 
   useEffect(() => {
     resumeAPI.getAll()
-      .then(res => { setResumes(res.resumes || []); if (res.resumes?.length) setSelectedId(res.resumes[0]._id) })
+      .then(res => { 
+        setResumes(res.resumes || [])
+        if (res.resumes?.length) setSelectedId(res.resumes[0]._id) 
+      })
       .catch(() => toast.error('Failed to load resumes'))
       .finally(() => setFetching(false))
   }, [])
@@ -32,95 +35,140 @@ export default function Analyzer() {
     }
   }
 
-  const priorityColor = { high: 'var(--danger)', medium: 'var(--accent)', low: 'var(--success)' }
-  const priorityBg = { high: 'var(--danger-bg)', medium: 'var(--accent-dim)', low: 'var(--success-bg)' }
+  const priorityColor = { high: '#ef4444', medium: '#f59e0b', low: '#10b981' }
 
   return (
-    <div className="min-h-screen pt-14" style={{ background: 'var(--bg-primary)' }}>
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="animate-fade-up mb-8">
-          <p className="section-title">AI Tools</p>
-          <h1 className="font-display text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>ATS Resume Analyzer</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-            Get an AI-powered ATS compatibility score and actionable improvement suggestions.
+    <div className="min-h-screen pt-32 pb-20 bg-[#080807]">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="animate-fade-up mb-16 text-center lg:text-left">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500 mb-3">AI Intelligence</p>
+          <h1 className="font-display text-5xl lg:text-6xl font-black text-white tracking-tight">
+            ATS <span className="text-zinc-700">Analyzer</span>
+          </h1>
+          <p className="text-zinc-500 text-sm mt-4 max-w-2xl leading-relaxed mx-auto lg:mx-0">
+            Audit your resume against modern Applicant Tracking Systems. Our AI identifies gaps, missing keywords, and structural issues to ensure you pass the first filter.
           </p>
         </div>
 
-        {/* Select & Run */}
-        <div className="card p-5 mb-6 animate-fade-up delay-100">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <select className="input flex-1" value={selectedId} onChange={e => setSelectedId(e.target.value)} disabled={fetching}>
-              <option value="">— Select a resume —</option>
-              {resumes.map(r => <option key={r._id} value={r._id}>{r.title}</option>)}
-            </select>
-            <button onClick={handleAnalyze} className="btn-primary" disabled={loading || !selectedId}>
+        {/* Selection Area */}
+        <div className="card p-8 lg:p-10 mb-12 animate-fade-up delay-100 bg-white/[0.02] border-white/5 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 opacity-5 text-6xl group-hover:scale-110 transition-transform duration-700">🧠</div>
+          <div className="flex flex-col lg:flex-row items-end gap-6 relative z-10">
+            <div className="flex-1 w-full">
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-3 block">Target Artifact</label>
+              <div className="relative group/select">
+                <select 
+                  className="w-full h-14 bg-white/[0.03] border border-white/10 rounded-2xl px-6 text-sm text-white focus:border-amber-500/50 transition-all outline-none appearance-none cursor-pointer"
+                  value={selectedId} 
+                  onChange={e => setSelectedId(e.target.value)} 
+                  disabled={fetching}
+                >
+                  <option value="">Select a document...</option>
+                  {resumes.map(r => <option key={r._id} value={r._id} className="bg-[#121210]">{r.title}</option>)}
+                </select>
+                <span className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30 text-xs transition-transform group-hover/select:translate-y-[-40%]">▼</span>
+              </div>
+            </div>
+            <button 
+              onClick={handleAnalyze} 
+              className="w-full lg:w-auto h-14 px-10 rounded-2xl bg-amber-500 text-black text-[10px] font-black uppercase tracking-[0.2em] glow-orange transition-all hover:scale-[1.02] disabled:opacity-50 disabled:grayscale"
+              disabled={loading || !selectedId}
+            >
               {loading ? (
-                <>
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
-                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                  </svg>
-                  Analyzing...
-                </>
-              ) : '⚡ Analyze Now'}
+                <span className="flex items-center justify-center gap-3">
+                  <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                  Analyzing
+                </span>
+              ) : '⚡ Start Audit'}
             </button>
           </div>
-          {loading && (
-            <div className="mt-4 text-center">
-              <p className="text-xs animate-pulse" style={{ color: 'var(--text-muted)' }}>
-                AI is reading your resume and computing your ATS score...
-              </p>
-            </div>
-          )}
         </div>
 
         {/* Results */}
         {analysis && (
-          <div className="space-y-5 animate-fade-up">
-            {/* Score + Summary */}
-            <div className="card p-6 flex flex-col sm:flex-row items-center gap-6">
-              <ScoreRing score={analysis.atsScore} size={130} />
-              <div className="flex-1 text-center sm:text-left">
-                <h2 className="font-display text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                  ATS Score: {analysis.atsScore}/100
-                </h2>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+          <div className="space-y-10 animate-fade-up">
+            {/* Score & Summary */}
+            <div className="card p-10 lg:p-12 border-white/5 flex flex-col lg:flex-row items-center gap-12 relative overflow-hidden bg-amber-500/[0.01]">
+              <div className="relative flex-shrink-0 animate-scale-in">
+                <div className="w-44 h-44 rounded-full border-4 border-white/5 flex items-center justify-center relative">
+                  <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+                    <circle cx="88" cy="88" r="82" fill="none" stroke="currentColor" strokeWidth="8" className="text-white/[0.02]" />
+                    <circle 
+                      cx="88" cy="88" r="82" fill="none" stroke="currentColor" strokeWidth="8" 
+                      className="text-amber-500 transition-all duration-[2000ms] ease-out"
+                      strokeDasharray={515}
+                      strokeDashoffset={515 * (1 - analysis.atsScore / 100)}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="flex flex-col items-center">
+                    <span className="text-6xl font-black text-white">{analysis.atsScore}</span>
+                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">ATS Score</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 text-center lg:text-left space-y-4">
+                <h2 className="font-display text-3xl font-bold text-white tracking-tight">Executive Summary</h2>
+                <p className="text-zinc-400 text-sm leading-relaxed font-medium">
                   {analysis.overallFeedback}
                 </p>
+                <div className="flex flex-wrap justify-center lg:justify-start gap-3 pt-4">
+                   <div className="px-4 py-2 rounded-xl bg-white/[0.03] border border-white/5">
+                      <p className="text-[8px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Pass Probability</p>
+                      <p className="text-sm font-black text-white">{analysis.atsScore > 75 ? 'HIGH' : 'MEDIUM'}</p>
+                   </div>
+                   <div className="px-4 py-2 rounded-xl bg-white/[0.03] border border-white/5">
+                      <p className="text-[8px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Keywords</p>
+                      <p className="text-sm font-black text-white">{analysis.keywords?.found.length || 0} / {(analysis.keywords?.found.length || 0) + (analysis.keywords?.missing.length || 0)}</p>
+                   </div>
+                </div>
               </div>
             </div>
 
-            {/* Sections assessment */}
-            <div className="grid grid-cols-3 gap-3">
+            {/* Assessment Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { label: 'Strong Sections', items: analysis.sections?.strong || [], type: 'success' },
-                { label: 'Weak Sections', items: analysis.sections?.weak || [], type: 'warning' },
-                { label: 'Missing Sections', items: analysis.sections?.missing || [], type: 'danger' },
-              ].map(({ label, items, type }) => (
-                <div key={label} className="card p-4">
-                  <p className="text-xs font-semibold mb-3" style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</p>
-                  {items.length === 0 ? <p className="text-xs" style={{ color: 'var(--text-muted)' }}>None</p> : items.map((item, i) => (
-                    <div key={i} className={`badge-${type === 'success' ? 'success' : type === 'danger' ? 'danger' : 'accent'} mb-1.5 block`}>
-                      {item}
-                    </div>
-                  ))}
+                { label: 'Strategic Pillars', items: analysis.sections?.strong || [], accent: 'emerald-500' },
+                { label: 'Structural Gaps', items: analysis.sections?.weak || [], accent: 'amber-500' },
+                { label: 'Critical Missing', items: analysis.sections?.missing || [], accent: 'red-500' },
+              ].map(({ label, items, accent }) => (
+                <div key={label} className="card p-8 border-white/5 group hover:border-white/10 transition-all">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-6">{label}</p>
+                  <div className="space-y-3">
+                    {items.length === 0 ? (
+                      <p className="text-[10px] font-bold text-zinc-700 italic uppercase">No data detected</p>
+                    ) : items.map((item, i) => (
+                      <div key={i} className={`flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 transition-all group-hover:bg-white/[0.04]`}>
+                        <div className={`w-1.5 h-1.5 rounded-full bg-${accent} shadow-[0_0_10px_rgba(0,0,0,0.5)]`} />
+                        <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-wider">{item}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* Keywords */}
-            <div className="card p-5">
-              <h3 className="font-display font-semibold text-sm mb-4" style={{ color: 'var(--text-primary)' }}>Keyword Analysis</h3>
-              <div className="space-y-3">
+            <div className="card p-10 border-white/5 bg-white/[0.01]">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                <h3 className="font-display text-2xl font-bold text-white tracking-tight">Vocabulary Audit</h3>
+                <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Industry Relevance & Keyword Density</p>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {[
-                  { label: '✅ Keywords Found', items: analysis.keywords?.found || [], style: { background: 'var(--success-bg)', color: 'var(--success)', border: '1px solid rgba(66,130,94,0.3)' } },
-                  { label: '❌ Missing Keywords', items: analysis.keywords?.missing || [], style: { background: 'var(--danger-bg)', color: 'var(--danger)', border: '1px solid rgba(220,38,38,0.2)' } },
-                  { label: '💡 Recommended', items: analysis.keywords?.recommended || [], style: { background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--accent-border)' } },
-                ].map(({ label, items, style }) => items.length > 0 && (
-                  <div key={label}>
-                    <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>{label}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {items.map((kw, i) => <span key={i} className="badge text-xs" style={style}>{kw}</span>)}
+                  { label: 'Found in Artifact', items: analysis.keywords?.found || [], color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+                  { label: 'Missing Critical', items: analysis.keywords?.missing || [], color: 'text-red-500', bg: 'bg-red-500/10' },
+                  { label: 'AI Recommended', items: analysis.keywords?.recommended || [], color: 'text-amber-500', bg: 'bg-amber-500/10' },
+                ].map(({ label, items, color, bg }) => (
+                  <div key={label} className="space-y-5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 border-l-2 border-white/10 pl-3">{label}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {items.map((kw, i) => (
+                        <span key={i} className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider ${bg} ${color} border border-white/5 hover:scale-105 transition-transform cursor-default`}>
+                          {kw}
+                        </span>
+                      ))}
+                      {items.length === 0 && <p className="text-[10px] font-bold text-zinc-700 italic uppercase">None</p>}
                     </div>
                   </div>
                 ))}
@@ -129,23 +177,22 @@ export default function Analyzer() {
 
             {/* Suggestions */}
             {analysis.suggestions?.length > 0 && (
-              <div className="card p-5">
-                <h3 className="font-display font-semibold text-sm mb-4" style={{ color: 'var(--text-primary)' }}>
-                  Improvement Suggestions ({analysis.suggestions.length})
-                </h3>
-                <div className="space-y-3">
+              <div className="card p-10 border-white/5 bg-zinc-900/20">
+                <div className="flex items-center gap-3 mb-10">
+                  <div className="w-2 h-8 bg-amber-500 rounded-full" />
+                  <h3 className="font-display text-2xl font-bold text-white tracking-tight">Strategic Fixes</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {analysis.suggestions.map((s, i) => (
-                    <div key={i} className="flex gap-3 p-3 rounded-lg"
-                      style={{ background: priorityBg[s.priority], border: `1px solid ${priorityColor[s.priority]}30` }}>
-                      <div className="flex-shrink-0 mt-0.5">
-                        <span className="badge text-xs" style={{ background: `${priorityColor[s.priority]}20`, color: priorityColor[s.priority] }}>
-                          {s.priority}
+                    <div key={i} className="p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-amber-500/30 transition-all group">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white/5 border border-white/10`} 
+                          style={{ color: priorityColor[s.priority] }}>
+                          {s.priority} Impact
                         </span>
                       </div>
-                      <div>
-                        <p className="text-xs font-semibold mb-0.5" style={{ color: priorityColor[s.priority] }}>{s.issue}</p>
-                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{s.suggestion}</p>
-                      </div>
+                      <p className="text-base font-bold text-white mb-2 group-hover:text-amber-500 transition-colors">{s.issue}</p>
+                      <p className="text-xs text-zinc-500 leading-relaxed font-medium">{s.suggestion}</p>
                     </div>
                   ))}
                 </div>

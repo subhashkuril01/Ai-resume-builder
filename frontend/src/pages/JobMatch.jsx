@@ -3,28 +3,30 @@ import { resumeAPI, jobMatchAPI } from '../api'
 import toast from 'react-hot-toast'
 
 function MatchMeter({ pct }) {
-  const color = pct >= 75 ? '#42825e' : pct >= 55 ? '#f59e0b' : pct >= 35 ? '#f97316' : '#dc2626'
-  const label = pct >= 75 ? 'Strong Match' : pct >= 55 ? 'Good Match' : pct >= 35 ? 'Moderate Match' : 'Weak Match'
+  const color = pct >= 75 ? '#10b981' : pct >= 55 ? '#f59e0b' : pct >= 35 ? '#f97316' : '#ef4444'
+  const glowClass = pct >= 75 ? 'shadow-[0_0_30px_rgba(16,185,129,0.3)]' : pct >= 55 ? 'shadow-[0_0_30px_rgba(245,158,11,0.3)]' : 'shadow-[0_0_30px_rgba(239,68,68,0.3)]'
+  
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative w-40 h-40">
-        <svg viewBox="0 0 140 140" className="w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
-          <circle cx="70" cy="70" r="58" fill="none" stroke="var(--bg-secondary)" strokeWidth="12" />
-          <circle cx="70" cy="70" r="58" fill="none" stroke={color} strokeWidth="12"
+    <div className="flex flex-col items-center gap-8 group">
+      <div className={`relative w-56 h-56 rounded-full p-1 bg-white/[0.02] border border-white/5 ${glowClass} transition-all duration-700`}>
+        <svg viewBox="0 0 140 140" className="w-full h-full transform -rotate-90">
+          <circle cx="70" cy="70" r="64" fill="none" stroke="currentColor" strokeWidth="6" className="text-white/5" />
+          <circle cx="70" cy="70" r="64" fill="none" stroke={color} strokeWidth="6"
             strokeLinecap="round"
-            strokeDasharray={`${2 * Math.PI * 58}`}
-            strokeDashoffset={`${2 * Math.PI * 58 * (1 - pct / 100)}`}
-            style={{ transition: 'stroke-dashoffset 1.2s ease', filter: `drop-shadow(0 0 8px ${color}60)` }} />
+            strokeDasharray={402}
+            strokeDashoffset={402 * (1 - pct / 100)}
+            className="transition-all duration-[2000ms] ease-out"
+          />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-display font-bold text-4xl" style={{ color }}>{pct}%</span>
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>match</span>
+          <span className="font-display font-black text-6xl text-white group-hover:scale-110 transition-transform duration-500">{pct}<span className="text-2xl text-zinc-500">%</span></span>
+          <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mt-2">Alignment</p>
         </div>
       </div>
-      <span className="text-sm font-semibold px-3 py-1 rounded-full"
-        style={{ background: `${color}18`, color, border: `1px solid ${color}35` }}>
-        {label}
-      </span>
+      <div className="px-6 py-2 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border transition-all animate-pulse"
+        style={{ background: `${color}10`, color: color, borderColor: `${color}20` }}>
+        {pct >= 75 ? 'Optimal Strategy' : pct >= 55 ? 'Strong Potential' : pct >= 35 ? 'Needs Optimization' : 'High Risk'}
+      </div>
     </div>
   )
 }
@@ -40,7 +42,10 @@ export default function JobMatch() {
 
   useEffect(() => {
     resumeAPI.getAll()
-      .then(res => { setResumes(res.resumes || []); if (res.resumes?.length) setSelectedId(res.resumes[0]._id) })
+      .then(res => { 
+        setResumes(res.resumes || [])
+        if (res.resumes?.length) setSelectedId(res.resumes[0]._id) 
+      })
       .catch(() => {})
   }, [])
 
@@ -68,60 +73,93 @@ export default function JobMatch() {
   }
 
   return (
-    <div className="min-h-screen pt-14" style={{ background: 'var(--bg-primary)' }}>
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="animate-fade-up mb-8">
-          <p className="section-title">AI Tools</p>
-          <h1 className="font-display text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Job Match Engine</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-            Paste any job description to get your match score, missing skills, and tailored recommendations.
+    <div className="min-h-screen pt-32 pb-20 bg-[#080807]">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="animate-fade-up mb-16">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500 mb-3">Matching Engine</p>
+          <h1 className="font-display text-5xl lg:text-6xl font-black text-white tracking-tight">
+            Job <span className="text-zinc-700">Sync</span>
+          </h1>
+          <p className="text-zinc-500 text-sm mt-4 max-w-2xl leading-relaxed">
+            AI-powered semantic matching between your resume and job requirements. Understand exactly where you stand and how to pivot.
           </p>
         </div>
 
-        {/* Input card */}
-        <div className="card p-5 mb-6 animate-fade-up delay-100 space-y-4">
-          <div className="form-group">
-            <label className="label">Select Resume</label>
-            <select className="input" value={selectedId} onChange={e => setSelectedId(e.target.value)}>
-              <option value="">— Select —</option>
-              {resumes.map(r => <option key={r._id} value={r._id}>{r.title}</option>)}
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="label">Job Description</label>
-            <textarea className="textarea w-full" rows={8}
-              placeholder="Paste the full job description here — the more detail the better..."
-              value={jobDescription} onChange={e => setJobDescription(e.target.value)} />
-          </div>
-          <div className="flex gap-2">
-            <button onClick={handleAnalyze} className="btn-primary flex-1 justify-center" disabled={loading}>
-              {loading ? (
-                <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Analyzing...</>
-              ) : '🎯 Analyze Match'}
-            </button>
-            <button onClick={handleExtractKeywords} className="btn-ghost" disabled={kwLoading}>
-              {kwLoading ? '⟳' : '🔑'} Extract Keywords
-            </button>
+        {/* Input area */}
+        <div className="card p-8 lg:p-12 mb-12 animate-fade-up delay-100 bg-white/[0.02] border-white/5">
+          <div className="grid grid-cols-1 gap-8">
+            <div className="space-y-3">
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">Target Resume</label>
+              <div className="relative group/select">
+                <select 
+                  className="w-full h-14 bg-white/[0.03] border border-white/10 rounded-2xl px-6 text-sm text-white focus:border-amber-500/50 transition-all outline-none appearance-none cursor-pointer"
+                  value={selectedId} 
+                  onChange={e => setSelectedId(e.target.value)}
+                >
+                  <option value="" className="bg-[#080807]">Select a resume artifact...</option>
+                  {resumes.map(r => <option key={r._id} value={r._id} className="bg-[#121210]">{r.title}</option>)}
+                </select>
+                <span className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30 text-xs transition-transform group-hover/select:translate-y-[-40%]">▼</span>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">Job Description Artifact</label>
+              <textarea 
+                className="w-full h-64 bg-white/[0.03] border border-white/10 rounded-3xl p-8 text-sm text-zinc-300 focus:border-amber-500/50 transition-all outline-none resize-none font-medium custom-scrollbar" 
+                placeholder="Paste the full job description here. Include requirements, responsibilities, and company values..."
+                value={jobDescription} 
+                onChange={e => setJobDescription(e.target.value)} 
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/5">
+              <button 
+                onClick={handleAnalyze} 
+                className="flex-[2] h-14 rounded-2xl bg-amber-500 text-black text-[10px] font-black uppercase tracking-[0.2em] glow-orange transition-all hover:scale-[1.01]" 
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-3">
+                    <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                    Running Analysis
+                  </span>
+                ) : '🎯 Analyze Compatibility'}
+              </button>
+              <button 
+                onClick={handleExtractKeywords} 
+                className="flex-1 h-14 rounded-2xl bg-white/[0.03] border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all" 
+                disabled={kwLoading}
+              >
+                {kwLoading ? 'Extracting...' : 'Fetch Skills'}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Keywords */}
+        {/* Keywords extracted */}
         {keywords && (
-          <div className="card p-5 mb-5 animate-fade-up">
-            <h3 className="font-display font-semibold text-sm mb-4" style={{ color: 'var(--text-primary)' }}>
-              Extracted Keywords — <span className="badge-muted ml-1">{keywords.jobLevel}</span> · <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{keywords.industry}</span>
-            </h3>
-            <div className="space-y-3">
+          <div className="card p-10 mb-12 animate-fade-up border-white/5 bg-white/[0.01]">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 pb-6 border-b border-white/5 gap-6">
+              <h3 className="font-display text-2xl font-bold text-white tracking-tight">Requirement Breakdown</h3>
+              <div className="flex gap-3">
+                <span className="px-4 py-1.5 rounded-xl bg-amber-500/10 text-amber-500 text-[10px] font-black uppercase tracking-widest border border-amber-500/20">{keywords.jobLevel}</span>
+                <span className="px-4 py-1.5 rounded-xl bg-white/5 text-zinc-500 text-[10px] font-black uppercase tracking-widest border border-white/5">{keywords.industry}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
               {[
-                { label: 'Technical Skills', items: keywords.technicalSkills || [] },
-                { label: 'Tools & Technologies', items: keywords.tools || [] },
-                { label: 'Soft Skills', items: keywords.softSkills || [] },
-                { label: 'Key Phrases', items: keywords.keyPhrases || [] },
-              ].filter(g => g.items.length > 0).map(({ label, items }) => (
-                <div key={label}>
-                  <p className="text-xs font-medium mb-1.5" style={{ color: 'var(--text-muted)' }}>{label}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {items.map((kw, i) => <span key={i} className="badge-muted text-xs">{kw}</span>)}
+                { label: 'Technical Core', items: keywords.technicalSkills || [], accent: 'text-amber-500' },
+                { label: 'Tools & Stack', items: keywords.tools || [], accent: 'text-indigo-400' },
+                { label: 'Human Skills', items: keywords.softSkills || [], accent: 'text-emerald-400' },
+                { label: 'Key Phrases', items: keywords.keyPhrases || [], accent: 'text-zinc-400' },
+              ].filter(g => g.items.length > 0).map(({ label, items, accent }) => (
+                <div key={label} className="space-y-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 pl-3 border-l-2 border-white/10">{label}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {items.map((kw, i) => (
+                      <span key={i} className={`px-2.5 py-1.5 rounded-lg bg-white/[0.02] border border-white/5 ${accent} text-[9px] font-black uppercase tracking-wider`}>
+                        {kw}
+                      </span>
+                    ))}
                   </div>
                 </div>
               ))}
@@ -129,69 +167,88 @@ export default function JobMatch() {
           </div>
         )}
 
-        {/* Match result */}
+        {/* Results section */}
         {result && (
-          <div className="space-y-5 animate-fade-up">
-            {/* Score header */}
-            <div className="card p-6 flex flex-col sm:flex-row items-center gap-6">
+          <div className="space-y-12 animate-fade-up pb-10">
+            {/* Header Score */}
+            <div className="card p-10 lg:p-14 border-white/5 flex flex-col lg:flex-row items-center gap-16 bg-white/[0.01] relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
               <MatchMeter pct={result.matchPercentage} />
-              <div className="flex-1 text-center sm:text-left">
-                <h2 className="font-display text-lg font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+              <div className="flex-1 text-center lg:text-left space-y-6">
+                <h2 className="font-display text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                   {result.jobTitle}
                 </h2>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                  {result.overallAssessment}
-                </p>
+                <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 relative">
+                   <div className="absolute top-[-10px] left-8 px-3 py-1 bg-zinc-900 border border-white/10 rounded-full text-[8px] font-black text-zinc-500 uppercase tracking-widest">AI EVALUATION</div>
+                  <p className="text-zinc-400 text-sm leading-relaxed font-medium italic">
+                    "{result.overallAssessment}"
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Skills grid */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="card p-4">
-                <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--success)' }}>✅ Matched Skills</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {(result.matchedSkills || []).map((s, i) => <span key={i} className="badge-success text-xs">{s}</span>)}
-                  {!result.matchedSkills?.length && <p className="text-xs" style={{ color: 'var(--text-muted)' }}>None detected</p>}
+            {/* Comparison Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="card p-10 border-emerald-500/10 bg-emerald-500/[0.01] group hover:bg-emerald-500/[0.02] transition-all">
+                <div className="flex items-center justify-between mb-8">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">✅ Semantic Alignment</p>
+                  <span className="text-[8px] font-bold text-emerald-500/50 uppercase">Strong Match</span>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {(result.matchedSkills || []).map((s, i) => (
+                    <span key={i} className="px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-wider border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
+                      {s}
+                    </span>
+                  ))}
                 </div>
               </div>
-              <div className="card p-4">
-                <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--danger)' }}>❌ Missing Skills</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {(result.missingSkills || []).map((s, i) => <span key={i} className="badge-danger text-xs">{s}</span>)}
-                  {!result.missingSkills?.length && <p className="text-xs" style={{ color: 'var(--text-muted)' }}>None detected</p>}
+              <div className="card p-10 border-red-500/10 bg-red-500/[0.01] group hover:bg-red-500/[0.02] transition-all">
+                <div className="flex items-center justify-between mb-8">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500">❌ Technical Gaps</p>
+                  <span className="text-[8px] font-bold text-red-500/50 uppercase">Immediate Action</span>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {(result.missingSkills || []).map((s, i) => (
+                    <span key={i} className="px-4 py-2 rounded-xl bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-wider border border-red-500/20 shadow-lg shadow-red-500/5">
+                      {s}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
 
             {/* Recommendations */}
-            {result.recommendations?.length > 0 && (
-              <div className="card p-5">
-                <h3 className="font-display font-semibold text-sm mb-4" style={{ color: 'var(--text-primary)' }}>💡 Recommendations</h3>
-                <div className="space-y-2">
-                  {result.recommendations.map((rec, i) => (
-                    <div key={i} className="flex gap-3 p-3 rounded-lg" style={{ background: 'var(--accent-dim)' }}>
-                      <span style={{ color: 'var(--accent)' }} className="flex-shrink-0 font-bold text-sm">{i + 1}.</span>
-                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{rec}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+               <div className="lg:col-span-3 card p-10 border-white/5 space-y-10">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 text-lg">💡</div>
+                    <h3 className="font-display text-2xl font-bold text-white tracking-tight">Strategic Roadmap</h3>
+                  </div>
+                  <div className="grid gap-4">
+                    {(result.recommendations || []).map((rec, i) => (
+                      <div key={i} className="flex gap-6 p-6 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all group border-l-2 border-l-amber-500/30">
+                        <span className="text-amber-500/30 font-display font-black text-2xl group-hover:text-amber-500 transition-colors">0{i + 1}</span>
+                        <p className="text-sm text-zinc-400 leading-relaxed font-medium mt-1">{rec}</p>
+                      </div>
+                    ))}
+                  </div>
+               </div>
 
-            {/* Interview tips */}
-            {result.interviewTips?.length > 0 && (
-              <div className="card p-5">
-                <h3 className="font-display font-semibold text-sm mb-4" style={{ color: 'var(--text-primary)' }}>🎤 Interview Preparation Tips</h3>
-                <div className="space-y-2">
-                  {result.interviewTips.map((tip, i) => (
-                    <div key={i} className="flex gap-3 p-2.5 rounded-lg" style={{ background: 'var(--bg-secondary)' }}>
-                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>•</span>
-                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{tip}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+               <div className="lg:col-span-2 card p-10 border-white/5 bg-indigo-500/[0.01]">
+                  <div className="flex items-center gap-4 mb-10">
+                    <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500 text-lg">🎙️</div>
+                    <h3 className="font-display text-2xl font-bold text-white tracking-tight text-center lg:text-left">Interview Prep</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {(result.interviewTips || []).map((tip, i) => (
+                      <div key={i} className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 relative group hover:bg-white/[0.05] transition-all">
+                        <div className="absolute top-1/2 left-0 w-1 h-4 bg-indigo-500/50 rounded-full -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <p className="text-xs text-zinc-500 leading-relaxed font-medium">{tip}</p>
+                      </div>
+                    ))}
+                  </div>
+               </div>
+            </div>
           </div>
         )}
       </div>

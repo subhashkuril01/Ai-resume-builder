@@ -1,85 +1,66 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { resumeAPI } from '../api'
+import { resumeAPI, resumeTestAPI } from '../api'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
-import { SkeletonCard } from '../components/common/Spinner'
 import { formatDistanceToNow } from 'date-fns'
-
-const templateColors = {
-  modern: '#f59e0b', classic: '#6366f1', minimal: '#64748b',
-  executive: '#0ea5e9', creative: '#ec4899', tech: '#10b981'
-}
 
 function ResumeCard({ resume, onDelete, onDuplicate }) {
   const navigate = useNavigate()
-  const color = templateColors[resume.template] || '#f59e0b'
+  const score = resume.atsScore || 0
+  const status = score >= 70 ? 'High' : score >= 40 ? 'Moderate' : 'Low'
+  const statusColor = score >= 70 ? '#10b981' : score >= 40 ? '#f59e0b' : '#ef4444'
 
   return (
-    <div className="card group relative overflow-hidden transition-all duration-300 hover:border-amber-500/30"
+    <div className="card group relative p-6 transition-all duration-500 hover:border-amber-500/40 bg-white/[0.02]"
       style={{ cursor: 'pointer' }}
       onClick={() => navigate(`/builder/${resume._id}`)}>
-      {/* Top color band */}
-      <div className="h-1.5 w-full" style={{ background: color }} />
-
-      <div className="p-5">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-display font-semibold text-sm truncate" style={{ color: 'var(--text-primary)' }}>
-              {resume.title}
-            </h3>
-            <p className="text-xs mt-0.5 capitalize" style={{ color: 'var(--text-muted)' }}>
-              {resume.template} template
-            </p>
+      
+      <div className="flex justify-between items-start mb-8">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500">Live Artifact</p>
           </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {resume.atsScore !== null && resume.atsScore !== undefined && (
-              <span className="badge text-xs px-2 py-0.5 rounded-full"
-                style={{
-                  background: resume.atsScore >= 70 ? 'var(--success-bg)' : 'var(--accent-dim)',
-                  color: resume.atsScore >= 70 ? 'var(--success)' : 'var(--accent)',
-                }}>
-                ATS {resume.atsScore}
-              </span>
-            )}
-            {resume.isPublic && (
-              <span className="badge-muted text-xs">Public</span>
-            )}
-          </div>
-          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-            {formatDistanceToNow(new Date(resume.updatedAt), { addSuffix: true })}
+          <h3 className="font-display font-bold text-xl text-white group-hover:text-amber-500 transition-colors">
+            {resume.title}
+          </h3>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mt-1">
+            {resume.template || 'Modern'} Template
           </p>
         </div>
+        <div className="relative w-16 h-20 bg-black/40 rounded-xl border border-white/5 overflow-hidden group-hover:border-amber-500/20 transition-all">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent" />
+          <div className="absolute inset-x-3 top-3 h-0.5 bg-white/10 rounded-full" />
+          <div className="absolute inset-x-3 top-5 h-0.5 bg-white/5 rounded-full" />
+          <div className="absolute inset-x-3 top-7 h-8 bg-white/[0.02] rounded-sm" />
+          <div className="absolute bottom-0 inset-x-0 h-1 bg-amber-500/30" />
+        </div>
+      </div>
 
-        <div className="flex items-center gap-2 mt-4 pt-4"
-          style={{ borderTop: '1px solid var(--border)' }}
-          onClick={e => e.stopPropagation()}>
-          <button
-            onClick={() => navigate(`/builder/${resume._id}`)}
-            className="btn-ghost text-xs py-1.5 px-3"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => onDuplicate(resume._id)}
-            className="btn-ghost text-xs py-1.5 px-3"
-          >
-            Duplicate
-          </button>
-          <button
-            onClick={() => onDelete(resume._id)}
-            className="text-xs py-1.5 px-3 rounded-lg transition-colors"
-            style={{
-              background: 'rgba(220, 38, 38, 0.1)',
-              color: 'var(--danger)',
-              border: '1px solid rgba(220, 38, 38, 0.2)'
-            }}
-          >
-            Delete
-          </button>
+      <div className="space-y-5">
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">ATS Match Probability</span>
+            <span className="text-xs font-bold text-white">{score}%</span>
+          </div>
+          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-1000" style={{ width: `${score}%` }} />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-4 border-t border-white/5">
+          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-600">
+            {formatDistanceToNow(new Date(resume.updatedAt), { addSuffix: true })}
+          </span>
+          <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+            <button onClick={() => onDuplicate(resume._id)} className="p-2 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all" title="Duplicate">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+            <button onClick={() => onDelete(resume._id)} className="p-2 rounded-lg bg-red-500/5 border border-red-500/10 hover:bg-red-500/10 text-red-500/60 hover:text-red-500 transition-all" title="Delete">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -90,13 +71,18 @@ export default function Dashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [resumes, setResumes] = useState([])
+  const [tests, setTests] = useState([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
 
   useEffect(() => {
-    resumeAPI.getAll()
-      .then(res => setResumes(res.resumes || []))
-      .catch(() => toast.error('Failed to load resumes'))
+    Promise.all([
+      resumeAPI.getAll(),
+      resumeTestAPI.getAll()
+    ]).then(([resData, testData]) => {
+      setResumes(resData.resumes || [])
+      setTests(testData.tests || [])
+    }).catch(() => toast.error('Failed to load dashboard data'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -133,73 +119,152 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen pt-14" style={{ background: 'var(--bg-primary)' }}>
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8 animate-fade-up">
-          <div>
-            <h1 className="font-display text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-              Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'},{' '}
-              <span style={{ color: 'var(--accent)' }}>{user?.name?.split(' ')[0]}</span>
+    <div className="min-h-screen pt-24 pb-20 bg-[#080807]">
+      <div className="max-w-7xl mx-auto px-6">
+        
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+          <div className="animate-fade-up">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-bold uppercase tracking-widest">
+                {user?.role === 'admin' ? 'Elite Admin Access' : 'Pro Member Workspace'}
+              </span>
+            </div>
+            <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tight leading-[0.9]">
+              Hello, <span className="text-amber-500">{user?.name?.split(' ')[0] || 'friend'}</span>.
             </h1>
-            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-              {resumes.length === 0 ? 'Create your first resume to get started' : `You have ${resumes.length} resume${resumes.length > 1 ? 's' : ''}`}
+            <p className="text-zinc-500 text-sm mt-6 font-medium max-w-md leading-relaxed">
+              Your professional command center. Manage your artifacts, track AI analysis, and prep for your next big move.
             </p>
           </div>
-          <button onClick={handleCreate} className="btn-primary" disabled={creating}>
-            {creating ? (
-              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
-                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-              </svg>
-            ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            )}
-            New Resume
-          </button>
+
+          <div className="flex items-center gap-4 animate-fade-up delay-100">
+             <button onClick={handleCreate} disabled={creating}
+              className="btn-primary h-14 px-8 glow-orange flex items-center gap-3">
+              <span className="text-lg">+</span>
+              {creating ? 'Initializing...' : 'Create New Artifact'}
+            </button>
+          </div>
         </div>
 
-        {/* Quick links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 animate-fade-up delay-100">
-          {[
-            { to: '/analyzer', icon: '📊', label: 'ATS Analyzer' },
-            { to: '/job-match', icon: '🎯', label: 'Job Match' },
-            { to: '/templates', icon: '🎨', label: 'Templates' },
-            { to: '/profile', icon: '👤', label: 'Profile' },
-          ].map(({ to, icon, label }) => (
-            <Link key={to} to={to} className="card p-4 flex items-center gap-3 hover:border-amber-500/30 transition-all group">
-              <span className="text-xl">{icon}</span>
-              <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{label}</span>
-            </Link>
-          ))}
-        </div>
-
-        {/* Resume grid */}
-        <div className="animate-fade-up delay-200">
-          <p className="section-title">Your Resumes</p>
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1,2,3].map(i => <SkeletonCard key={i} />)}
-            </div>
-          ) : resumes.length === 0 ? (
-            <div className="card p-12 text-center">
-              <div className="text-4xl mb-3">📄</div>
-              <h3 className="font-display font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No resumes yet</h3>
-              <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>Create your first AI-powered resume</p>
-              <button onClick={handleCreate} className="btn-primary mx-auto">
-                Create Resume
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {resumes.map(resume => (
-                <ResumeCard key={resume._id} resume={resume}
-                  onDelete={handleDelete} onDuplicate={handleDuplicate} />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Main Content Area */}
+          <div className="lg:col-span-8 space-y-12">
+            
+            {/* Quick Actions Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 animate-fade-up delay-200">
+              {[
+                { to: '/analyzer', icon: '⚡', label: 'ATS Auditor', sub: 'Check Score' },
+                { to: '/job-match', icon: '🎯', label: 'Role Match', sub: 'Sync Skills' },
+                { to: '/resume-test', icon: '🧠', label: 'Assessment', sub: 'Mock Interview' },
+              ].map(({ to, icon, label, sub }) => (
+                <Link key={to} to={to} className="card p-6 flex items-center gap-5 hover:border-amber-500/30 group">
+                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    {icon}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">{label}</p>
+                    <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mt-0.5">{sub}</p>
+                  </div>
+                </Link>
               ))}
             </div>
-          )}
+
+            {/* Resumes List */}
+            <div className="animate-fade-up delay-300">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h2 className="font-display text-2xl font-bold text-white">Your Artifacts</h2>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mt-1">Recently modified documents</p>
+                </div>
+                <Link to="/templates" className="text-[10px] font-bold uppercase tracking-widest text-amber-500 hover:text-amber-400 transition-colors">View All Templates →</Link>
+              </div>
+              
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[1,2,3,4].map(i => <div key={i} className="card h-64 animate-pulse bg-white/[0.02]" />)}
+                </div>
+              ) : resumes.length === 0 ? (
+                <div className="card p-20 text-center bg-white/[0.01] border-dashed border-white/10">
+                  <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
+                    <svg className="w-8 h-8 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                  </div>
+                  <h3 className="text-white font-bold mb-2">No resumes found</h3>
+                  <p className="text-zinc-600 text-xs mb-8 max-w-xs mx-auto">Start by choosing a professional template and let AI help you build the perfect resume.</p>
+                  <button onClick={handleCreate} className="btn-primary px-8">Start Building</button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {resumes.map(resume => (
+                    <ResumeCard key={resume._id} resume={resume} onDelete={handleDelete} onDuplicate={handleDuplicate} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sidebar Area */}
+          <div className="lg:col-span-4 space-y-8 animate-fade-up delay-400">
+            
+            {/* Insights Module */}
+            <div className="card p-8 bg-gradient-to-br from-amber-500 to-amber-600 border-none relative overflow-hidden group">
+              <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-black/60 mb-2">Pro Insights</p>
+                <h3 className="font-display text-2xl font-bold text-black mb-6 leading-tight">Your Resume is in the <br/> top 15% of candidates.</h3>
+                
+                <div className="space-y-4">
+                  <div className="flex justify-between items-end">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-black">ATS Readiness</p>
+                    <p className="text-xl font-bold text-black">88%</p>
+                  </div>
+                  <div className="h-1 w-full bg-black/10 rounded-full">
+                    <div className="h-full bg-black w-[88%] rounded-full" />
+                  </div>
+                </div>
+
+                <button className="w-full mt-8 py-3 rounded-xl bg-black text-white text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-900 transition-all">
+                  Run Full Audit
+                </button>
+              </div>
+            </div>
+
+            {/* Assessment History */}
+            <div className="card p-6 bg-white/[0.02]">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Assessment Feed</h3>
+                <Link to="/resume-test" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">Tests</Link>
+              </div>
+              
+              <div className="space-y-4">
+                {tests.length === 0 ? (
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 py-4 text-center">No assessments taken</p>
+                ) : tests.slice(0, 3).map(test => (
+                  <div key={test._id} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group hover:border-white/10 transition-all cursor-pointer"
+                    onClick={() => navigate(`/resume-test`)}>
+                    <div>
+                      <p className="text-xs font-bold text-white mb-1 line-clamp-1">{test.title || 'Skills Assessment'}</p>
+                      <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Score: <span className={test.score >= 70 ? 'text-emerald-500' : 'text-amber-500'}>{test.score || 0}%</span></p>
+                    </div>
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-zinc-600 group-hover:text-white transition-colors">
+                      →
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* System Status */}
+            <div className="px-4 py-2 flex items-center justify-between border-t border-white/5 mt-4">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">AI Cluster Online</span>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-800">v4.2.0-stable</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

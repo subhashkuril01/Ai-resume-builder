@@ -17,7 +17,7 @@ export default function Register() {
     setLoading(true)
     try {
       await register(form.name, form.email, form.password)
-      toast.success('Account created! Welcome to ResumeAI')
+      toast.success('Account created! Welcome to CVISION')
       navigate('/dashboard')
     } catch (err) {
       toast.error(err.error || 'Registration failed')
@@ -37,66 +37,121 @@ export default function Register() {
     return s
   })()
 
-  const strengthColors = ['var(--danger)', '#f97316', '#f59e0b', 'var(--success)']
-  const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong']
+  const strengthColors = ['#ef4444', '#f59e0b', '#f59e0b', '#10b981']
+  const strengthLabels = ['Critical', 'Moderate', 'Secure', 'Fortified']
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: 'var(--bg-primary)' }}>
-      <div className="w-full max-w-sm animate-fade-up">
-        <div className="mb-6">
-          <h1 className="font-display text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Create account</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Free forever. No credit card required.</p>
-        </div>
+    <div className="min-h-screen flex bg-[#080807] text-white">
+      {/* Left Panel: Visuals */}
+      <div className="hidden lg:flex flex-col justify-center relative w-[45%] p-20 bg-gradient-to-br from-zinc-900 to-black border-r border-white/5 overflow-hidden">
+        <div className="absolute top-0 right-0 w-full h-full bg-amber-500/[0.02] -z-10" />
+        <div className="absolute -top-20 -right-20 w-80 h-80 bg-amber-500/10 blur-[100px] rounded-full" />
+        
+        <div className="space-y-12 relative z-10">
+          <div>
+            <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-tighter text-white">
+              The future of <br />
+              <span className="text-amber-500">resume building.</span>
+            </h1>
+            <p className="mt-6 text-zinc-500 max-w-sm leading-relaxed">
+              Join 50,000+ professionals using AI to land more interviews and accelerate their career growth.
+            </p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="form-group">
-            <label className="label">Full name</label>
-            <input type="text" className="input" placeholder="Jane Smith"
-              value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
-          </div>
-          <div className="form-group">
-            <label className="label">Email address</label>
-            <input type="email" className="input" placeholder="you@example.com"
-              value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
-          </div>
-          <div className="form-group">
-            <label className="label">Password</label>
-            <input type="password" className="input" placeholder="Min. 6 characters"
-              value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
-            {form.password && (
-              <div className="mt-2 space-y-1">
-                <div className="flex gap-1">
-                  {[0,1,2,3].map(i => (
-                    <div key={i} className="h-1 flex-1 rounded-full transition-all duration-300"
-                      style={{ background: i < strength ? strengthColors[strength-1] : 'var(--border)' }} />
-                  ))}
-                </div>
-                <p className="text-xs" style={{ color: strengthColors[strength-1] || 'var(--text-muted)' }}>
-                  {strengthLabels[strength-1] || 'Enter password'}
-                </p>
+          <div className="grid grid-cols-1 gap-6">
+            {[
+              { title: 'Free Pro Templates', desc: 'Industry-validated designs.' },
+              { title: 'AI Content Engine', desc: 'Write like a professional.' },
+              { title: 'ATS Scoring', desc: 'Know your rank instantly.' },
+            ].map(item => (
+              <div key={item.title} className="flex flex-col gap-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-white">{item.title}</p>
+                <p className="text-xs text-zinc-500">{item.desc}</p>
               </div>
-            )}
+            ))}
           </div>
-          <div className="form-group">
-            <label className="label">Confirm password</label>
-            <input type="password" className="input" placeholder="Repeat password"
-              value={form.confirm} onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))} />
+        </div>
+        
+        <div className="absolute bottom-12 left-20">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">© 2026 CVISION LABS</p>
+        </div>
+      </div>
+
+      {/* Right Panel: Registration Form */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-[#080807] relative overflow-y-auto">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/[0.03] blur-[120px] rounded-full pointer-events-none" />
+        
+        <div className="w-full max-w-md animate-fade-up relative z-10 py-12">
+          <div className="mb-10 text-center lg:text-left">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500 mb-2">Get Started Free</p>
+            <h2 className="font-display text-3xl font-bold text-white tracking-tight">Create your account</h2>
           </div>
 
-          <button type="submit" className="btn-primary w-full justify-center mt-2" disabled={loading}>
-            {loading ? (
-              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
-                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-              </svg>
-            ) : 'Create free account'}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Full Name</label>
+              <input type="text" className="input h-12 bg-white/[0.03] border-white/10 focus:border-amber-500/50 transition-all" 
+                placeholder="Jane Smith"
+                value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+            </div>
 
-        <p className="text-center text-sm mt-6" style={{ color: 'var(--text-muted)' }}>
-          Already have an account?{' '}
-          <Link to="/login" style={{ color: 'var(--accent)' }} className="font-medium hover:underline">Sign in</Link>
-        </p>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Email Address</label>
+              <input type="email" className="input h-12 bg-white/[0.03] border-white/10 focus:border-amber-500/50 transition-all" 
+                placeholder="jane@example.com"
+                value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Password</label>
+              <input type="password" className="input h-12 bg-white/[0.03] border-white/10 focus:border-amber-500/50 transition-all"
+                placeholder="••••••••"
+                value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
+              
+              {form.password && (
+                <div className="px-1 pt-1">
+                  <div className="flex gap-1.5 mb-1.5">
+                    {[0,1,2,3].map(i => (
+                      <div key={i} className="h-1 flex-1 rounded-full bg-white/5 overflow-hidden">
+                        <div className="h-full transition-all duration-500"
+                          style={{ 
+                            width: i < strength ? '100%' : '0%',
+                            background: strengthColors[strength-1]
+                          }} />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: strengthColors[strength-1] }}>
+                    Security: {strengthLabels[strength-1]}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Confirm Password</label>
+              <input type="password" className="input h-12 bg-white/[0.03] border-white/10 focus:border-amber-500/50 transition-all"
+                placeholder="••••••••"
+                value={form.confirm} onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))} />
+            </div>
+
+            <button type="submit" className="btn-primary w-full h-12 justify-center glow-orange mt-2" disabled={loading}>
+              {loading ? (
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
+                  <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+              ) : 'Establish Account'}
+            </button>
+          </form>
+
+          <p className="text-center text-[10px] font-bold uppercase tracking-widest mt-10 text-zinc-500">
+            Already a member?{' '}
+            <Link to="/login" className="text-amber-500 hover:text-amber-400 transition-colors ml-1">
+              Sign In
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )

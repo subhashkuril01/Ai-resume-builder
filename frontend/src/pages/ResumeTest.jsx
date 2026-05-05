@@ -10,17 +10,24 @@ const formatClock = (seconds) => {
 }
 
 const scoreTone = (score) => {
-  if (score >= 80) return { color: 'var(--success)', bg: 'var(--success-bg)' }
-  if (score >= 60) return { color: 'var(--accent)', bg: 'var(--accent-dim)' }
-  return { color: 'var(--danger)', bg: 'var(--danger-bg)' }
+  if (score >= 80) return { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' }
+  if (score >= 60) return { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' }
+  return { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' }
 }
 
 function EmptyState({ title, body, action, actionLabel }) {
   return (
-    <div className="card p-10 text-center">
-      <h3 className="font-display text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{title}</h3>
-      <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>{body}</p>
-      {action && <button onClick={action} className="btn-primary mx-auto">{actionLabel}</button>}
+    <div className="card p-12 text-center bg-white/[0.02] border-white/5 space-y-6">
+      <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center text-3xl mx-auto border border-white/5 opacity-50">📑</div>
+      <div className="space-y-2">
+        <h3 className="font-display text-xl font-bold text-white tracking-tight">{title}</h3>
+        <p className="text-zinc-500 text-sm max-w-sm mx-auto leading-relaxed">{body}</p>
+      </div>
+      {action && (
+        <button onClick={action} className="h-12 px-8 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all">
+          {actionLabel}
+        </button>
+      )}
     </div>
   )
 }
@@ -277,39 +284,44 @@ export default function ResumeTest() {
   const currentTone = selectedTest?.report ? scoreTone(selectedTest.report.overallScore || 0) : null
 
   return (
-    <div className="min-h-screen pt-14" style={{ background: 'var(--bg-primary)' }}>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <p className="section-title">AI Assessment</p>
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-            <div>
-              <h1 className="font-display text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                Resume-Based Test Prep
+    <div className="min-h-screen pt-32 pb-20 bg-[#080807]">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="mb-12">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500 mb-3">Cognitive Evaluation</p>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+            <div className="space-y-4">
+              <h1 className="font-display text-4xl lg:text-5xl font-black text-white tracking-tight">
+                Resume <span className="text-zinc-700">Assessment</span>
               </h1>
-              <p className="text-sm mt-1 max-w-3xl" style={{ color: 'var(--text-muted)' }}>
-                Generate a 50-question MCQ assessment from your saved resume with increasing difficulty levels, complete it inside the app, and get AI-driven evaluation with detailed answer review.
+              <p className="text-zinc-500 text-sm max-w-2xl leading-relaxed">
+                Adaptive AI-driven assessment based on your professional profile. Prepare for high-stakes interviews with personalized MCQ sets.
               </p>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <select className="input min-w-[240px]" value={selectedResumeId} onChange={(e) => setSelectedResumeId(e.target.value)}>
-                <option value="">Select a resume</option>
+            <div className="flex flex-wrap items-center gap-3">
+              <select 
+                className="h-12 bg-white/[0.03] border border-white/10 rounded-xl px-5 text-[10px] font-bold uppercase tracking-widest text-white focus:border-amber-500/50 outline-none appearance-none cursor-pointer pr-10 relative"
+                value={selectedResumeId} 
+                onChange={(e) => setSelectedResumeId(e.target.value)}
+              >
+                <option value="" className="bg-[#080807]">Target Artifact</option>
                 {resumes.map((resume) => (
-                  <option key={resume._id} value={resume._id}>{resume.title}</option>
+                  <option key={resume._id} value={resume._id} className="bg-[#121210]">{resume.title}</option>
                 ))}
               </select>
-              <button onClick={handleGenerate} className="btn-primary" disabled={generating || !selectedResumeId}>
-                {generating ? 'Generating...' : 'Generate 50 MCQ Test'}
+              <button onClick={handleGenerate} className="h-12 px-6 rounded-xl bg-amber-500 text-black text-[10px] font-black uppercase tracking-widest glow-orange transition-all hover:scale-105 disabled:opacity-50" disabled={generating || !selectedResumeId}>
+                {generating ? 'Processing' : 'Generate 50 MCQ Set'}
               </button>
-              <button onClick={handleRunAnalyzer} className="btn-ghost" disabled={!selectedResumeId || evaluatingResumeId === selectedResumeId}>
-                {evaluatingResumeId === selectedResumeId ? 'Analyzing...' : 'Refresh ATS Insight'}
+              <button onClick={handleRunAnalyzer} className="h-12 px-6 rounded-xl bg-white/[0.03] border border-white/10 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all" disabled={!selectedResumeId || evaluatingResumeId === selectedResumeId}>
+                {evaluatingResumeId === selectedResumeId ? 'Analyzing' : 'Sync ATS Data'}
               </button>
             </div>
           </div>
         </div>
 
         {loading ? (
-          <div className="card p-10 text-center">
-            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading assessment workspace...</p>
+          <div className="flex flex-col items-center justify-center py-40 gap-4">
+            <div className="w-12 h-12 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+            <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Initializing Assessment Engine</p>
           </div>
         ) : resumes.length === 0 ? (
           <EmptyState
@@ -317,58 +329,54 @@ export default function ResumeTest() {
             body="Create a resume in the builder first. This module uses the structured resume data already saved in your account."
           />
         ) : (
-          <div className="grid lg:grid-cols-[300px,1fr] gap-6">
-            <aside className="space-y-4">
-              <div className="card p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="font-display text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Attempts</h2>
-                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tests.length}</span>
+          <div className="grid lg:grid-cols-[320px,1fr] gap-10">
+            <aside className="space-y-8 animate-fade-up">
+              <div className="card p-6 border-white/5 bg-white/[0.01]">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Timeline</h2>
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-[9px] font-bold text-zinc-600">{tests.length} SESSIONS</span>
                 </div>
                 {tests.length === 0 ? (
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No tests yet. Generate one from a resume.</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 italic">No sessions recorded.</p>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {tests.map((test) => (
                       <div
                         key={test._id}
-                        className="relative w-full rounded-xl transition-all"
-                        style={{
-                          border: `1px solid ${selectedTest?._id === test._id ? 'var(--accent)' : 'var(--border)'}`,
-                          background: selectedTest?._id === test._id ? 'var(--accent-dim)' : 'var(--bg-secondary)'
-                        }}
+                        className={`relative w-full rounded-2xl transition-all border group ${selectedTest?._id === test._id ? 'bg-amber-500/[0.03] border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.05)]' : 'bg-white/[0.02] border-white/5 hover:border-white/10'}`}
                       >
                         <button
                           onClick={() => handleSelectTest(test._id)}
-                          className="w-full text-left p-3 pr-10"
+                          className="w-full text-left p-4 pr-12"
                         >
-                          <p className="text-xs font-semibold mb-1 truncate" style={{ color: 'var(--text-primary)' }}>{test.title}</p>
-                          <p className="text-xs mb-2 truncate" style={{ color: 'var(--text-muted)' }}>{test.resumeTitle} • Attempt {test.attemptNumber}</p>
+                          <p className={`text-[10px] font-black uppercase tracking-tight truncate mb-1 ${selectedTest?._id === test._id ? 'text-amber-500' : 'text-zinc-400'}`}>{test.title}</p>
+                          <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-3 truncate">{test.resumeTitle} • #{test.attemptNumber}</p>
                           <div className="flex items-center justify-between">
-                            <span className="badge-muted text-xs">{test.status.replace('_', ' ')}</span>
-                            <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                              {test.report?.overallScore ?? '--'}%
+                            <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500 px-2 py-1 bg-white/5 rounded-lg border border-white/5">{test.status.replace('_', ' ')}</span>
+                            <span className="text-sm font-black text-white">
+                              {test.report?.overallScore ?? '--'}<span className="text-[9px] text-zinc-600">%</span>
                             </span>
                           </div>
                         </button>
-                        <div className="absolute top-2 right-2">
+                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
                               setMenuOpenId(menuOpenId === test._id ? null : test._id)
                             }}
-                            className="btn-icon w-8 h-8 rounded-md"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-zinc-500 hover:text-white"
                           >
-                            <span style={{ fontSize: '18px', fontWeight: 'bold' }}>⋮</span>
+                            <span className="font-bold">⋮</span>
                           </button>
                           {menuOpenId === test._id && (
                             <>
                               <div className="fixed inset-0 z-40" onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); }} />
-                              <div className="absolute right-0 mt-1 w-36 rounded-lg shadow-xl z-50 overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                                <button onClick={(e) => handleRenameTest(e, test._id, test.title)} className="w-full text-left px-3 py-2 text-xs hover:bg-white/5 flex items-center gap-2 transition-colors" style={{ color: 'var(--text-primary)' }}>
-                                  <span style={{ fontSize: '14px' }}>✎</span> Rename
+                              <div className="absolute right-0 mt-2 w-44 rounded-2xl shadow-2xl z-50 overflow-hidden bg-[#121210] border border-white/10">
+                                <button onClick={(e) => handleRenameTest(e, test._id, test.title)} className="w-full text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 flex items-center gap-3 transition-colors text-white">
+                                  <span>✎</span> Rename
                                 </button>
-                                <button onClick={(e) => handleDeleteTest(e, test._id)} className="w-full text-left px-3 py-2 text-xs hover:bg-red-500/10 flex items-center gap-2 transition-colors" style={{ color: 'var(--danger)' }}>
-                                  <span style={{ fontSize: '14px' }}>🗑</span> Delete
+                                <button onClick={(e) => handleDeleteTest(e, test._id)} className="w-full text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/10 flex items-center gap-3 transition-colors text-red-500 border-t border-white/5">
+                                  <span>🗑</span> Delete
                                 </button>
                               </div>
                             </>
@@ -381,22 +389,22 @@ export default function ResumeTest() {
               </div>
 
               {selectedTest?.generatedFrom && (
-                <div className="card p-4">
-                  <h2 className="font-display text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Assessment Focus</h2>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>Skills</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {(selectedTest.generatedFrom.skills || []).slice(0, 8).map((skill) => (
-                          <span key={skill} className="badge text-xs" style={{ background: 'var(--accent-dim)', color: 'var(--accent)' }}>{skill}</span>
+                <div className="card p-6 border-white/5 bg-white/[0.01] animate-fade-up">
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-6">Environment Data</h2>
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-700">Primary Skills</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(selectedTest.generatedFrom.skills || []).slice(0, 10).map((skill) => (
+                          <span key={skill} className="px-2.5 py-1.5 rounded-lg bg-amber-500/5 text-amber-500 text-[9px] font-black uppercase tracking-wider border border-amber-500/10">{skill}</span>
                         ))}
                       </div>
                     </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>Projects</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {(selectedTest.generatedFrom.projects || []).slice(0, 4).map((project) => (
-                          <span key={project} className="badge-muted text-xs">{project}</span>
+                    <div className="space-y-3">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-700">Artifact References</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(selectedTest.generatedFrom.projects || []).slice(0, 5).map((project) => (
+                          <span key={project} className="px-2.5 py-1.5 rounded-lg bg-white/5 text-zinc-500 text-[9px] font-black uppercase tracking-wider border border-white/5">{project}</span>
                         ))}
                       </div>
                     </div>
@@ -405,164 +413,155 @@ export default function ResumeTest() {
               )}
             </aside>
 
-            <main className="space-y-5">
+            <main className="space-y-8 animate-fade-up">
               {!selectedTest ? (
                 <EmptyState
-                  title="No active assessment selected"
-                  body="Generate a personalized test from one of your saved resumes to begin."
+                  title="Session Not Selected"
+                  body="Select an existing assessment session from the timeline or generate a new set from your resume artifacts."
                   action={handleGenerate}
-                  actionLabel="Generate Test"
+                  actionLabel="Create New Session"
                 />
               ) : (
                 <>
-                  <div className="card p-5">
-                    <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="badge-muted text-xs">{selectedTest.status.replace('_', ' ')}</span>
-                          <span className="badge-muted text-xs">Attempt {selectedTest.attemptNumber}</span>
-                          <span className="badge-muted text-xs capitalize">{selectedTest.difficulty}</span>
+                  <div className="card p-8 lg:p-10 border-white/5 relative overflow-hidden bg-white/[0.01]">
+                    <div className="absolute top-0 right-0 p-10 opacity-[0.02] pointer-events-none">
+                       <div className="text-9xl font-black">{selectedTest.attemptNumber}</div>
+                    </div>
+                    <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8 relative z-10">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                          <span className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-zinc-500">{selectedTest.status.replace('_', ' ')}</span>
+                          <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${selectedTest.difficulty === 'hard' ? 'text-red-500 bg-red-500/10' : 'text-amber-500 bg-amber-500/10'}`}>{selectedTest.difficulty} Complexity</span>
                         </div>
-                        <h2 className="font-display text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>{selectedTest.title}</h2>
-                        <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-                          {selectedTest.resumeTitle} • {selectedTest.questions.length} MCQ questions • 60 minutes
-                        </p>
+                        <h2 className="font-display text-3xl font-black text-white tracking-tight leading-tight">{selectedTest.title}</h2>
+                        <div className="flex items-center gap-4 text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
+                           <span>{selectedTest.questions.length} MCQs</span>
+                           <div className="w-1 h-1 rounded-full bg-zinc-800" />
+                           <span>60 Minute Cap</span>
+                        </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-4">
                         {selectedTest.status === 'draft' && (
-                          <button onClick={handleStart} className="btn-primary">Start Test</button>
+                          <button onClick={handleStart} className="h-14 px-10 rounded-2xl bg-amber-500 text-black text-[10px] font-black uppercase tracking-widest glow-orange hover:scale-[1.02] transition-all">Initialize Stream</button>
                         )}
                         {selectedTest.status === 'in_progress' && (
                           <>
-                            <div className="px-4 py-2 rounded-xl" style={{ background: remainingSeconds < 600 ? 'var(--danger-bg)' : 'var(--bg-secondary)', color: remainingSeconds < 600 ? 'var(--danger)' : 'var(--text-primary)' }}>
-                              <span className="text-xs uppercase tracking-wide" style={{ color: 'inherit' }}>Time left</span>
-                              <p className="font-display text-lg">{formatClock(remainingSeconds)}</p>
+                            <div className={`h-14 px-6 rounded-2xl border flex flex-col items-center justify-center min-w-[120px] transition-colors ${remainingSeconds < 600 ? 'bg-red-500/10 border-red-500/20 text-red-500 animate-pulse' : 'bg-white/[0.03] border-white/10 text-white'}`}>
+                              <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-0.5">Remaining</span>
+                              <p className="font-display text-xl font-black tracking-tighter">{formatClock(remainingSeconds)}</p>
                             </div>
-                            <button onClick={() => handleSaveAnswer()} className="btn-ghost" disabled={saving}>
-                              {saving ? 'Saving...' : 'Save Answer'}
+                            <button onClick={() => handleSaveAnswer()} className="h-14 px-6 rounded-2xl bg-white/[0.03] border border-white/10 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-all" disabled={saving}>
+                              {saving ? 'Syncing...' : 'Sync Progress'}
                             </button>
-                            <button onClick={() => handleSubmit(false)} className="btn-primary" disabled={submitting}>
-                              {submitting ? 'Submitting...' : 'Submit Test'}
+                            <button onClick={() => handleSubmit(false)} className="h-14 px-8 rounded-2xl bg-emerald-500 text-black text-[10px] font-black uppercase tracking-widest glow-emerald hover:scale-[1.02] transition-all" disabled={submitting}>
+                              {submitting ? 'Finalizing...' : 'Submit Session'}
                             </button>
                           </>
                         )}
                         {selectedTest.status === 'submitted' && (
-                          <button onClick={handleRetake} className="btn-primary">Retake with New Questions</button>
+                          <button onClick={handleRetake} className="h-14 px-10 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all">New Iteration →</button>
                         )}
                       </div>
                     </div>
 
-                    <div className="mt-5">
-                      <div className="flex items-center justify-between text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-                        <span>Answer progress</span>
-                        <span>{progress}%</span>
+                    <div className="mt-10 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">Cognitive Coverage</span>
+                        <span className="text-sm font-black text-amber-500">{progress}<span className="text-[10px] ml-1">%</span></span>
                       </div>
-                      <div className="h-2 rounded-full" style={{ background: 'var(--bg-secondary)' }}>
-                        <div className="h-2 rounded-full transition-all" style={{ width: `${progress}%`, background: 'var(--accent)' }} />
+                      <div className="h-2 rounded-full bg-white/[0.02] overflow-hidden border border-white/5">
+                        <div className="h-full bg-amber-500 glow-orange transition-all duration-1000 ease-out rounded-full" style={{ width: `${progress}%` }} />
                       </div>
                     </div>
                   </div>
 
                   {selectedTest.status !== 'submitted' ? (
-                    <div className="grid xl:grid-cols-[1fr,220px] gap-5">
-                      <div className="card p-6">
+                    <div className="grid xl:grid-cols-[1fr,240px] gap-8">
+                      <div className="card p-10 border-white/5 bg-white/[0.01]">
                         {activeQuestion && (
-                          <>
-                            <div className="flex items-center justify-between mb-4">
-                              <div>
-                                <p className="text-xs uppercase tracking-wide mb-1" style={{ color: 'var(--text-muted)' }}>
-                                  Question {activeIndex + 1} of {selectedTest.questions.length}
+                          <div className="animate-fade-up">
+                            <div className="flex items-center justify-between mb-10 pb-6 border-b border-white/5">
+                              <div className="space-y-1">
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 mb-2">
+                                  Challenge {activeIndex + 1} <span className="text-zinc-700 mx-2">/</span> {selectedTest.questions.length}
                                 </p>
-                                <h3 className="font-display text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
-                                  {activeQuestion.skill} • {activeQuestion.type}
+                                <h3 className="font-display text-2xl font-bold text-white tracking-tight">
+                                  {activeQuestion.skill}
                                 </h3>
                               </div>
-                              <span className="badge-muted text-xs capitalize">{activeQuestion.difficulty}</span>
+                              <span className="px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-zinc-500 capitalize">{activeQuestion.difficulty}</span>
                             </div>
 
                             {activeQuestion.context && (
-                              <div className="rounded-xl p-3 mb-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{activeQuestion.context}</p>
+                              <div className="rounded-3xl p-6 mb-8 bg-zinc-900/40 border border-white/5 relative group">
+                                <div className="absolute top-4 left-[-2px] w-1 h-8 bg-indigo-500/50 rounded-full" />
+                                <p className="text-sm text-zinc-400 leading-relaxed italic">"{activeQuestion.context}"</p>
                               </div>
                             )}
 
-                            <p className="text-base leading-7 mb-6" style={{ color: 'var(--text-primary)' }}>{activeQuestion.prompt}</p>
+                            <p className="text-lg text-white font-medium leading-relaxed mb-10">{activeQuestion.prompt}</p>
 
                             {activeQuestion.type === 'mcq' && (
-                              <div className="space-y-3">
+                              <div className="grid grid-cols-1 gap-4">
                                 {activeQuestion.options.map((option) => (
                                   <label
                                     key={option.key}
-                                    className="flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-all"
-                                    style={{
-                                      border: `1px solid ${selectedOptionKey === option.key ? 'var(--accent)' : 'var(--border)'}`,
-                                      background: selectedOptionKey === option.key ? 'var(--accent-dim)' : 'var(--bg-secondary)'
-                                    }}
+                                    className={`flex items-start gap-5 p-6 rounded-3xl cursor-pointer transition-all border group relative overflow-hidden ${selectedOptionKey === option.key ? 'bg-amber-500/[0.04] border-amber-500/40' : 'bg-white/[0.01] border-white/5 hover:bg-white/[0.03] hover:border-white/10'}`}
                                   >
+                                    <div className={`mt-1.5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedOptionKey === option.key ? 'border-amber-500 bg-amber-500' : 'border-zinc-700 bg-transparent group-hover:border-zinc-500'}`}>
+                                       {selectedOptionKey === option.key && <div className="w-2 h-2 rounded-full bg-black" />}
+                                    </div>
+                                    <div className="relative z-10 flex-1">
+                                      <p className={`text-[11px] font-black uppercase tracking-widest mb-1.5 ${selectedOptionKey === option.key ? 'text-amber-500' : 'text-zinc-600 group-hover:text-zinc-400'}`}>Option {option.key}</p>
+                                      <p className={`text-sm leading-relaxed ${selectedOptionKey === option.key ? 'text-white' : 'text-zinc-400'}`}>{option.text}</p>
+                                    </div>
                                     <input
                                       type="radio"
+                                      className="hidden"
                                       checked={selectedOptionKey === option.key}
                                       onChange={() => setSelectedOptionKey(option.key)}
-                                      className="mt-1"
                                     />
-                                    <div>
-                                      <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{option.key}</p>
-                                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{option.text}</p>
-                                    </div>
                                   </label>
                                 ))}
                               </div>
                             )}
 
-                            <div className="flex items-center justify-between mt-6">
+                            <div className="flex items-center justify-between mt-12 pt-8 border-t border-white/5">
                               <button
                                 onClick={() => setActiveIndex((index) => Math.max(0, index - 1))}
-                                className="btn-ghost"
+                                className={`h-12 px-8 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeIndex === 0 ? 'opacity-20 grayscale' : 'text-zinc-500 hover:text-white hover:bg-white/5'}`}
                                 disabled={activeIndex === 0}
                               >
-                                Previous
+                                ← Previous
                               </button>
-                              <div className="flex gap-3">
-                                <button onClick={() => handleSaveAnswer()} className="btn-ghost" disabled={saving}>
-                                  {saving ? 'Saving...' : 'Save'}
+                              <div className="flex gap-4">
+                                <button onClick={() => handleSaveAnswer()} className="h-12 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-600 hover:text-white transition-all" disabled={saving}>
+                                  {saving ? 'Syncing' : 'Stash'}
                                 </button>
                                 <button
                                   onClick={() => handleSaveAnswer({ nextIndex: Math.min(selectedTest.questions.length - 1, activeIndex + 1) })}
-                                  className="btn-primary"
+                                  className="h-12 px-10 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all disabled:opacity-30"
                                   disabled={activeIndex === selectedTest.questions.length - 1}
                                 >
-                                  Save & Next
+                                  Continue →
                                 </button>
                               </div>
                             </div>
-                          </>
+                          </div>
                         )}
                       </div>
 
-                      <div className="card p-4 h-fit" style={{ maxHeight: '500px', overflowY: 'auto' }}>
-                        <h3 className="font-display text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Question Map</h3>
-                        <div className="grid grid-cols-5 xl:grid-cols-5 gap-1.5">
+                      <div className="card p-6 h-fit bg-white/[0.01] border-white/5 sticky top-32 max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar">
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-6">Cognitive Map</h3>
+                        <div className="grid grid-cols-4 gap-2">
                           {selectedTest.questions.map((question, index) => {
                             const answered = Boolean(question.userAnswer?.selectedOptionKey)
                             return (
                               <button
                                 key={question.questionId}
                                 onClick={() => setActiveIndex(index)}
-                                className="h-9 rounded-lg text-xs font-semibold transition-all"
-                                style={{
-                                  background: activeIndex === index
-                                    ? 'var(--accent)'
-                                    : answered
-                                      ? 'var(--success-bg)'
-                                      : 'var(--bg-secondary)',
-                                  color: activeIndex === index
-                                    ? '#0d0c0a'
-                                    : answered
-                                      ? 'var(--success)'
-                                      : 'var(--text-secondary)',
-                                  border: `1px solid ${activeIndex === index ? 'var(--accent)' : 'var(--border)'}`
-                                }}
+                                className={`h-11 rounded-xl text-[11px] font-black transition-all border ${activeIndex === index ? 'bg-amber-500 border-amber-500 text-black shadow-lg shadow-amber-500/20 scale-110 z-10' : answered ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-white/5 border-white/10 text-zinc-600 hover:border-white/20'}`}
                               >
                                 {index + 1}
                               </button>
@@ -572,125 +571,246 @@ export default function ResumeTest() {
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-5">
-                      {/* ── Tab Navigation ── */}
-                      <div className="card p-2 flex gap-2">
-                        {[['score','📊 Score Overview'],['answers','📝 Answer Review'],['report','📋 Full Report']].map(([key, label]) => (
-                          <button key={key} onClick={() => setReportTab(key)} className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all" style={{ background: reportTab === key ? 'var(--accent)' : 'transparent', color: reportTab === key ? '#0d0c0a' : 'var(--text-secondary)' }}>{label}</button>
+                    <div className="space-y-8 animate-fade-up">
+                      {/* Tab Navigation */}
+                      <div className="card p-2 border-white/5 bg-white/[0.01] flex gap-2">
+                        {[
+                          ['score','Analytics Overview'],
+                          ['answers','Answer Audit'],
+                          ['report','Critical Roadmap']
+                        ].map(([key, label]) => (
+                          <button 
+                            key={key} 
+                            onClick={() => setReportTab(key)} 
+                            className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${reportTab === key ? 'bg-white text-black shadow-xl shadow-white/10' : 'text-zinc-600 hover:text-zinc-400 hover:bg-white/5'}`}
+                          >
+                            {label}
+                          </button>
                         ))}
                       </div>
 
-                      {/* ── TAB 1: Score Overview ── */}
-                      {reportTab === 'score' && (<>
-                      <div className="card p-6">
-                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                          <div>
-                            <p className="text-xs uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>Evaluation Summary</p>
-                            <h3 className="font-display text-3xl font-bold" style={{ color: currentTone?.color || 'var(--text-primary)' }}>{selectedTest.report?.overallScore}% Overall</h3>
-                            <p className="text-sm mt-2 max-w-2xl" style={{ color: 'var(--text-secondary)' }}>{selectedTest.report?.careerFeedback?.finalSummary}</p>
-                            {(() => { const qs = selectedTest.questions || []; const correct = qs.filter(q => q.userAnswer?.selectedOptionKey === q.correctAnswer?.optionKey).length; const wrong = qs.filter(q => q.userAnswer?.selectedOptionKey && q.userAnswer.selectedOptionKey !== q.correctAnswer?.optionKey).length; const skip = qs.length - correct - wrong; return (
-                              <div className="flex gap-4 mt-4">
-                                <span className="text-sm font-semibold" style={{color:'var(--success)'}}>✓ {correct} Correct</span>
-                                <span className="text-sm font-semibold" style={{color:'var(--danger)'}}>✗ {wrong} Wrong</span>
-                                <span className="text-sm font-semibold" style={{color:'var(--text-muted)'}}>— {skip} Skipped</span>
+                      {/* TAB 1: Analytics Overview */}
+                      {reportTab === 'score' && (
+                        <div className="space-y-10 animate-fade-up">
+                          <div className="card p-12 border-white/5 bg-white/[0.01] relative overflow-hidden">
+                             <div className="absolute top-0 right-0 p-20 opacity-[0.02] select-none text-9xl font-black">{selectedTest.report?.overallScore}</div>
+                            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12 relative z-10">
+                              <div className="space-y-6 flex-1">
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 border-l-2 border-zinc-800 pl-4">Performance Index</p>
+                                <h3 className="font-display text-6xl font-black tracking-tighter" style={{ color: currentTone?.color }}>
+                                  {selectedTest.report?.overallScore}<span className="text-3xl opacity-50 ml-1">%</span>
+                                </h3>
+                                <p className="text-zinc-400 text-base leading-relaxed font-medium max-w-2xl">
+                                  "{selectedTest.report?.careerFeedback?.finalSummary}"
+                                </p>
+                                {(() => { 
+                                  const qs = selectedTest.questions || []; 
+                                  const correct = qs.filter(q => q.userAnswer?.selectedOptionKey === q.correctAnswer?.optionKey).length; 
+                                  const wrong = qs.filter(q => q.userAnswer?.selectedOptionKey && q.userAnswer.selectedOptionKey !== q.correctAnswer?.optionKey).length; 
+                                  const skip = qs.length - correct - wrong; 
+                                  return (
+                                    <div className="flex gap-8 pt-4">
+                                      <div className="flex flex-col"><span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">Precision</span><span className="text-xl font-black text-white">{correct}</span></div>
+                                      <div className="flex flex-col"><span className="text-[9px] font-black text-red-500 uppercase tracking-widest mb-1">Errors</span><span className="text-xl font-black text-white">{wrong}</span></div>
+                                      <div className="flex flex-col"><span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-1">Bypass</span><span className="text-xl font-black text-white">{skip}</span></div>
+                                    </div>
+                                  ); 
+                                })()}
                               </div>
-                            ); })()}
-                          </div>
-                          <div className="grid grid-cols-2 gap-3 min-w-[280px]">
-                            {[['Accuracy', selectedTest.report?.accuracyLevel],['Logic', selectedTest.report?.logicalThinkingScore],['Problem Solving', selectedTest.report?.problemSolvingAbility],['Interview Ready', selectedTest.report?.careerFeedback?.interviewReadinessScore]].map(([label, value]) => (
-                              <div key={label} className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                                <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{label}</p>
-                                <p className="font-display text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>{value}%</p>
+                              <div className="grid grid-cols-2 gap-4 min-w-[320px]">
+                                {[
+                                  ['Logic & Reasoning', selectedTest.report?.logicalThinkingScore],
+                                  ['Problem Solving', selectedTest.report?.problemSolvingAbility],
+                                  ['Technical Accuracy', selectedTest.report?.accuracyLevel],
+                                  ['Interview Readiness', selectedTest.report?.careerFeedback?.interviewReadinessScore]
+                                ].map(([label, value]) => (
+                                  <div key={label} className="card p-6 bg-white/[0.02] border-white/10 group hover:border-amber-500/30 transition-all">
+                                    <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-4 group-hover:text-amber-500 transition-colors">{label}</p>
+                                    <p className="font-display text-3xl font-black text-white tracking-tighter">{value}<span className="text-xs opacity-30 ml-1">%</span></p>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      {selectedTest.report?.comparison && (
-                        <div className="card p-5">
-                          <h3 className="font-display text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Attempt Comparison</h3>
-                          <div className="grid md:grid-cols-3 gap-4">
-                            <div className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}><p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Previous Score</p><p className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{selectedTest.report.comparison.previousOverallScore}%</p></div>
-                            <div className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}><p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Delta</p><p className="text-lg font-semibold" style={{ color: selectedTest.report.comparison.delta >= 0 ? 'var(--success)' : 'var(--danger)' }}>{selectedTest.report.comparison.delta >= 0 ? '+' : ''}{selectedTest.report.comparison.delta} pts</p></div>
-                            <div className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}><p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Improved Skills</p><p className="text-sm" style={{ color: 'var(--text-primary)' }}>{(selectedTest.report.comparison.improvedSkills || []).join(', ') || 'None yet'}</p></div>
-                          </div>
+                          
+                          {selectedTest.report?.comparison && (
+                            <div className="card p-10 border-white/5 bg-amber-500/[0.01]">
+                              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 mb-8">Evolutionary Delta</h3>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div className="space-y-2"><p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Baseline</p><p className="text-2xl font-black text-white">{selectedTest.report.comparison.previousOverallScore}%</p></div>
+                                <div className="space-y-2"><p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Growth</p><p className={`text-2xl font-black ${selectedTest.report.comparison.delta >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{selectedTest.report.comparison.delta >= 0 ? '↑' : '↓'} {Math.abs(selectedTest.report.comparison.delta)} PTS</p></div>
+                                <div className="space-y-2"><p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Mastered Verticals</p><p className="text-xs font-black text-zinc-400 uppercase tracking-widest leading-relaxed">{(selectedTest.report.comparison.improvedSkills || []).join(' • ') || 'N/A'}</p></div>
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex justify-center"><button onClick={() => setReportTab('answers')} className="h-16 px-12 rounded-3xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-2xl shadow-white/5">Audit Detailed Answers →</button></div>
                         </div>
                       )}
-                      <div className="flex justify-center"><button onClick={() => setReportTab('answers')} className="btn-primary">View All Answers →</button></div>
-                      </>)}
 
-                      {/* ── TAB 2: Answer Review ── */}
-                      {reportTab === 'answers' && (<>
-                      <div className="card p-5" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-                        <h3 className="font-display text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>All Answers — Your Picks vs Correct</h3>
-                        <p className="text-sm mb-5" style={{ color: 'var(--text-muted)' }}>Showing all {selectedTest.questions.length} questions.</p>
-                        <div className="space-y-4">
-                          {selectedTest.questions.map((question, qIdx) => {
-                            const userKey = question.userAnswer?.selectedOptionKey || null
-                            const correctKey = question.correctAnswer?.optionKey || ''
-                            const isCorrect = userKey === correctKey
-                            return (
-                              <div key={question.questionId} className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: `1px solid ${!userKey ? 'var(--text-muted)' : isCorrect ? 'var(--success)' : 'var(--danger)'}`, borderLeftWidth: '4px' }}>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ background: !userKey ? 'var(--bg-secondary)' : isCorrect ? 'var(--success-bg)' : 'var(--danger-bg)', color: !userKey ? 'var(--text-muted)' : isCorrect ? 'var(--success)' : 'var(--danger)' }}>{!userKey ? '— Skipped' : isCorrect ? '✓ Correct' : '✗ Wrong'}</span>
-                                  <span className="badge-muted text-xs">Q{qIdx + 1}</span>
-                                  <span className="badge-muted text-xs capitalize">{question.difficulty}</span>
-                                  <span className="badge-muted text-xs">{question.skill}</span>
-                                </div>
-                                <p className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>{question.prompt}</p>
-                                <div className="grid gap-2 mb-3">
-                                  {question.options?.map((opt) => {
-                                    const isUserPick = opt.key === userKey
-                                    const isCorrectOpt = opt.key === correctKey
-                                    let bg = 'transparent', bdr = '1px solid var(--border)', tc = 'var(--text-secondary)'
-                                    if (isCorrectOpt) { bg = 'var(--success-bg)'; bdr = '1px solid var(--success)'; tc = 'var(--success)' }
-                                    else if (isUserPick && !isCorrect) { bg = 'var(--danger-bg)'; bdr = '1px solid var(--danger)'; tc = 'var(--danger)' }
-                                    return (<div key={opt.key} className="rounded-lg px-3 py-2 text-sm flex items-center gap-2" style={{ background: bg, border: bdr, color: tc }}><span className="font-bold">{opt.key}.</span><span>{opt.text}</span>{isCorrectOpt && <span className="ml-auto text-xs font-semibold">✓ Correct</span>}{isUserPick && !isCorrect && <span className="ml-auto text-xs font-semibold">Your pick</span>}</div>)
-                                  })}
-                                </div>
-                                {question.correctAnswer?.explanation && (<p className="text-xs" style={{ color: 'var(--text-muted)' }}><strong>Explanation:</strong> {question.correctAnswer.explanation}</p>)}
-                              </div>
-                            )
-                          })}
-                        </div>
-                      </div>
-                      <div className="flex justify-center"><button onClick={() => setReportTab('report')} className="btn-primary">View Full Report →</button></div>
-                      </>)}
-
-                      {/* ── TAB 3: Full Report ── */}
-                      {reportTab === 'report' && (<>
-                      <div style={{ maxHeight: '70vh', overflowY: 'auto', paddingRight: '4px' }}>
-                      <div className="grid xl:grid-cols-2 gap-5">
-                        <div className="card p-5">
-                          <h3 className="font-display text-sm font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Skill Breakdown</h3>
-                          <div className="space-y-3">
-                            {(selectedTest.report?.skillBreakdown || []).map((skill) => { const tone = scoreTone(skill.accuracy || 0); return (
-                              <div key={skill.skill} className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                                <div className="flex items-center justify-between mb-2"><p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{skill.skill}</p><span className="badge text-xs" style={{ background: tone.bg, color: tone.color }}>{skill.accuracy}%</span></div>
-                                <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{skill.score} / {skill.maxScore} points</p>
-                                {skill.weaknesses?.length > 0 && <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Needs work: {skill.weaknesses.join(', ')}</p>}
-                              </div>) })}
+                      {/* TAB 2: Answer Audit */}
+                      {reportTab === 'answers' && (
+                        <div className="space-y-10 animate-fade-up">
+                          <div className="card p-10 lg:p-12 border-white/5 bg-white/[0.01]">
+                            <div className="flex items-center justify-between mb-12">
+                               <h3 className="font-display text-2xl font-bold text-white tracking-tight leading-tight">Session Audit Logs</h3>
+                               <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em]">Precision Traceability</p>
+                            </div>
+                            <div className="space-y-6">
+                              {selectedTest.questions.map((question, qIdx) => {
+                                const userKey = question.userAnswer?.selectedOptionKey || null
+                                const correctKey = question.correctAnswer?.optionKey || ''
+                                const isCorrect = userKey === correctKey
+                                return (
+                                  <div key={question.questionId} className={`rounded-[2.5rem] p-8 transition-all border-2 relative group overflow-hidden ${!userKey ? 'bg-white/[0.02] border-white/5 grayscale' : isCorrect ? 'bg-emerald-500/[0.02] border-emerald-500/10' : 'bg-red-500/[0.02] border-red-500/10'}`}>
+                                    <div className="absolute top-0 right-0 p-6 opacity-[0.05] group-hover:opacity-10 transition-opacity">
+                                       <div className="text-6xl font-black">{qIdx + 1}</div>
+                                    </div>
+                                    <div className="flex items-center gap-4 mb-6 relative z-10">
+                                      <span className={`text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] border ${!userKey ? 'bg-zinc-800 border-zinc-700 text-zinc-500' : isCorrect ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'}`}>
+                                         {!userKey ? 'Skipped Execution' : isCorrect ? 'Optimal Selection' : 'Strategic Error'}
+                                      </span>
+                                      <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">{question.skill} • {question.difficulty}</span>
+                                    </div>
+                                    <p className="text-lg font-bold text-white mb-8 max-w-3xl leading-relaxed relative z-10">{question.prompt}</p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                                      {question.options?.map((opt) => {
+                                        const isUserPick = opt.key === userKey
+                                        const isCorrectOpt = opt.key === correctKey
+                                        let bg = 'bg-white/[0.03]', bdr = 'border-white/5', tc = 'text-zinc-500', op = 'opacity-60'
+                                        if (isCorrectOpt) { bg = 'bg-emerald-500/10'; bdr = 'border-emerald-500/30'; tc = 'text-emerald-500'; op = 'opacity-100' }
+                                        else if (isUserPick && !isCorrect) { bg = 'bg-red-500/10'; bdr = 'border-red-500/30'; tc = 'text-red-500'; op = 'opacity-100' }
+                                        return (
+                                          <div key={opt.key} className={`rounded-2xl px-5 py-4 text-xs flex items-center justify-between border transition-all ${bg} ${bdr} ${tc} ${op}`}>
+                                             <div className="flex items-center gap-3">
+                                                <span className="font-black opacity-50">{opt.key}.</span>
+                                                <span className="font-medium">{opt.text}</span>
+                                             </div>
+                                             {isCorrectOpt && <span className="text-[8px] font-black uppercase tracking-widest bg-emerald-500 text-black px-2 py-0.5 rounded ml-2">Verified</span>}
+                                             {isUserPick && !isCorrect && <span className="text-[8px] font-black uppercase tracking-widest bg-red-500 text-black px-2 py-0.5 rounded ml-2">Your Bias</span>}
+                                          </div>
+                                        )
+                                      })}
+                                    </div>
+                                    {question.correctAnswer?.explanation && (
+                                      <div className="mt-8 p-6 rounded-3xl bg-black/40 border border-white/5 relative group/exp">
+                                         <div className="absolute top-4 left-[-1px] w-1 h-6 bg-white/10 rounded-full" />
+                                         <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-2">Rationale</p>
+                                         <p className="text-xs text-zinc-500 leading-relaxed font-medium">{question.correctAnswer.explanation}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                )
+                              })}
+                            </div>
                           </div>
+                          <div className="flex justify-center"><button onClick={() => setReportTab('report')} className="h-16 px-12 rounded-3xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all">Build Strategic Roadmap →</button></div>
                         </div>
-                        <div className="card p-5">
-                          <h3 className="font-display text-sm font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Weak Areas</h3>
-                          <div className="flex flex-wrap gap-2 mb-5">{(selectedTest.report?.weakAreas || []).map((a) => (<span key={a} className="badge text-xs" style={{ background: 'var(--danger-bg)', color: 'var(--danger)' }}>{a}</span>))}</div>
-                          <h4 className="text-xs uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>Roadmap</h4>
-                          <div className="space-y-2">{(selectedTest.report?.careerFeedback?.learningRoadmap || []).map((item, i) => (<div key={i} className="rounded-xl p-3" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}><p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{item}</p></div>))}</div>
+                      )}
+
+                      {/* TAB 3: Critical Roadmap */}
+                      {reportTab === 'report' && (
+                        <div className="space-y-8 animate-fade-up">
+                           <div className="grid xl:grid-cols-5 gap-8">
+                              <div className="xl:col-span-3 card p-10 border-white/5 bg-white/[0.01] space-y-10">
+                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Vertical Competency</h3>
+                                 <div className="space-y-4">
+                                   {(selectedTest.report?.skillBreakdown || []).map((skill) => { 
+                                     const tone = scoreTone(skill.accuracy || 0); 
+                                     return (
+                                       <div key={skill.skill} className="card p-6 bg-white/[0.02] border-white/5 group hover:border-white/10 transition-all">
+                                         <div className="flex items-center justify-between mb-4">
+                                            <p className="font-bold text-white uppercase tracking-tight">{skill.skill}</p>
+                                            <span className="text-sm font-black" style={{ color: tone.color }}>{skill.accuracy}<span className="text-[9px] opacity-50 ml-1">%</span></span>
+                                         </div>
+                                         <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden mb-4">
+                                            <div className="h-full transition-all duration-1000" style={{ width: `${skill.accuracy}%`, background: tone.color }} />
+                                         </div>
+                                         <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-zinc-600">
+                                            <span>Score: {skill.score} / {skill.maxScore}</span>
+                                            {skill.weaknesses?.length > 0 && <span className="text-red-500/50">Attention Required</span>}
+                                         </div>
+                                         {skill.weaknesses?.length > 0 && (
+                                           <div className="mt-4 pt-4 border-t border-white/5 flex flex-wrap gap-2">
+                                              {skill.weaknesses.map(w => <span key={w} className="text-[8px] font-black px-2 py-1 bg-red-500/5 text-red-500 border border-red-500/10 rounded uppercase">{w}</span>)}
+                                           </div>
+                                         )}
+                                       </div>
+                                     ) 
+                                   })}
+                                 </div>
+                              </div>
+                              
+                              <div className="xl:col-span-2 space-y-8">
+                                 <div className="card p-10 border-white/5 bg-red-500/[0.01]">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-red-500 mb-8">Systemic Gaps</h3>
+                                    <div className="flex flex-wrap gap-3">
+                                       {(selectedTest.report?.weakAreas || []).map((a) => (
+                                         <span key={a} className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-[10px] font-black text-red-500 uppercase tracking-widest">{a}</span>
+                                       ))}
+                                    </div>
+                                 </div>
+                                 <div className="card p-10 border-white/5 bg-indigo-500/[0.01] space-y-10">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400">Optimization Roadmap</h3>
+                                    <div className="space-y-4">
+                                       {(selectedTest.report?.careerFeedback?.learningRoadmap || []).map((item, i) => (
+                                         <div key={i} className="flex gap-4 p-5 rounded-3xl bg-white/[0.03] border border-white/5 group hover:bg-white/[0.06] transition-all">
+                                            <span className="text-indigo-500/40 font-black text-sm">{i + 1}</span>
+                                            <p className="text-xs text-zinc-400 leading-relaxed font-medium group-hover:text-zinc-300 transition-colors">{item}</p>
+                                         </div>
+                                       ))}
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+
+                           <div className="grid xl:grid-cols-2 gap-8">
+                              <div className="card p-10 border-white/5 bg-white/[0.01]">
+                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-10">Behavioral Mistake Analysis</h3>
+                                 <div className="space-y-4">
+                                    {(selectedTest.report?.mistakeAnalysis || []).length === 0 ? (
+                                      <p className="text-[10px] font-bold text-zinc-700 italic uppercase">No recurring errors detected.</p>
+                                    ) : (
+                                      (selectedTest.report?.mistakeAnalysis || []).map((item, i) => (
+                                        <div key={i} className="p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all space-y-4">
+                                           <div className="flex items-center justify-between">
+                                              <span className="text-[8px] font-black uppercase tracking-[0.3em] text-zinc-600">{item.skill}</span>
+                                              <span className="text-[8px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded uppercase">Misalignment</span>
+                                           </div>
+                                           <p className="text-base font-bold text-white leading-tight">{item.prompt}</p>
+                                           <p className="text-xs text-zinc-500 font-medium leading-relaxed italic">"{item.explanation}"</p>
+                                           <div className="pt-4 border-t border-white/5">
+                                              <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-2">Optimal Approach</p>
+                                              <p className="text-xs text-zinc-400 font-medium">{item.correctApproach}</p>
+                                           </div>
+                                        </div>
+                                      ))
+                                    )}
+                                 </div>
+                              </div>
+                              
+                              <div className="card p-10 border-white/5 bg-white/[0.01] space-y-12">
+                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Executive Career Feedback</h3>
+                                 {[
+                                   ['Resume Optimization', selectedTest.report?.careerFeedback?.resumeImprovements || [], 'text-amber-500'],
+                                   ['Skill Concentration', selectedTest.report?.careerFeedback?.skillsToFocus || [], 'text-indigo-400'],
+                                   ['Artifact Expansion', selectedTest.report?.careerFeedback?.projectSuggestions || [], 'text-emerald-400']
+                                 ].map(([label, items, accent]) => (
+                                   <div key={label} className="space-y-6">
+                                      <p className={`text-[10px] font-black uppercase tracking-widest ${accent}`}>{label}</p>
+                                      <div className="space-y-3">
+                                         {items.map((item, i) => (
+                                           <div key={i} className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 relative group hover:bg-white/[0.04] transition-all">
+                                              <div className="absolute top-1/2 left-[-1px] w-1 h-4 bg-white/10 rounded-full group-hover:bg-amber-500/50 transition-colors -translate-y-1/2" />
+                                              <p className="text-xs text-zinc-500 leading-relaxed font-medium">{item}</p>
+                                           </div>
+                                         ))}
+                                      </div>
+                                   </div>
+                                 ))}
+                              </div>
+                           </div>
                         </div>
-                      </div>
-                      <div className="grid xl:grid-cols-2 gap-5">
-                        <div className="card p-5">
-                          <h3 className="font-display text-sm font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Mistake Analysis</h3>
-                          <div className="space-y-3">{(selectedTest.report?.mistakeAnalysis || []).length === 0 ? (<p className="text-sm" style={{ color: 'var(--text-muted)' }}>No major mistakes detected.</p>) : ((selectedTest.report?.mistakeAnalysis || []).map((item) => (<div key={item.questionId} className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}><p className="text-xs uppercase tracking-wide mb-1" style={{ color: 'var(--text-muted)' }}>{item.skill}</p><p className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{item.prompt}</p><p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>{item.explanation}</p><p className="text-sm" style={{ color: 'var(--text-primary)' }}>Correct approach: {item.correctApproach}</p></div>)))}</div>
-                        </div>
-                        <div className="card p-5">
-                          <h3 className="font-display text-sm font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Career Feedback</h3>
-                          <div className="space-y-4">{[['Resume Improvements', selectedTest.report?.careerFeedback?.resumeImprovements || []],['Skills To Focus', selectedTest.report?.careerFeedback?.skillsToFocus || []],['Project Suggestions', selectedTest.report?.careerFeedback?.projectSuggestions || []]].map(([label, items]) => (<div key={label}><p className="text-xs uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>{label}</p><div className="space-y-2">{items.map((item, i) => (<div key={i} className="rounded-xl p-3" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}><p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{item}</p></div>))}</div></div>))}</div>
-                        </div>
-                      </div>
-                      </div>
-                      </>)}
+                      )}
                     </div>
                   )}
                 </>

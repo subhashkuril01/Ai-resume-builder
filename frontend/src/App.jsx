@@ -1,10 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
-import { AuthProvider, useAuth } from './context/AuthContext'
-import { ThemeProvider, useTheme } from './context/ThemeContext'
-import BrandLogo from './components/common/BrandLogo'
+import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import ProtectedAdminRoute from './components/common/ProtectedAdminRoute'
+import Navbar from './components/common/Navbar'
+
+// Pages
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -21,55 +23,6 @@ import AdminUsers from './pages/AdminUsers'
 import AdminResumes from './pages/AdminResumes'
 import AdminAnalytics from './pages/AdminAnalytics'
 
-function ShellNav() {
-  const { user, logout } = useAuth()
-  const { dark, toggleTheme } = useTheme()
-  const location = useLocation()
-
-  if (!user && !['/', '/login', '/register'].includes(location.pathname)) return null
-
-  const links = user ? [
-    ['/dashboard', 'Dashboard'],
-    ['/builder', 'Builder'],
-    ['/analyzer', 'Analyzer'],
-    ['/job-match', 'Job Match'],
-    ['/resume-test', 'Resume Test'],
-    ['/templates', 'Templates'],
-    ...(user.role === 'admin' ? [['/admin', 'Admin']] : [])
-  ] : []
-
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-14" style={{ background: "var(--bg-primary)", borderBottom: "1px solid var(--border)" }}>
-      <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-4">
-        <BrandLogo to={user ? "/dashboard" : "/"} compact={true} />
-        <div className="hidden md:flex items-center gap-1">
-          {links.map(([to, label]) => (
-            <Link key={to} to={to} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ color: location.pathname.startsWith(to) ? "var(--accent)" : "var(--text-secondary)", background: location.pathname.startsWith(to) ? "var(--accent-dim)" : "transparent" }}>{label}</Link>
-          ))}
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={toggleTheme} className="btn-ghost text-xs py-1.5 px-3" title={dark ? "Light mode" : "Dark mode"}>{dark ? "☀️" : "🌙"}</button>
-          {user ? (
-            <>
-              <Link to="/profile" className="hidden md:inline-flex btn-ghost text-xs py-1.5 px-3">Profile</Link>
-              <button onClick={logout} className="hidden md:inline-flex btn-ghost text-xs py-1.5 px-3">Logout</button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="hidden md:inline-flex btn-ghost text-xs py-1.5 px-3">Login</Link>
-              <Link to="/register" className="btn-primary text-xs py-1.5 px-3">Get Started</Link>
-            </>
-          )}
-        </div>
-      </div>
-    </nav>
-  )
-}
-
-function Layout({ children, showNav = true }) {
-  return <>{showNav && <ShellNav />}{children}</>
-}
-
 export default function App() {
   return (
     <BrowserRouter>
@@ -80,34 +33,42 @@ export default function App() {
             toastOptions={{
               duration: 3500,
               style: {
-                background: "var(--bg-card)",
-                color: "var(--text-primary)",
-                border: "1px solid var(--border)",
-                borderRadius: "10px",
-                fontSize: "13px",
+                background: "#121210",
+                color: "#ffffff",
+                border: "1px solid rgba(255,255,255,0.05)",
+                borderRadius: "16px",
+                fontSize: "12px",
+                fontWeight: "bold",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
                 fontFamily: "Cabinet Grotesk, sans-serif",
+                backdropFilter: "blur(12px)",
               },
-              success: { iconTheme: { primary: "var(--success)", secondary: "white" } },
-              error: { iconTheme: { primary: "var(--danger)", secondary: "white" } },
+              success: { iconTheme: { primary: "#f59e0b", secondary: "black" } },
+              error: { iconTheme: { primary: "#ef4444", secondary: "white" } },
             }}
           />
+          <Navbar />
           <Routes>
-            <Route path="/" element={<Layout><Home /></Layout>} />
-            <Route path="/login" element={<Layout><Login /></Layout>} />
-            <Route path="/register" element={<Layout><Register /></Layout>} />
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/r/:slug" element={<PublicResume />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
-            <Route path="/builder" element={<ProtectedRoute><Layout><Builder /></Layout></ProtectedRoute>} />
-            <Route path="/builder/:id" element={<ProtectedRoute><Layout><Builder /></Layout></ProtectedRoute>} />
-            <Route path="/analyzer" element={<ProtectedRoute><Layout><Analyzer /></Layout></ProtectedRoute>} />
-            <Route path="/job-match" element={<ProtectedRoute><Layout><JobMatch /></Layout></ProtectedRoute>} />
-            <Route path="/resume-test" element={<ProtectedRoute><Layout><ResumeTest /></Layout></ProtectedRoute>} />
-            <Route path="/templates" element={<ProtectedRoute><Layout><Templates /></Layout></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
+            
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/builder" element={<ProtectedRoute><Builder /></ProtectedRoute>} />
+            <Route path="/builder/:id" element={<ProtectedRoute><Builder /></ProtectedRoute>} />
+            <Route path="/analyzer" element={<ProtectedRoute><Analyzer /></ProtectedRoute>} />
+            <Route path="/job-match" element={<ProtectedRoute><JobMatch /></ProtectedRoute>} />
+            <Route path="/resume-test" element={<ProtectedRoute><ResumeTest /></ProtectedRoute>} />
+            <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            
             <Route path="/admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
             <Route path="/admin/users" element={<ProtectedAdminRoute><AdminUsers /></ProtectedAdminRoute>} />
             <Route path="/admin/resumes" element={<ProtectedAdminRoute><AdminResumes /></ProtectedAdminRoute>} />
             <Route path="/admin/analytics" element={<ProtectedAdminRoute><AdminAnalytics /></ProtectedAdminRoute>} />
+            
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>
