@@ -41,19 +41,19 @@ export default function Register() {
   const strengthLabels = ['Critical', 'Moderate', 'Secure', 'Fortified']
 
   return (
-    <div className="min-h-screen flex bg-[#080807] text-white">
+    <div className="min-h-screen flex bg-primary text-text-primary">
       {/* Left Panel: Visuals */}
-      <div className="hidden lg:flex flex-col justify-center relative w-[45%] p-20 bg-gradient-to-br from-zinc-900 to-black border-r border-white/5 overflow-hidden">
+      <div className="hidden lg:flex flex-col justify-center relative w-[45%] p-20 bg-secondary border-r border-border overflow-hidden">
         <div className="absolute top-0 right-0 w-full h-full bg-amber-500/[0.02] -z-10" />
         <div className="absolute -top-20 -right-20 w-80 h-80 bg-amber-500/10 blur-[100px] rounded-full" />
         
         <div className="space-y-12 relative z-10">
           <div>
-            <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-tighter text-white">
+            <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-tighter text-text-primary">
               The future of <br />
               <span className="text-amber-500">resume building.</span>
             </h1>
-            <p className="mt-6 text-zinc-500 max-w-sm leading-relaxed">
+            <p className="mt-6 text-text-secondary max-w-sm leading-relaxed">
               Join 50,000+ professionals using AI to land more interviews and accelerate their career growth.
             </p>
           </div>
@@ -65,46 +65,46 @@ export default function Register() {
               { title: 'ATS Scoring', desc: 'Know your rank instantly.' },
             ].map(item => (
               <div key={item.title} className="flex flex-col gap-1">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-white">{item.title}</p>
-                <p className="text-xs text-zinc-500">{item.desc}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">{item.title}</p>
+                <p className="text-xs text-text-secondary">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
         
         <div className="absolute bottom-12 left-20">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">© 2026 CVISION LABS</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">© 2026 CVISION LABS</p>
         </div>
       </div>
 
       {/* Right Panel: Registration Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-[#080807] relative overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center p-8 bg-primary relative overflow-y-auto">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/[0.03] blur-[120px] rounded-full pointer-events-none" />
         
         <div className="w-full max-w-md animate-fade-up relative z-10 py-12">
           <div className="mb-10 text-center lg:text-left">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500 mb-2">Get Started Free</p>
-            <h2 className="font-display text-3xl font-bold text-white tracking-tight">Create your account</h2>
+            <h2 className="font-display text-3xl font-bold text-text-primary tracking-tight">Create your account</h2>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Full Name</label>
-              <input type="text" className="input h-12 bg-white/[0.03] border-white/10 focus:border-amber-500/50 transition-all" 
+              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">Full Name</label>
+              <input type="text" className="input h-12 bg-white/[0.03] border-border focus:border-amber-500/50 transition-all" 
                 placeholder="Jane Smith"
                 value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Email Address</label>
-              <input type="email" className="input h-12 bg-white/[0.03] border-white/10 focus:border-amber-500/50 transition-all" 
+              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">Email Address</label>
+              <input type="email" className="input h-12 bg-white/[0.03] border-border focus:border-amber-500/50 transition-all" 
                 placeholder="jane@example.com"
                 value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Password</label>
-              <input type="password" className="input h-12 bg-white/[0.03] border-white/10 focus:border-amber-500/50 transition-all"
+              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">Password</label>
+              <input type="password" className="input h-12 bg-white/[0.03] border-border focus:border-amber-500/50 transition-all"
                 placeholder="••••••••"
                 value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
               
@@ -129,8 +129,8 @@ export default function Register() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Confirm Password</label>
-              <input type="password" className="input h-12 bg-white/[0.03] border-white/10 focus:border-amber-500/50 transition-all"
+              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">Confirm Password</label>
+              <input type="password" className="input h-12 bg-white/[0.03] border-border focus:border-amber-500/50 transition-all"
                 placeholder="••••••••"
                 value={form.confirm} onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))} />
             </div>
@@ -145,7 +145,7 @@ export default function Register() {
             </button>
           </form>
 
-          <p className="text-center text-[10px] font-bold uppercase tracking-widest mt-10 text-zinc-500">
+          <p className="text-center text-[10px] font-bold uppercase tracking-widest mt-10 text-text-secondary">
             Already a member?{' '}
             <Link to="/login" className="text-amber-500 hover:text-amber-400 transition-colors ml-1">
               Sign In

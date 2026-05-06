@@ -35,14 +35,14 @@ export default function Templates() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-20 bg-[#080807]">
+    <div className="min-h-screen pt-24 pb-20 bg-primary">
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Header */}
         <div className="animate-fade-up mb-16 flex flex-col lg:flex-row lg:items-end justify-between gap-10">
           <div className="space-y-4">
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500">Curated Library</p>
-            <h1 className="font-display text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1] max-w-xl">
+            <h1 className="font-display text-5xl md:text-7xl font-bold text-text-primary tracking-tight leading-[1] max-w-xl">
               Architect your <br/> <span className="text-amber-500">Professional</span> Identity.
             </h1>
           </div>
@@ -107,7 +107,7 @@ export default function Templates() {
                 {/* Info Footer */}
                 <div className="p-6 space-y-4 border-t border-white/5 relative z-10">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-xs text-white uppercase tracking-widest">{t.label}</h3>
+                    <h3 className="font-bold text-xs text-text-primary uppercase tracking-widest">{t.label}</h3>
                     <div className="w-2.5 h-2.5 rounded-full glow-orange" style={{ background: t.color }} />
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -129,7 +129,7 @@ export default function Templates() {
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all border ${currentPage === 1 ? 'border-white/5 text-zinc-800 cursor-not-allowed' : 'border-white/10 text-white hover:border-amber-500/50 hover:text-amber-500 hover:bg-white/5'}`}
+              className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all border ${currentPage === 1 ? 'border-white/5 text-zinc-800 cursor-not-allowed' : 'border-border text-text-primary hover:border-amber-500/50 hover:text-amber-500 hover:bg-white/5'}`}
             >
               ←
             </button>
@@ -149,7 +149,7 @@ export default function Templates() {
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all border ${currentPage === totalPages ? 'border-white/5 text-zinc-800 cursor-not-allowed' : 'border-white/10 text-white hover:border-amber-500/50 hover:text-amber-500 hover:bg-white/5'}`}
+              className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all border ${currentPage === totalPages ? 'border-white/5 text-zinc-800 cursor-not-allowed' : 'border-border text-text-primary hover:border-amber-500/50 hover:text-amber-500 hover:bg-white/5'}`}
             >
               →
             </button>

@@ -20,20 +20,20 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <div className="flex h-screen bg-[#080807] overflow-hidden">
+    <div className="flex h-screen bg-primary overflow-hidden">
       {/* Sidebar */}
       <aside
-        className={`${sidebarOpen ? 'w-72' : 'w-24'} transition-all duration-500 ease-in-out relative flex flex-col border-r border-white/5 bg-white/[0.01] backdrop-blur-3xl z-40`}
+        className={`${sidebarOpen ? 'w-72' : 'w-24'} transition-all duration-500 ease-in-out relative flex flex-col border-r border-border bg-secondary/50 backdrop-blur-3xl z-40`}
       >
         {/* Brand */}
-        <div className="h-24 px-6 flex items-center justify-between border-b border-white/5">
+        <div className="h-24 px-6 flex items-center justify-between border-b border-border">
           {sidebarOpen ? (
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-black font-display font-black text-[10px] shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                 CV
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Admin</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-primary">Admin</span>
                 <span className="text-[8px] font-bold uppercase tracking-widest text-amber-500/80">Control Panel</span>
               </div>
             </div>
@@ -53,7 +53,7 @@ export default function AdminLayout({ children }) {
                 key={item.path}
                 to={item.path}
                 className={`group flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 ${
-                  active ? 'bg-amber-500 text-black shadow-[0_0_30px_rgba(245,158,11,0.15)]' : 'text-zinc-500 hover:text-white hover:bg-white/5'
+                  active ? 'bg-amber-500 text-black shadow-[0_0_30px_rgba(245,158,11,0.15)]' : 'text-text-secondary hover:text-text-primary hover:bg-secondary'
                 }`}
                 title={!sidebarOpen ? item.label : ''}
               >
@@ -67,14 +67,14 @@ export default function AdminLayout({ children }) {
         </nav>
 
         {/* User Profile */}
-        <div className="p-6 border-t border-white/5 bg-white/[0.01]">
+        <div className="p-6 border-t border-border bg-white/[0.01]">
           <div className={`flex items-center gap-4 ${!sidebarOpen && 'justify-center'}`}>
-            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-10 h-10 rounded-xl bg-white/5 border border-border flex items-center justify-center text-text-primary font-bold text-sm">
               {user?.name?.[0]}
             </div>
             {sidebarOpen && (
               <div className="flex flex-col min-w-0">
-                <p className="text-[10px] font-bold text-white uppercase tracking-widest truncate">{user?.name}</p>
+                <p className="text-[10px] font-bold text-text-primary uppercase tracking-widest truncate">{user?.name}</p>
                 <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Master Admin</p>
               </div>
             )}
@@ -93,12 +93,12 @@ export default function AdminLayout({ children }) {
       {/* Main Content */}
       <main className="flex-1 flex flex-col relative overflow-hidden">
         {/* Top Header */}
-        <header className="h-20 border-b border-white/5 px-8 flex items-center justify-between bg-black/20 backdrop-blur-md z-30">
+        <header className="h-20 border-b border-border px-8 flex items-center justify-between bg-primary/20 backdrop-blur-md z-30">
           <div className="flex items-center gap-4">
-            <h1 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">System / <span className="text-white">{menuItems.find(m => isActive(m.path))?.label || 'Dashboard'}</span></h1>
+            <h1 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">System / <span className="text-text-primary">{menuItems.find(m => isActive(m.path))?.label || 'Dashboard'}</span></h1>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/dashboard" className="px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-white hover:border-white/20 transition-all">
+            <Link to="/dashboard" className="px-5 py-2 rounded-xl bg-white/5 border border-border text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-text-primary hover:border-white/20 transition-all">
               Back to Portal
             </Link>
           </div>

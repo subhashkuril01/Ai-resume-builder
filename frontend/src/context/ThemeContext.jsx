@@ -8,8 +8,16 @@ export const ThemeProvider = ({ children }) => {
     return saved ? saved === 'dark' : true
   })
 
+  // Apply theme immediately when component mounts and update class
   useEffect(() => {
-    document.body.classList.toggle('light-mode', !dark)
+    const root = window.document.documentElement
+    if (!dark) {
+      root.classList.add('light-mode')
+      root.classList.remove('dark')
+    } else {
+      root.classList.remove('light-mode')
+      root.classList.add('dark')
+    }
     localStorage.setItem('theme', dark ? 'dark' : 'light')
   }, [dark])
 

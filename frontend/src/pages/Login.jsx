@@ -26,19 +26,19 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#080807] text-white">
+    <div className="min-h-screen flex bg-primary text-text-primary">
       {/* Left Panel: Branding & Visuals */}
-      <div className="hidden lg:flex flex-col justify-center relative w-[45%] p-20 bg-gradient-to-br from-zinc-900 to-black border-r border-white/5 overflow-hidden">
+      <div className="hidden lg:flex flex-col justify-center relative w-[45%] p-20 bg-secondary border-r border-border overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-amber-500/[0.02] -z-10" />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-amber-500/10 blur-[100px] rounded-full" />
         
         <div className="space-y-12 relative z-10">
           <div>
-            <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-tighter text-white">
+            <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-tighter text-text-primary">
               Elevate your <br />
               <span className="text-amber-500">career journey.</span>
             </h1>
-            <p className="mt-6 text-zinc-500 max-w-sm leading-relaxed">
+            <p className="mt-6 text-text-secondary max-w-sm leading-relaxed">
               Sign in to access your AI-powered resume suite and track your application progress.
             </p>
           </div>
@@ -50,7 +50,7 @@ export default function Login() {
               { label: 'Real-time Job Matching', icon: '🎯' },
             ].map(item => (
               <div key={item.label} className="flex items-center gap-4 group">
-                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg group-hover:border-amber-500/50 transition-all">
+                <div className="w-10 h-10 rounded-xl bg-white/5 border border-border flex items-center justify-center text-lg group-hover:border-amber-500/50 transition-all">
                   {item.icon}
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 group-hover:text-white transition-colors">{item.label}</span>
@@ -60,36 +60,36 @@ export default function Login() {
         </div>
         
         <div className="absolute bottom-12 left-20">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">© 2026 CVISION LABS</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">© 2026 CVISION LABS</p>
         </div>
       </div>
 
       {/* Right Panel: Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-[#080807] relative">
+      <div className="flex-1 flex items-center justify-center p-8 bg-primary relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/[0.03] blur-[120px] rounded-full pointer-events-none" />
         
         <div className="w-full max-w-md animate-fade-up relative z-10">
           <div className="mb-10 text-center lg:text-left">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500 mb-2">Welcome Back</p>
-            <h2 className="font-display text-3xl font-bold text-white tracking-tight">Login to Dashboard</h2>
+            <h2 className="font-display text-3xl font-bold text-text-primary tracking-tight">Login to Dashboard</h2>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Email Address</label>
-              <input type="email" className="input h-12 bg-white/[0.03] border-white/10 focus:border-amber-500/50 transition-all" 
+              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">Email Address</label>
+              <input type="email" className="input h-12 bg-white/[0.03] border-border focus:border-amber-500/50 transition-all" 
                 placeholder="name@company.com"
                 value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between ml-1">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Password</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Password</label>
                 <button type="button" onClick={() => setShowPass(!showPass)} className="text-[10px] font-bold uppercase tracking-widest text-amber-500/80 hover:text-amber-500 transition-colors">
                   {showPass ? 'Hide' : 'Show'}
                 </button>
               </div>
-              <input type={showPass ? 'text' : 'password'} className="input h-12 bg-white/[0.03] border-white/10 focus:border-amber-500/50 transition-all"
+              <input type={showPass ? 'text' : 'password'} className="input h-12 bg-white/[0.03] border-border focus:border-amber-500/50 transition-all"
                 placeholder="••••••••"
                 value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
             </div>
@@ -104,7 +104,7 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="text-center text-[10px] font-bold uppercase tracking-widest mt-10 text-zinc-500">
+          <p className="text-center text-[10px] font-bold uppercase tracking-widest mt-10 text-text-secondary">
             Don't have an account?{' '}
             <Link to="/register" className="text-amber-500 hover:text-amber-400 transition-colors ml-1">
               Register Free

@@ -41,39 +41,39 @@ export default function Profile() {
   const handleLogout = () => { logout(); navigate('/') }
 
   return (
-    <div className="min-h-screen pt-24 pb-20 bg-[#080807]">
+    <div className="min-h-screen pt-24 pb-20 bg-primary">
       <div className="max-w-3xl mx-auto px-6 space-y-8">
         <div className="animate-fade-up space-y-2">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500">Settings</p>
-          <h1 className="font-display text-4xl font-black text-white">Your Profile</h1>
+          <h1 className="font-display text-4xl font-black text-text-primary">Your Profile</h1>
         </div>
 
         {/* Avatar + info */}
-        <div className="card p-8 animate-fade-up delay-100 border-white/5 bg-white/[0.02]">
-          <div className="flex flex-col md:flex-row md:items-center gap-8 mb-10 pb-8 border-b border-white/5">
+        <div className="card p-8 animate-fade-up delay-100 border-border/50 bg-white/[0.02]">
+          <div className="flex flex-col md:flex-row md:items-center gap-8 mb-10 pb-8 border-b border-border/50">
             <div className="w-24 h-24 rounded-3xl flex items-center justify-center text-3xl font-black shadow-2xl brand-mark relative overflow-hidden group">
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
               <span className="relative z-10 text-black">{user?.name?.[0]?.toUpperCase()}</span>
             </div>
             <div className="space-y-2">
-              <h2 className="font-display text-2xl font-bold text-white leading-none">{user?.name}</h2>
+              <h2 className="font-display text-2xl font-bold text-text-primary leading-none">{user?.name}</h2>
               <p className="text-sm text-zinc-400 font-medium">{user?.email}</p>
               <div className="flex items-center gap-3 pt-2">
                 <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-bold uppercase tracking-widest">{user?.plan || 'Free'} Plan</span>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Member since {new Date().getFullYear()}</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Member since {new Date().getFullYear()}</span>
               </div>
             </div>
           </div>
 
           <form onSubmit={handleProfileSave} className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Full Name</label>
-              <input className="w-full h-12 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-sm text-white focus:border-amber-500/50 transition-all outline-none" 
+              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">Full Name</label>
+              <input className="w-full h-12 bg-white/[0.03] border border-border rounded-xl px-4 text-sm text-text-primary focus:border-amber-500/50 transition-all outline-none" 
                 value={name} onChange={e => setName(e.target.value)} placeholder="Jane Smith" />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Email Address</label>
-              <input className="w-full h-12 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-sm text-zinc-500 cursor-not-allowed" 
+              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">Email Address</label>
+              <input className="w-full h-12 bg-white/[0.03] border border-border rounded-xl px-4 text-sm text-text-secondary cursor-not-allowed" 
                 value={user?.email || ''} disabled />
             </div>
             <div className="md:col-span-2 pt-2">
@@ -86,10 +86,10 @@ export default function Profile() {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
           {/* Password */}
-          <div className="lg:col-span-3 card p-8 animate-fade-up delay-200 border-white/5">
+          <div className="lg:col-span-3 card p-8 animate-fade-up delay-200 border-border/50">
             <div className="mb-8">
-              <h3 className="font-display text-xl font-bold text-white mb-1">Security</h3>
-              <p className="text-xs text-zinc-500 uppercase tracking-widest">Update your credentials</p>
+              <h3 className="font-display text-xl font-bold text-text-primary mb-1">Security</h3>
+              <p className="text-xs text-text-secondary uppercase tracking-widest">Update your credentials</p>
             </div>
             <form onSubmit={handlePasswordChange} className="space-y-6">
               {[
@@ -98,15 +98,15 @@ export default function Profile() {
                 { key: 'confirm', label: 'Confirm Password', placeholder: 'Repeat new password' },
               ].map(f => (
                 <div key={f.key} className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">{f.label}</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">{f.label}</label>
                   <input type="password" 
-                    className="w-full h-12 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-sm text-white focus:border-amber-500/50 transition-all outline-none" 
+                    className="w-full h-12 bg-white/[0.03] border border-border rounded-xl px-4 text-sm text-text-primary focus:border-amber-500/50 transition-all outline-none" 
                     placeholder={f.placeholder}
                     value={pwForm[f.key]} onChange={e => setPwForm(p => ({ ...p, [f.key]: e.target.value }))} />
                 </div>
               ))}
               <div className="pt-2">
-                <button type="submit" className="w-full py-4 rounded-xl border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white hover:border-amber-500/50 hover:text-amber-500 transition-all" disabled={pwSaving}>
+                <button type="submit" className="w-full py-4 rounded-xl border border-border text-[10px] font-bold uppercase tracking-widest text-text-primary hover:border-amber-500/50 hover:text-amber-500 transition-all" disabled={pwSaving}>
                   {pwSaving ? 'UPDATING...' : 'UPDATE PASSWORD'}
                 </button>
               </div>
@@ -117,7 +117,7 @@ export default function Profile() {
           <div className="lg:col-span-2 card p-8 animate-fade-up delay-300 border-red-500/10 bg-red-500/[0.02]">
             <div className="mb-6">
               <h3 className="font-display text-lg font-bold text-red-500 mb-1">Sign Out</h3>
-              <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">End your current session on this device.</p>
+              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest leading-relaxed">End your current session on this device.</p>
             </div>
             <button onClick={handleLogout} className="w-full py-4 rounded-xl bg-red-500/10 border border-red-500/20 text-[10px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-500/20 transition-all">
               SIGN OUT NOW

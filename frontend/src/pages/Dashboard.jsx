@@ -22,7 +22,7 @@ function ResumeCard({ resume, onDelete, onDuplicate }) {
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
             <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500">Live Artifact</p>
           </div>
-          <h3 className="font-display font-bold text-xl text-white group-hover:text-amber-500 transition-colors">
+          <h3 className="font-display font-bold text-xl text-text-primary group-hover:text-amber-500 transition-colors">
             {resume.title}
           </h3>
           <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mt-1">
@@ -42,7 +42,7 @@ function ResumeCard({ resume, onDelete, onDuplicate }) {
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">ATS Match Probability</span>
-            <span className="text-xs font-bold text-white">{score}%</span>
+            <span className="text-xs font-bold text-text-primary">{score}%</span>
           </div>
           <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-1000" style={{ width: `${score}%` }} />
@@ -119,7 +119,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-20 bg-[#080807]">
+    <div className="min-h-screen pt-24 pb-20 bg-primary">
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Header Section */}
@@ -130,7 +130,7 @@ export default function Dashboard() {
                 {user?.role === 'admin' ? 'Elite Admin Access' : 'Pro Member Workspace'}
               </span>
             </div>
-            <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tight leading-[0.9]">
+            <h1 className="font-display text-4xl md:text-6xl font-bold text-text-primary tracking-tight leading-[0.9]">
               Hello, <span className="text-amber-500">{user?.name?.split(' ')[0] || 'friend'}</span>.
             </h1>
             <p className="text-zinc-500 text-sm mt-6 font-medium max-w-md leading-relaxed">
@@ -164,7 +164,7 @@ export default function Dashboard() {
                     {icon}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">{label}</p>
+                    <p className="text-sm font-bold text-text-primary">{label}</p>
                     <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mt-0.5">{sub}</p>
                   </div>
                 </Link>
@@ -175,7 +175,7 @@ export default function Dashboard() {
             <div className="animate-fade-up delay-300">
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h2 className="font-display text-2xl font-bold text-white">Your Artifacts</h2>
+                  <h2 className="font-display text-2xl font-bold text-text-primary">Your Artifacts</h2>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mt-1">Recently modified documents</p>
                 </div>
                 <Link to="/templates" className="text-[10px] font-bold uppercase tracking-widest text-amber-500 hover:text-amber-400 transition-colors">View All Templates →</Link>
@@ -186,11 +186,11 @@ export default function Dashboard() {
                   {[1,2,3,4].map(i => <div key={i} className="card h-64 animate-pulse bg-white/[0.02]" />)}
                 </div>
               ) : resumes.length === 0 ? (
-                <div className="card p-20 text-center bg-white/[0.01] border-dashed border-white/10">
+                <div className="card p-20 text-center bg-white/[0.01] border-dashed border-border">
                   <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
                     <svg className="w-8 h-8 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                   </div>
-                  <h3 className="text-white font-bold mb-2">No resumes found</h3>
+                  <h3 className="text-text-primary font-bold mb-2">No resumes found</h3>
                   <p className="text-zinc-600 text-xs mb-8 max-w-xs mx-auto">Start by choosing a professional template and let AI help you build the perfect resume.</p>
                   <button onClick={handleCreate} className="btn-primary px-8">Start Building</button>
                 </div>
@@ -219,8 +219,8 @@ export default function Dashboard() {
                     <p className="text-[10px] font-bold uppercase tracking-widest text-black">ATS Readiness</p>
                     <p className="text-xl font-bold text-black">88%</p>
                   </div>
-                  <div className="h-1 w-full bg-black/10 rounded-full">
-                    <div className="h-full bg-black w-[88%] rounded-full" />
+                  <div className="h-1.5 w-full bg-black/20 rounded-full">
+                    <div className="h-full bg-[#1a1a1a] w-[88%] rounded-full shadow-sm" />
                   </div>
                 </div>
 
@@ -233,7 +233,7 @@ export default function Dashboard() {
             {/* Assessment History */}
             <div className="card p-6 bg-white/[0.02]">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Assessment Feed</h3>
+                <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">Assessment Feed</h3>
                 <Link to="/resume-test" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">Tests</Link>
               </div>
               
@@ -241,10 +241,10 @@ export default function Dashboard() {
                 {tests.length === 0 ? (
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 py-4 text-center">No assessments taken</p>
                 ) : tests.slice(0, 3).map(test => (
-                  <div key={test._id} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group hover:border-white/10 transition-all cursor-pointer"
+                  <div key={test._id} className="p-4 rounded-xl bg-white/[0.02] border border-border flex items-center justify-between group hover:border-white/10 transition-all cursor-pointer"
                     onClick={() => navigate(`/resume-test`)}>
                     <div>
-                      <p className="text-xs font-bold text-white mb-1 line-clamp-1">{test.title || 'Skills Assessment'}</p>
+                      <p className="text-xs font-bold text-text-primary mb-1 line-clamp-1">{test.title || 'Skills Assessment'}</p>
                       <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Score: <span className={test.score >= 70 ? 'text-emerald-500' : 'text-amber-500'}>{test.score || 0}%</span></p>
                     </div>
                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-zinc-600 group-hover:text-white transition-colors">

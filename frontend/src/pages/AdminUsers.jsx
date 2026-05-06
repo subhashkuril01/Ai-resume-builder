@@ -82,31 +82,31 @@ export default function AdminUsers() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500">Access Management</p>
-            <h2 className="font-display text-4xl font-black text-white">System <span className="text-zinc-600">Users</span></h2>
+            <h2 className="font-display text-4xl font-black text-text-primary">System <span className="text-text-muted">Users</span></h2>
           </div>
-          <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Total Database Size: </span>
-            <span className="text-sm font-black text-white">{total}</span>
+          <div className="px-4 py-2 rounded-xl bg-white/5 border border-border">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Total Database Size: </span>
+            <span className="text-sm font-black text-text-primary">{total}</span>
           </div>
         </div>
 
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 animate-fade-up">
           <div className="md:col-span-6 relative group">
-             <input
-                type="text"
-                placeholder="Search by name or email..."
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                className="w-full h-14 bg-white/[0.03] border border-white/10 rounded-2xl px-6 pl-12 text-sm text-white focus:border-amber-500/50 transition-all outline-none group-hover:bg-white/[0.05]"
-              />
+               <input
+                  type="text"
+                  placeholder="Search by name or email..."
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                  className="w-full h-14 bg-surface border border-border rounded-2xl px-6 pl-12 text-sm text-text-primary focus:border-amber-500/50 transition-all outline-none group-hover:bg-white/[0.05]"
+                />
               <span className="absolute left-5 top-1/2 -translate-y-1/2 opacity-30 group-hover:opacity-60 transition-opacity">🔍</span>
           </div>
           <div className="md:col-span-3">
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-              className="w-full h-14 bg-white/[0.03] border border-white/10 rounded-2xl px-6 text-sm text-zinc-400 focus:text-white focus:border-amber-500/50 transition-all outline-none appearance-none cursor-pointer"
+              className="w-full h-14 bg-white/[0.03] border border-border rounded-2xl px-6 text-sm text-zinc-400 focus:text-text-primary focus:border-amber-500/50 transition-all outline-none appearance-none cursor-pointer"
             >
               <option value="">All Statuses</option>
               <option value="active">Active Members</option>
@@ -117,7 +117,7 @@ export default function AdminUsers() {
             <select
               value={roleFilter}
               onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
-              className="w-full h-14 bg-white/[0.03] border border-white/10 rounded-2xl px-6 text-sm text-zinc-400 focus:text-white focus:border-amber-500/50 transition-all outline-none appearance-none cursor-pointer"
+              className="w-full h-14 bg-white/[0.03] border border-border rounded-2xl px-6 text-sm text-zinc-400 focus:text-text-primary focus:border-amber-500/50 transition-all outline-none appearance-none cursor-pointer"
             >
               <option value="">All Roles</option>
               <option value="user">Regular Users</option>
@@ -127,11 +127,11 @@ export default function AdminUsers() {
         </div>
 
         {/* Users Table */}
-        <div className="card border-white/5 overflow-hidden animate-fade-up delay-100">
+        <div className="card border-border/50 overflow-hidden animate-fade-up delay-100">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 space-y-4">
               <div className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
-              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Fetching Registry...</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Fetching Registry...</p>
             </div>
           ) : error ? (
             <div className="m-6 p-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
@@ -139,18 +139,18 @@ export default function AdminUsers() {
             </div>
           ) : users.length === 0 ? (
             <div className="py-20 text-center">
-              <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">No users match your filters.</p>
+              <p className="text-text-secondary font-bold uppercase tracking-widest text-[10px]">No users match your filters.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-white/[0.02] border-b border-white/5">
-                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Identity</th>
-                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Permission</th>
-                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Status</th>
-                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Registry Date</th>
-                    <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Operations</th>
+                  <tr className="bg-white/[0.02] border-b border-border/50">
+                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary">Identity</th>
+                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary">Permission</th>
+                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary">Status</th>
+                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary">Registry Date</th>
+                    <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary">Operations</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -162,8 +162,8 @@ export default function AdminUsers() {
                             {user.name[0]}
                           </div>
                           <div>
-                            <p className="font-bold text-sm text-white">{user.name}</p>
-                            <p className="text-[10px] font-medium text-zinc-500 mt-0.5">{user.email}</p>
+                            <p className="font-bold text-sm text-text-primary">{user.name}</p>
+                            <p className="text-[10px] font-medium text-text-secondary mt-0.5">{user.email}</p>
                           </div>
                         </div>
                       </td>
@@ -172,7 +172,7 @@ export default function AdminUsers() {
                           value={user.role}
                           onChange={(e) => updateUserRole(user._id, e.target.value)}
                           disabled={actionLoading[user._id]}
-                          className="bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-400 focus:text-white focus:border-amber-500/50 outline-none transition-all cursor-pointer"
+                          className="bg-zinc-900/50 border border-border rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-400 focus:text-text-primary focus:border-amber-500/50 outline-none transition-all cursor-pointer"
                         >
                           <option value="user">USER</option>
                           <option value="admin">ADMIN</option>
@@ -190,7 +190,7 @@ export default function AdminUsers() {
                         </select>
                       </td>
                       <td className="px-8 py-6">
-                        <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">
+                        <p className="text-[11px] font-bold text-text-secondary uppercase tracking-widest">
                           {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
                       </td>
@@ -198,7 +198,7 @@ export default function AdminUsers() {
                         <button
                           onClick={() => deleteUser(user._id)}
                           disabled={actionLoading[user._id]}
-                          className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
+                          className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500 hover:text-text-primary transition-all disabled:opacity-50"
                         >
                           {actionLoading[user._id] ? '•••' : 'Purge'}
                         </button>
@@ -217,7 +217,7 @@ export default function AdminUsers() {
             <button
               onClick={() => setPage(prev => Math.max(1, prev - 1))}
               disabled={page === 1}
-              className="px-6 py-3 rounded-2xl border border-white/10 text-[10px] font-bold uppercase tracking-[0.2em] text-white hover:border-amber-500/50 hover:text-amber-500 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+              className="px-6 py-3 rounded-2xl border border-border text-[10px] font-bold uppercase tracking-[0.2em] text-text-primary hover:border-amber-500/50 hover:text-amber-500 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
             >
               ← PREV
             </button>
@@ -226,7 +226,7 @@ export default function AdminUsers() {
                 <button
                   key={i + 1}
                   onClick={() => setPage(i + 1)}
-                  className={`w-12 h-12 rounded-2xl text-[10px] font-bold transition-all border ${page === i + 1 ? 'bg-amber-500 text-black border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : 'bg-white/5 text-zinc-500 border-white/5 hover:text-white hover:border-white/20'}`}
+                  className={`w-12 h-12 rounded-2xl text-[10px] font-bold transition-all border ${page === i + 1 ? 'bg-amber-500 text-black border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]' : 'bg-white/5 text-text-secondary border-border/50 hover:text-text-primary hover:border-white/20'}`}
                 >
                   {i + 1}
                 </button>
@@ -235,7 +235,7 @@ export default function AdminUsers() {
             <button
               onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
               disabled={page === totalPages}
-              className="px-6 py-3 rounded-2xl border border-white/10 text-[10px] font-bold uppercase tracking-[0.2em] text-white hover:border-amber-500/50 hover:text-amber-500 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+              className="px-6 py-3 rounded-2xl border border-border text-[10px] font-bold uppercase tracking-[0.2em] text-text-primary hover:border-amber-500/50 hover:text-amber-500 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
             >
               NEXT →
             </button>
