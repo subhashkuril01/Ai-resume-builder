@@ -151,15 +151,51 @@
   }
 
   /* Custom scrollbar for containers */
+  .custom-scrollbar {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(245, 158, 11, 0.6) rgba(255, 255, 255, 0.05);
+  }
   .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+    width: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    margin: 5px 0;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    background: rgba(245, 158, 11, 0.5);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    min-height: 40px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: var(--accent);
+    background: rgba(245, 158, 11, 0.8);
+    background-clip: content-box;
+  }
+
+  /* Modal specific scrollbar */
+  .modal-scrollbar {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(245, 158, 11, 0.7) transparent;
+  }
+  .modal-scrollbar::-webkit-scrollbar {
+    width: 12px;
+  }
+  .modal-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .modal-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.6);
+    border-radius: 8px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+    min-height: 50px;
+  }
+  .modal-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 158, 11, 0.9);
+    background-clip: content-box;
   }
 }
 
