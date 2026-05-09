@@ -5,7 +5,8 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const authRoutes = require('./routes/auth');
 const resumeRoutes = require('./routes/resumes');
@@ -56,7 +57,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Static files for uploads
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);

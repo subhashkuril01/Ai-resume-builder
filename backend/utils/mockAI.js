@@ -197,6 +197,17 @@ const shuffle = (arr) => {
   return copy;
 };
 
+const makeResumeSpecificPrompt = (basePrompt, skill, profile, index) => {
+  const project = profile.projects?.[index % Math.max(profile.projects.length, 1)];
+  const experience = profile.experience?.[index % Math.max(profile.experience.length, 1)];
+  const context = project?.name
+    ? ` in the context of the "${project.name}" project`
+    : experience?.position
+      ? ` for a ${experience.position} role`
+      : '';
+  return `${basePrompt} Apply it to ${skill}${context}.`;
+};
+
 const generateResumeTest = (profile, { attemptNumber = 1 } = {}) => {
   const skills = profile.technicalSkills.length
     ? profile.technicalSkills
@@ -224,7 +235,7 @@ const generateResumeTest = (profile, { attemptNumber = 1 } = {}) => {
     type: 'mcq',
     skill: q.skill,
     difficulty: q.d,
-    prompt: q.prompt,
+    prompt: makeResumeSpecificPrompt(q.prompt, q.skill, profile, i),
     context: '',
     options: q.opts.map((text, oi) => ({ key: String.fromCharCode(65 + oi), text })),
     correctAnswer: { optionKey: q.key, idealAnswer: '', expectedConcepts: [q.skill], explanation: q.exp },

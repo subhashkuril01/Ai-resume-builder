@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 30000,
+  timeout: 120000,
   headers: { 'Content-Type': 'application/json' }
 })
 
@@ -40,6 +40,11 @@ export const resumeAPI = {
   getAll: () => api.get('/resumes'),
   getOne: (id) => api.get(`/resumes/${id}`),
   create: (data) => api.post('/resumes', data),
+  upload: (file) => {
+    const formData = new FormData()
+    formData.append('media', file)
+    return api.post('/resumes/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+  },
   update: (id, data) => api.put(`/resumes/${id}`, data),
   delete: (id) => api.delete(`/resumes/${id}`),
   duplicate: (id) => api.post(`/resumes/${id}/duplicate`),

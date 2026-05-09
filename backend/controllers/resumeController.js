@@ -1,6 +1,7 @@
 const Resume = require('../models/Resume');
 const User = require('../models/User');
 const { asyncHandler } = require('../middleware/errorHandler');
+const fs = require('fs');
 
 // @desc  Get all resumes for user
 // @route GET /api/resumes
@@ -39,6 +40,55 @@ const createResume = asyncHandler(async (req, res) => {
   });
 
   // Add to user's resumes array
+  await User.findByIdAndUpdate(req.user.id, { $push: { resumes: resume._id } });
+
+  res.status(201).json({ success: true, resume });
+});
+
+// @desc  Upload a resume media file and add it to the user's resume list
+// @route POST /api/resumes/upload
+const uploadResume = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'Choose a file to upload.' });
+  }
+
+  const originalName = req.file.originalname || 'Uploaded resume';
+  const title = originalName.replace(/\.[^/.]+$/, '') || 'Uploaded resume';
+  const isPlainText = /^text\//.test(req.file.mimetype) || req.file.mimetype === 'application/json';
+  let uploadedText = '';
+
+  if (isPlainText) {
+    uploadedText = fs.readFileSync(req.file.path, 'utf8').slice(0, 20000);
+  }
+
+  const content = {
+    personalInfo: {
+      summary: uploadedText || `Uploaded resume file: ${originalName}`
+    },
+    customSections: [
+      {
+        title: 'Uploaded Media',
+        content: uploadedText || `${originalName} is saved and ready for selection. Add structured resume details in the builder for deeper AI analysis.`
+      }
+    ]
+  };
+
+  const resume = await Resume.create({
+    userId: req.user.id,
+    title,
+    template: 'ats',
+    content,
+    uploadedFile: {
+      originalName,
+      fileName: req.file.filename,
+      mimeType: req.file.mimetype,
+      size: req.file.size,
+      path: `/uploads/resumes/${req.file.filename}`,
+      uploadedAt: new Date()
+    },
+    sectionOrder: ['personalInfo', 'summary', 'experience', 'education', 'skills', 'projects']
+  });
+
   await User.findByIdAndUpdate(req.user.id, { $push: { resumes: resume._id } });
 
   res.status(201).json({ success: true, resume });
@@ -175,6 +225,6 @@ const saveVersion = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  getResumes, getResume, createResume, updateResume, deleteResume,
+  getResumes, getResume, createResume, uploadResume, updateResume, deleteResume,
   duplicateResume, toggleShare, getVersions, restoreVersion, saveVersion
 };

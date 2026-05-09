@@ -1,12 +1,33 @@
 const Resume = require('../models/Resume');
 const ResumeTest = require('../models/ResumeTest');
 const { asyncHandler } = require('../middleware/errorHandler');
-const { getOpenAIClient, isMockMode, getMockAI } = require('../utils/openaiClient');
+const { getOpenAIClient, isMockMode, getAIProvider, getAIModel, getJSONResponseFormat, parseAIJSON, getMockAI } = require('../utils/openaiClient');
 const { resumeToText, extractResumeProfile } = require('../utils/resumeProfile');
 
 const DEFAULT_DURATION_MINUTES = 60;
+const DEFAULT_OPENAI_QUESTION_COUNT = 50;
+const DEFAULT_GROQ_QUESTION_COUNT = 20;
 
 const slugifySkill = (skill = '') => skill.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+const getAssessmentQuestionCount = () => {
+  const configured = Number.parseInt(process.env.ASSESSMENT_QUESTION_COUNT, 10);
+  if (Number.isFinite(configured) && configured >= 10 && configured <= 50) return configured;
+  return getAIProvider() === 'groq' ? DEFAULT_GROQ_QUESTION_COUNT : DEFAULT_OPENAI_QUESTION_COUNT;
+};
+
+const getDifficultyDistribution = (questionCount) => {
+  if (questionCount === 50) return { easy: 15, medium: 20, hard: 15 };
+  const easy = Math.max(3, Math.round(questionCount * 0.3));
+  const medium = Math.max(4, Math.round(questionCount * 0.4));
+  return { easy, medium, hard: Math.max(3, questionCount - easy - medium) };
+};
+
+const getAssessmentMaxTokens = (questionCount) => (
+  getAIProvider() === 'groq'
+    ? Math.min(5000, questionCount * 220)
+    : 12000
+);
 
 const inferComparison = (currentBreakdown = [], previousBreakdown = []) => {
   const previousMap = new Map(previousBreakdown.map((item) => [slugifySkill(item.skill), item]));
@@ -61,11 +82,13 @@ const normalizeQuestions = (questions = []) => questions.map((question, index) =
   maxPoints: question.maxPoints || 10
 }));
 
-const buildPromptForGeneration = (resume, profile, attemptNumber, priorPrompts = []) => `You are creating a strict resume-based MCQ assessment for a candidate.
+const buildPromptForGeneration = (resume, profile, attemptNumber, priorPrompts = [], generationId = '', questionCount = 50) => {
+  const distribution = getDifficultyDistribution(questionCount);
+  return `You are creating a strict resume-based MCQ assessment for a candidate.
 
 Rules:
-- Generate a 60 minute test based ONLY on the resume evidence below.
-- ALL 50 questions MUST be MCQ type with exactly 4 options (A, B, C, D).
+- Generate a resume assessment based ONLY on the resume evidence below.
+- ALL ${questionCount} questions MUST be MCQ type with exactly 4 options (A, B, C, D).
 - Do not include scenario, practical, or open-ended questions. Only MCQ.
 - Do not quote the resume back verbatim.
 - Do not ask trivia unrelated to the listed skills, experience, projects, education, or technologies.
@@ -73,11 +96,13 @@ Rules:
 - Adapt difficulty to the resume strength.
 - IMPORTANT: Generate completely NEW and DIFFERENT questions each time. Never repeat prior questions.
 - Prior questions to avoid repeating: ${priorPrompts.length ? priorPrompts.slice(0, 150).join(' || ') : 'none'}.
+- Uniqueness seed for this request: ${generationId}.
+- Make the assessment clearly specific to THIS resume's skills, projects, education, and experience. Two different resumes must produce noticeably different question sets.
 
 DIFFICULTY LEVELS - distribute questions as follows:
-- Questions q-1 to q-15: difficulty "easy" (basic concept recall and definitions)
-- Questions q-16 to q-35: difficulty "medium" (application and understanding)
-- Questions q-36 to q-50: difficulty "hard" (analysis, debugging, tradeoffs)
+- Questions q-1 to q-${distribution.easy}: difficulty "easy" (basic concept recall and definitions)
+- Questions q-${distribution.easy + 1} to q-${distribution.easy + distribution.medium}: difficulty "medium" (application and understanding)
+- Questions q-${distribution.easy + distribution.medium + 1} to q-${questionCount}: difficulty "hard" (analysis, debugging, tradeoffs)
 
 Resume title: ${resume.title}
 Resume text:
@@ -116,14 +141,15 @@ Respond ONLY with valid JSON:
 }
 
 Constraints:
-- Create EXACTLY 50 MCQ questions total.
+- Create EXACTLY ${questionCount} MCQ questions total.
 - Every single question must be type "mcq" with 4 options.
-- Questions q-1 to q-15 must have difficulty "easy".
-- Questions q-16 to q-35 must have difficulty "medium".
-- Questions q-36 to q-50 must have difficulty "hard".
+- Questions q-1 to q-${distribution.easy} must have difficulty "easy".
+- Questions q-${distribution.easy + 1} to q-${distribution.easy + distribution.medium} must have difficulty "medium".
+- Questions q-${distribution.easy + distribution.medium + 1} to q-${questionCount} must have difficulty "hard".
 - Each question must map to a real skill, project, experience, or education from the resume.
 - If the resume has limited technical content, create questions about the soft skills, experience, education, projects, or any other content mentioned.
 - Avoid direct copy-paste from the resume.`;
+};
 
 const buildPromptForEvaluation = (test, resume) => `You are evaluating a resume-based MCQ technical assessment.
 
@@ -209,15 +235,16 @@ const generateWithAI = async (resume, profile, attemptNumber, priorPrompts) => {
   }
 
   const openai = getOpenAIClient();
+  const generationId = `${resume._id}-${attemptNumber}-${Date.now()}`;
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [{ role: 'user', content: buildPromptForGeneration(resume, profile, attemptNumber, priorPrompts) }],
+    model: getAIModel(),
+    messages: [{ role: 'user', content: buildPromptForGeneration(resume, profile, attemptNumber, priorPrompts, generationId) }],
     temperature: 0.7,
     max_tokens: 12000,
-    response_format: { type: 'json_object' }
+    response_format: getJSONResponseFormat()
   });
 
-  return JSON.parse(response.choices[0].message.content);
+  return parseAIJSON(response.choices[0].message.content);
 };
 
 const keywordScore = (answerText = '', expectedConcepts = []) => {
@@ -355,30 +382,49 @@ const evaluateWithMockRules = (test, previousTest = null) => {
   return buildReportFromEvaluations(test, questionEvaluations, null, previousTest);
 };
 
+const getRuleBasedQuestionEvaluations = (test) => test.questions.map((question) => {
+  const answer = question.userAnswer || {};
+  const isCorrect = answer.selectedOptionKey === question.correctAnswer.optionKey;
+  return {
+    questionId: question.questionId,
+    score: isCorrect ? question.maxPoints : 0,
+    isCorrect,
+    explanation: isCorrect
+      ? `Correct. ${question.correctAnswer.explanation || 'The selected option matches the expected answer.'}`
+      : `Incorrect. The correct answer is ${question.correctAnswer.optionKey}. ${question.correctAnswer.explanation || 'The selected option does not match the expected answer.'}`,
+    strengths: isCorrect ? ['Selected the correct option.'] : [],
+    weaknesses: isCorrect ? [] : ['Did not select the correct option for this topic.'],
+    correctApproach: question.correctAnswer.explanation || 'Review the concept and analyze each option carefully.',
+    missingConcepts: isCorrect ? [] : (question.correctAnswer.expectedConcepts || [])
+  };
+});
+
 const evaluateWithAI = async (test, resume, previousTest) => {
   if (isMockMode()) {
     return evaluateWithMockRules(test, previousTest);
   }
 
-  // For MCQ tests, we can programmatically evaluate first for accuracy
-  const questionEvaluations = test.questions.map((question) => {
-    const answer = question.userAnswer || {};
-    const isCorrect = answer.selectedOptionKey === question.correctAnswer.optionKey;
-    return {
-      questionId: question.questionId,
-      score: isCorrect ? question.maxPoints : 0,
-      isCorrect,
-      explanation: isCorrect
-        ? `Correct. ${question.correctAnswer.explanation || 'The selected option matches the expected answer.'}`
-        : `Incorrect. The correct answer is ${question.correctAnswer.optionKey}. ${question.correctAnswer.explanation || 'The selected option does not match the expected answer.'}`,
-      strengths: isCorrect ? ['Selected the correct option.'] : [],
-      weaknesses: isCorrect ? [] : ['Did not select the correct option for this topic.'],
-      correctApproach: question.correctAnswer.explanation || 'Review the concept and analyze each option carefully.',
-      missingConcepts: isCorrect ? [] : (question.correctAnswer.expectedConcepts || [])
-    };
+  const questionEvaluations = getRuleBasedQuestionEvaluations(test);
+  const baseReport = buildReportFromEvaluations(test, questionEvaluations, null, previousTest).report;
+  const openai = getOpenAIClient();
+  const response = await openai.chat.completions.create({
+    model: getAIModel(),
+    messages: [{ role: 'user', content: buildPromptForEvaluation({
+      ...test.toObject(),
+      report: baseReport
+    }, resume) }],
+    temperature: 0.35,
+    max_tokens: 5000,
+    response_format: getJSONResponseFormat()
   });
+  const aiResult = parseAIJSON(response.choices[0].message.content);
 
-  return buildReportFromEvaluations(test, questionEvaluations, null, previousTest);
+  return buildReportFromEvaluations(
+    test,
+    aiResult.questionEvaluations?.length ? aiResult.questionEvaluations : questionEvaluations,
+    aiResult.report || baseReport,
+    previousTest
+  );
 };
 
 const generateTestDocument = async ({ resume, userId, priorTests }) => {

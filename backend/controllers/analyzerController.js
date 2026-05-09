@@ -1,7 +1,7 @@
 const Resume = require('../models/Resume');
 const AnalysisResult = require('../models/AnalysisResult');
 const { asyncHandler } = require('../middleware/errorHandler');
-const { getOpenAIClient, isMockMode, getMockAI } = require('../utils/openaiClient');
+const { getOpenAIClient, isMockMode, getAIModel, getJSONResponseFormat, parseAIJSON, getMockAI } = require('../utils/openaiClient');
 const { resumeToText } = require('../utils/resumeProfile');
 
 const analyzeATS = asyncHandler(async (req, res) => {
@@ -54,13 +54,13 @@ Scoring criteria:
 - Education completeness (10pts)
 - Keywords and ATS compatibility (20pts)`;
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: getAIModel(),
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
       max_tokens: 2000,
-      response_format: { type: 'json_object' }
+      response_format: getJSONResponseFormat()
     });
-    analysisData = JSON.parse(response.choices[0].message.content);
+    analysisData = parseAIJSON(response.choices[0].message.content);
   }
   const analysisResult = await AnalysisResult.create({
     resumeId: resume._id,
@@ -116,13 +116,13 @@ Rules:
 - Be concise but impactful
 - Do not invent false information, only enhance what is provided`;
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: getAIModel(),
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.5,
       max_tokens: 1000,
-      response_format: { type: 'json_object' }
+      response_format: getJSONResponseFormat()
     });
-    result = JSON.parse(response.choices[0].message.content);
+    result = parseAIJSON(response.choices[0].message.content);
   }
   res.json({ success: true, ...result });
 });

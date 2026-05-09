@@ -1,5 +1,8 @@
 const OpenAI = require('openai');
+const path = require('path');
 const mockAI = require('./mockAI');
+
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const isPlaceholderKey = (key) => {
   if (!key) return true;
@@ -14,24 +17,52 @@ const isPlaceholderKey = (key) => {
   ].includes(normalized);
 };
 
-// Initialize mock mode based on API key at module load time
-const apiKey = process.env.OPENAI_API_KEY?.trim();
-let mockMode = !apiKey || isPlaceholderKey(apiKey) || apiKey === 'mock_mode';
+const openAIKey = process.env.OPENAI_API_KEY?.trim();
+const groqKey = process.env.GROQ_API_KEY?.trim();
+const provider = !isPlaceholderKey(openAIKey) ? 'openai' : (!isPlaceholderKey(groqKey) ? 'groq' : null);
+const apiKey = provider === 'openai' ? openAIKey : groqKey;
+const baseURL = provider === 'groq' ? 'https://api.groq.com/openai/v1' : undefined;
+const defaultModel = provider === 'groq' ? 'llama-3.1-8b-instant' : 'gpt-4o-mini';
+let mockMode = !provider || !apiKey || isPlaceholderKey(apiKey);
 
-// Log the mode once at startup
 if (mockMode) {
-  console.warn('⚠️  Using MOCK AI mode - no real OpenAI API key configured.');
-  console.warn('⚠️  To use real AI, set OPENAI_API_KEY=sk-... in backend/.env and restart.');
+  console.warn('Using MOCK AI mode - no real AI API key configured.');
+  console.warn('To use real AI, set OPENAI_API_KEY or GROQ_API_KEY in backend/.env and restart.');
+} else {
+  console.log(`AI provider configured: ${provider}`);
 }
 
 const getOpenAIClient = () => {
   if (mockMode) {
     return null; // Signal to use mock mode
   }
-  return new OpenAI({ apiKey });
+  return new OpenAI({ apiKey, baseURL });
 };
 
 const isMockMode = () => mockMode;
+const getAIProvider = () => provider;
+const getAIModel = () => process.env.AI_MODEL?.trim() || defaultModel;
+const getJSONResponseFormat = () => (provider === 'openai' ? { type: 'json_object' } : undefined);
 const getMockAI = () => mockAI;
 
-module.exports = { getOpenAIClient, isMockMode, getMockAI };
+const parseAIJSON = (content = '') => {
+  const raw = String(content).trim();
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    const start = raw.indexOf('{');
+    const end = raw.lastIndexOf('}');
+    if (start === -1 || end === -1 || end <= start) throw error;
+    return JSON.parse(raw.slice(start, end + 1));
+  }
+};
+
+module.exports = {
+  getOpenAIClient,
+  isMockMode,
+  getAIProvider,
+  getAIModel,
+  getJSONResponseFormat,
+  parseAIJSON,
+  getMockAI
+};

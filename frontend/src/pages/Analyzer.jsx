@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { resumeAPI, analyzerAPI } from '../api'
 import ScoreRing from '../components/common/ScoreRing'
+import ResumeUploadButton from '../components/common/ResumeUploadButton'
 import toast from 'react-hot-toast'
 
 export default function Analyzer() {
@@ -33,6 +34,11 @@ export default function Analyzer() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleUploadedResume = (resume) => {
+    setResumes((current) => [resume, ...current.filter((item) => item._id !== resume._id)])
+    setSelectedId(resume._id)
   }
 
   const priorityColor = { high: '#ef4444', medium: '#f59e0b', low: '#10b981' }
@@ -68,6 +74,7 @@ export default function Analyzer() {
                 </select>
                 <span className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30 text-xs transition-transform group-hover/select:translate-y-[-40%]">▼</span>
               </div>
+              <ResumeUploadButton onUploaded={handleUploadedResume} className="w-full mt-3" />
             </div>
             <button 
               onClick={handleAnalyze} 

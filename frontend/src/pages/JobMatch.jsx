@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { resumeAPI, jobMatchAPI } from '../api'
+import ResumeUploadButton from '../components/common/ResumeUploadButton'
 import toast from 'react-hot-toast'
 
 function MatchMeter({ pct }) {
@@ -72,6 +73,11 @@ export default function JobMatch() {
     } finally { setKwLoading(false) }
   }
 
+  const handleUploadedResume = (resume) => {
+    setResumes((current) => [resume, ...current.filter((item) => item._id !== resume._id)])
+    setSelectedId(resume._id)
+  }
+
   return (
     <div className="min-h-screen pt-32 pb-20 bg-primary">
       <div className="max-w-6xl mx-auto px-6">
@@ -101,16 +107,19 @@ export default function JobMatch() {
                 </select>
                 <span className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30 text-xs transition-transform group-hover/select:translate-y-[-40%]">▼</span>
               </div>
+              <ResumeUploadButton onUploaded={handleUploadedResume} className="w-full" />
             </div>
+
             <div className="space-y-3">
               <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary">Job Description Artifact</label>
               <textarea 
-                className="w-full h-64 bg-white/5 border border-border rounded-3xl p-8 text-sm text-text-secondary focus:border-amber-500/50 transition-all outline-none resize-none font-medium custom-scrollbar" 
+                className="w-full h-40 bg-white/5 border border-border rounded-3xl p-8 text-sm text-text-secondary focus:border-amber-500/50 transition-all outline-none resize-none font-medium custom-scrollbar" 
                 placeholder="Paste the full job description here. Include requirements, responsibilities, and company values..."
                 value={jobDescription} 
                 onChange={e => setJobDescription(e.target.value)} 
               />
             </div>
+
             <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-border/50">
               <button 
                 onClick={handleAnalyze} 
@@ -124,6 +133,7 @@ export default function JobMatch() {
                   </span>
                 ) : '🎯 Analyze Compatibility'}
               </button>
+
               <button 
                 onClick={handleExtractKeywords} 
                 className="flex-1 h-14 rounded-2xl bg-white/[0.03] border border-border text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary hover:text-text-primary hover:bg-white/[0.06] transition-all" 
@@ -145,6 +155,7 @@ export default function JobMatch() {
                 <span className="px-4 py-1.5 rounded-xl bg-white/5 text-text-secondary text-[10px] font-black uppercase tracking-widest border border-border/50">{keywords.industry}</span>
               </div>
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
               {[
                 { label: 'Technical Core', items: keywords.technicalSkills || [], accent: 'text-amber-500' },
@@ -202,6 +213,7 @@ export default function JobMatch() {
                   ))}
                 </div>
               </div>
+
               <div className="card p-10 border-red-500/10 bg-red-500/[0.01] group hover:bg-red-500/[0.02] transition-all">
                 <div className="flex items-center justify-between mb-8">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500">❌ Technical Gaps</p>

@@ -60,6 +60,15 @@ const resumeContentSchema = new mongoose.Schema({
   }]
 }, { _id: false });
 
+const uploadedFileSchema = new mongoose.Schema({
+  originalName: String,
+  fileName: String,
+  mimeType: String,
+  size: Number,
+  path: String,
+  uploadedAt: { type: Date, default: Date.now }
+}, { _id: false });
+
 const versionSchema = new mongoose.Schema({
   versionNumber: Number,
   label: String,
@@ -92,6 +101,7 @@ const resumeSchema = new mongoose.Schema({
     default: 'modern'
   },
   content: resumeContentSchema,
+  uploadedFile: uploadedFileSchema,
   versions: [versionSchema],
   publicSlug: {
     type: String,

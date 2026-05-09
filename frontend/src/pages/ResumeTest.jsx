@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { analyzerAPI, resumeAPI, resumeTestAPI } from '../api'
+import ResumeUploadButton from '../components/common/ResumeUploadButton'
 import toast from 'react-hot-toast'
 
 const formatClock = (seconds) => {
@@ -281,6 +282,11 @@ export default function ResumeTest() {
     }
   }
 
+  const handleUploadedResume = (resume) => {
+    setResumes((current) => [resume, ...current.filter((item) => item._id !== resume._id)])
+    setSelectedResumeId(resume._id)
+  }
+
   const currentTone = selectedTest?.report ? scoreTone(selectedTest.report.overallScore || 0) : null
 
   return (
@@ -308,6 +314,7 @@ export default function ResumeTest() {
                   <option key={resume._id} value={resume._id} className="bg-secondary">{resume.title}</option>
                 ))}
               </select>
+              <ResumeUploadButton onUploaded={handleUploadedResume} className="h-12 rounded-xl" />
               <button onClick={handleGenerate} className="h-12 px-6 rounded-xl bg-amber-500 text-black text-[10px] font-black uppercase tracking-widest glow-orange transition-all hover:scale-105 disabled:opacity-50" disabled={generating || !selectedResumeId}>
                 {generating ? 'Processing' : 'Generate 50 MCQ Set'}
               </button>

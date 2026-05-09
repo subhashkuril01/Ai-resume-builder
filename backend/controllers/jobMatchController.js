@@ -1,7 +1,7 @@
 const Resume = require('../models/Resume');
 const AnalysisResult = require('../models/AnalysisResult');
 const { asyncHandler } = require('../middleware/errorHandler');
-const { getOpenAIClient, isMockMode, getMockAI } = require('../utils/openaiClient');
+const { getOpenAIClient, isMockMode, getAIModel, getJSONResponseFormat, parseAIJSON, getMockAI } = require('../utils/openaiClient');
 
 
 const resumeToText = (content) => {
@@ -92,14 +92,14 @@ Scoring guide:
 - 0-39: Weak match`;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: getAIModel(),
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
       max_tokens: 2000,
-      response_format: { type: 'json_object' }
+      response_format: getJSONResponseFormat()
     });
 
-    matchData = JSON.parse(response.choices[0].message.content);
+    matchData = parseAIJSON(response.choices[0].message.content);
   }
 
   // Save analysis result
@@ -156,14 +156,14 @@ Respond ONLY with valid JSON:
 }`;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: getAIModel(),
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.2,
       max_tokens: 800,
-      response_format: { type: 'json_object' }
+      response_format: getJSONResponseFormat()
     });
 
-    keywords = JSON.parse(response.choices[0].message.content);
+    keywords = parseAIJSON(response.choices[0].message.content);
   }
 
   res.json({ success: true, keywords });
