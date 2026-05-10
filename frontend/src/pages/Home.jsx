@@ -13,7 +13,7 @@ const features = [
 const stats = [
   { value: '98%', label: 'ATS Success' },
   { value: '2.4x', label: 'More Responses' },
-  { value: '50k+', label: 'Global Users' },
+  { value: '30+', label: 'Templates' },
   { value: 'GPT-4o', label: 'Engine' },
 ]
 

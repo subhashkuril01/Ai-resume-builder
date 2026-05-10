@@ -28,10 +28,7 @@ export default function Builder() {
   const [lastSaved, setLastSaved] = useState(null)
   const [showPreview, setShowPreview] = useState(false)
   const [exporting, setExporting] = useState(false)
-  const [shareUrl, setShareUrl] = useState(null)
   const [autoSaveTimer, setAutoSaveTimer] = useState(null)
-  const [showVersions, setShowVersions] = useState(false)
-  const [versions, setVersions] = useState([])
   const [titleEditing, setTitleEditing] = useState(false)
 
   useEffect(() => {
@@ -42,7 +39,7 @@ export default function Builder() {
         setContent(res.resume.content || {})
         setTemplate(res.resume.template || 'modern')
         setTitle(res.resume.title || 'Untitled Resume')
-        setShareUrl(res.resume.isPublic ? `${window.location.origin}/r/${res.resume.publicSlug}` : null)
+        setTitle(res.resume.title || 'Untitled Resume')
       })
       .catch(() => { toast.error('Resume not found'); navigate('/dashboard') })
       .finally(() => setLoading(false))
@@ -100,47 +97,6 @@ export default function Builder() {
     finally { setExporting(false) }
   }
 
-  const handleShare = async () => {
-    try {
-      const res = await resumeAPI.toggleShare(id)
-      if (res.isPublic) {
-        setShareUrl(res.shareUrl)
-        navigator.clipboard.writeText(res.shareUrl).catch(() => {})
-        toast.success('Share link copied!')
-      } else {
-        setShareUrl(null)
-        toast.success('Resume made private')
-      }
-    } catch { toast.error('Share toggle failed') }
-  }
-
-  const handleSaveVersion = async () => {
-    const label = prompt('Version label (optional):') || undefined
-    try {
-      await resumeAPI.saveVersion(id, label)
-      toast.success('Version saved!')
-    } catch { toast.error('Failed to save version') }
-  }
-
-  const handleLoadVersions = async () => {
-    try {
-      const res = await resumeAPI.getVersions(id)
-      setVersions(res.versions)
-      setShowVersions(true)
-    } catch { toast.error('Failed to load versions') }
-  }
-
-  const handleRestoreVersion = async (versionId, vLabel) => {
-    if (!confirm(`Restore "${vLabel}"? Current content will be saved first.`)) return
-    try {
-      const res = await resumeAPI.restoreVersion(id, versionId)
-      setContent(res.resume.content)
-      setTemplate(res.resume.template)
-      setShowVersions(false)
-      toast.success('Version restored!')
-    } catch { toast.error('Restore failed') }
-  }
-
   if (loading) return (
     <div className="min-h-screen bg-primary flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
@@ -188,13 +144,12 @@ export default function Builder() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden lg:flex items-center gap-1 p-1 bg-primary rounded-xl border border-border">
-            <button onClick={() => setShowPreview(!showPreview)} className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${showPreview ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20' : 'text-text-secondary hover:text-text-primary'}`}>Preview</button>
-            <button onClick={handleLoadVersions} className="px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary transition-all">History</button>
+          <div className="flex items-center gap-1 p-1 bg-primary rounded-xl border border-border">
+            <button onClick={() => setShowPreview(!showPreview)} className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${showPreview ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20' : 'text-text-secondary hover:text-text-primary'}`}>
+              <span className="lg:hidden">{showPreview ? 'Edit' : 'Preview'}</span>
+              <span className="hidden lg:inline">Preview</span>
+            </button>
           </div>
-          <button onClick={handleShare} className={`h-10 px-5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border ${shareUrl ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-white/5 border-border text-zinc-400 hover:text-text-primary hover:bg-white/10'}`}>
-            {shareUrl ? 'Public' : 'Private'}
-          </button>
           <button onClick={handleExportPDF} className="h-10 px-5 rounded-xl bg-white/5 border border-border text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-text-primary hover:bg-white/10 transition-all" disabled={exporting}>
             {exporting ? '...' : 'Export'}
           </button>
@@ -206,7 +161,7 @@ export default function Builder() {
 
       <div className="flex flex-1 overflow-hidden relative">
         {/* Left: Configuration Panel */}
-        <div className="w-full lg:w-[480px] flex-shrink-0 flex flex-col bg-secondary border-r border-border z-10">
+        <div className={`w-full lg:w-[480px] flex-shrink-0 flex-col bg-secondary border-r border-border z-10 ${showPreview ? 'hidden' : 'flex'}`}>
           
           {/* Step Progress */}
           <div className="px-8 pt-8 pb-4">
@@ -269,7 +224,7 @@ export default function Builder() {
         </div>
 
         {/* Right: Real-time Preview */}
-        <div className={`flex-1 bg-primary overflow-y-auto flex items-start justify-center p-12 transition-all duration-500 ${showPreview ? 'block' : 'hidden lg:flex'}`}>
+        <div className={`flex-1 bg-primary overflow-y-auto items-start justify-center p-12 transition-all duration-500 ${showPreview ? 'flex' : 'hidden lg:flex'}`}>
           <div className="relative w-full max-w-[850px] animate-scale-in">
             <div className="flex items-center justify-between mb-6 px-2">
               <div className="flex items-center gap-2">
@@ -288,42 +243,6 @@ export default function Builder() {
           </div>
         </div>
       </div>
-
-      {/* Version History Modal */}
-      {showVersions && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm animate-fade-in">
-          <div className="card w-full max-w-lg bg-secondary border border-border/50 shadow-2xl overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-border/50 flex items-center justify-between">
-              <div>
-                <h3 className="font-display font-bold text-xl text-text-primary tracking-tight">Timeline</h3>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary mt-0.5">Resume snapshots and versions</p>
-              </div>
-              <button onClick={() => setShowVersions(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-text-secondary hover:text-text-primary transition-all">✕</button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[500px]">
-              {versions.length === 0 ? (
-                <div className="py-20 text-center">
-                  <p className="text-text-muted text-sm italic">No snapshots available for this document.</p>
-                </div>
-              ) : versions.map(v => (
-                <div key={v._id} className="p-5 rounded-2xl bg-white/[0.02] border border-border/50 flex items-center justify-between group hover:border-amber-500/20 transition-all">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-1">{v.label || 'Auto-Saved Snapshot'}</p>
-                    <p className="text-xs text-text-primary font-medium">{new Date(v.savedAt).toLocaleDateString()} at {new Date(v.savedAt).toLocaleTimeString()}</p>
-                  </div>
-                  <button onClick={() => handleRestoreVersion(v._id, v.label)}
-                    className="h-10 px-5 rounded-xl border border-border/50 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-text-primary hover:bg-white/5 transition-all">
-                    Restore
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div className="p-6 bg-white/[0.01] border-t border-border/50">
-              <button onClick={handleSaveVersion} className="w-full h-12 rounded-xl bg-white text-black text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-200 transition-all">Create New Snapshot</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

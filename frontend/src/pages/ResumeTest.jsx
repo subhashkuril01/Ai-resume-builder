@@ -346,8 +346,12 @@ export default function ResumeTest() {
                 {tests.length === 0 ? (
                   <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted/50 italic">No sessions recorded.</p>
                 ) : (
-                  <div className="space-y-3">
-                    {tests.map((test) => (
+                  <>
+                    {/* To adjust the timeline height, change the '400px' value below. */}
+                    {/* Decrease the number (e.g., 300px) to make the timeline TALLER. */}
+                    {/* Increase the number (e.g., 500px) to make the timeline SHORTER. */}
+                    <div className="space-y-3 overflow-y-auto custom-scrollbar pr-2 pb-2" style={{ maxHeight: 'calc(125vh - 20px)' }}>
+                      {tests.map((test) => (
                       <div
                         key={test._id}
                         className={`relative w-full rounded-2xl transition-all border group ${selectedTest?._id === test._id ? 'bg-amber-500/[0.03] border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.05)]' : 'bg-white/5 border-border/50 hover:border-border'}`}
@@ -356,12 +360,12 @@ export default function ResumeTest() {
                           onClick={() => handleSelectTest(test._id)}
                           className="w-full text-left p-4 pr-12"
                         >
-                          <p className={`text-[10px] font-black uppercase tracking-tight truncate mb-1 ${selectedTest?._id === test._id ? 'text-amber-500' : 'text-text-secondary'}`}>{test.title}</p>
-                          <p className="text-[9px] font-bold text-text-muted uppercase tracking-widest mb-3 truncate">{test.resumeTitle} • #{test.attemptNumber}</p>
+                          <p className={`text-xs font-black uppercase tracking-tight truncate mb-1 ${selectedTest?._id === test._id ? 'text-amber-500' : 'text-text-secondary'}`}>{test.title}</p>
+                          <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3 truncate">{test.resumeTitle} • #{test.attemptNumber}</p>
                           <div className="flex items-center justify-between">
-                            <span className="text-[8px] font-black uppercase tracking-widest text-text-secondary/80 px-2 py-1 bg-white/5 rounded-lg border border-border/50">{test.status.replace('_', ' ')}</span>
-                            <span className="text-sm font-black text-text-primary">
-                              {test.report?.overallScore ?? '--'}<span className="text-[9px] text-text-muted">%</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary/80 px-2 py-1 bg-white/5 rounded-lg border border-border/50">{test.status.replace('_', ' ')}</span>
+                            <span className="text-base font-black text-text-primary">
+                              {test.report?.overallScore ?? '--'}<span className="text-[10px] text-text-muted">%</span>
                             </span>
                           </div>
                         </button>
@@ -392,26 +396,27 @@ export default function ResumeTest() {
                       </div>
                     ))}
                   </div>
+                  </>
                 )}
               </div>
 
               {selectedTest?.generatedFrom && (
                 <div className="card p-6 border-border/50 bg-white/[0.01] animate-fade-up">
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary/80 mb-6">Environment Data</h2>
+                  <h2 className="text-xs font-black uppercase tracking-[0.2em] text-text-secondary/80 mb-6">Environment Data</h2>
                   <div className="space-y-6">
                     <div className="space-y-3">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-text-muted/50">Primary Skills</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-text-muted/50">Primary Skills</p>
                       <div className="flex flex-wrap gap-2">
                         {(selectedTest.generatedFrom.skills || []).slice(0, 10).map((skill) => (
-                          <span key={skill} className="px-2.5 py-1.5 rounded-lg bg-amber-500/5 text-amber-500 text-[9px] font-black uppercase tracking-wider border border-amber-500/10">{skill}</span>
+                          <span key={skill} className="px-3 py-2 rounded-lg bg-amber-500/5 text-amber-500 text-[10px] font-black uppercase tracking-wider border border-amber-500/10">{skill}</span>
                         ))}
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-text-muted/50">Artifact References</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-text-muted/50">Artifact References</p>
                       <div className="flex flex-wrap gap-2">
                         {(selectedTest.generatedFrom.projects || []).slice(0, 5).map((project) => (
-                          <span key={project} className="px-2.5 py-1.5 rounded-lg bg-white/5 text-text-secondary/80 text-[9px] font-black uppercase tracking-wider border border-border/50">{project}</span>
+                          <span key={project} className="px-3 py-2 rounded-lg bg-white/5 text-text-secondary/80 text-[10px] font-black uppercase tracking-wider border border-border/50">{project}</span>
                         ))}
                       </div>
                     </div>
@@ -516,12 +521,12 @@ export default function ResumeTest() {
                                     key={option.key}
                                     className={`flex items-start gap-5 p-6 rounded-3xl cursor-pointer transition-all border group relative overflow-hidden ${selectedOptionKey === option.key ? 'bg-amber-500/[0.04] border-amber-500/40' : 'bg-white/[0.01] border-border/50 hover:bg-white/5 hover:border-border'}`}
                                   >
-                                    <div className={`mt-1.5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedOptionKey === option.key ? 'border-amber-500 bg-amber-500' : 'border-zinc-700 bg-transparent group-hover:border-zinc-500'}`}>
-                                       {selectedOptionKey === option.key && <div className="w-2 h-2 rounded-full bg-black" />}
+                                    <div className={`mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedOptionKey === option.key ? 'border-amber-500 bg-amber-500' : 'border-zinc-700 bg-transparent group-hover:border-zinc-500'}`}>
+                                       {selectedOptionKey === option.key && <div className="w-2.5 h-2.5 rounded-full bg-black" />}
                                     </div>
                                     <div className="relative z-10 flex-1">
-                                      <p className={`text-[11px] font-black uppercase tracking-widest mb-1.5 ${selectedOptionKey === option.key ? 'text-amber-500' : 'text-text-muted group-hover:text-text-secondary'}`}>Option {option.key}</p>
-                                      <p className={`text-sm leading-relaxed ${selectedOptionKey === option.key ? 'text-text-primary' : 'text-text-secondary'}`}>{option.text}</p>
+                                      <p className={`text-xs font-black uppercase tracking-widest mb-1.5 ${selectedOptionKey === option.key ? 'text-amber-500' : 'text-text-muted group-hover:text-text-secondary'}`}>Option {option.key}</p>
+                                      <p className={`text-base font-medium leading-relaxed ${selectedOptionKey === option.key ? 'text-text-primary' : 'text-text-secondary'}`}>{option.text}</p>
                                     </div>
                                     <input
                                       type="radio"
@@ -560,15 +565,15 @@ export default function ResumeTest() {
                       </div>
 
                       <div className="card p-6 h-fit bg-white/[0.01] border-border/50 sticky top-32 max-h-[calc(100vh-160px)] overflow-y-auto custom-scrollbar">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted mb-6">Cognitive Map</h3>
-                        <div className="grid grid-cols-4 gap-2">
+                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-text-muted mb-6">Cognitive Map</h3>
+                        <div className="grid grid-cols-4 gap-3">
                           {selectedTest.questions.map((question, index) => {
                             const answered = Boolean(question.userAnswer?.selectedOptionKey)
                             return (
                               <button
                                 key={question.questionId}
                                 onClick={() => setActiveIndex(index)}
-                                className={`h-11 rounded-xl text-[11px] font-black transition-all border ${activeIndex === index ? 'bg-amber-500 border-amber-500 text-black shadow-lg shadow-amber-500/20 scale-110 z-10' : answered ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-white/5 border-border text-text-muted hover:border-white/20'}`}
+                                className={`h-12 rounded-xl text-sm font-black transition-all border ${activeIndex === index ? 'bg-amber-500 border-amber-500 text-black shadow-lg shadow-amber-500/20 scale-110 z-10' : answered ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-white/5 border-border text-text-muted hover:border-white/20'}`}
                               >
                                 {index + 1}
                               </button>

@@ -183,7 +183,8 @@ const getVersions = asyncHandler(async (req, res) => {
   if (!resume) {
     return res.status(404).json({ error: 'Resume not found.' });
   }
-  res.json({ success: true, versions: resume.versions.reverse() });
+  const versions = resume.versions ? [...resume.versions].reverse() : [];
+  res.json({ success: true, versions });
 });
 
 // @desc  Restore version
