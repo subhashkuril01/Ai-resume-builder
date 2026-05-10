@@ -226,7 +226,7 @@ const DEFAULT_PREVIEW_CONTENT = {
   experience: [
     {
       position: 'Lead Specialist',
-      company: 'Cvision Labs',
+      company: 'Cvision',
       location: 'Remote',
       startDate: '2022',
       endDate: '',

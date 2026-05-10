@@ -76,20 +76,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trust Badges / Marquee */}
-      <section className="py-20 border-y border-border/50 bg-white/[0.01]">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-text-muted/50 mb-12">Engineered for candidates applying to</p>
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-20 grayscale transition-all hover:grayscale-0 hover:opacity-50">
-             {['GOOGLE', 'AMAZON', 'META', 'APPLE', 'TESLA', 'NETFLIX'].map(brand => (
-               <span key={brand} className="text-xl md:text-2xl font-black font-display tracking-widest">{brand}</span>
-             ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Features Section */}
-      <section className="py-40 px-6 relative">
+      <section className="pt-10 pb-40 px-6 relative">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-12">
             <div className="max-w-2xl">
@@ -199,7 +189,6 @@ export default function Home() {
           <div className="md:col-span-1 space-y-6">
             <div className="flex items-center gap-2">
               <span className="font-display font-black text-2xl text-text-primary tracking-tighter">CVISION</span>
-              <span className="px-2 py-0.5 rounded bg-white/5 text-[8px] font-black text-text-muted uppercase tracking-widest">Labs</span>
             </div>
             <p className="text-sm text-text-muted leading-relaxed font-medium">
               Architecting the future of professional identity with advanced neural networks and design excellence.

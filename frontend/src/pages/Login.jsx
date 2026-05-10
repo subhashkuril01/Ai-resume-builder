@@ -60,7 +60,7 @@ export default function Login() {
         </div>
         
         <div className="absolute bottom-12 left-20">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">© 2026 CVISION LABS</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">© 2026 CVISION</p>
         </div>
       </div>
 

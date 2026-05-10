@@ -24,9 +24,6 @@ export default function BrandLogo({ to = '/', compact = false, showTagline = fal
           <span className="font-display font-black text-2xl tracking-tighter text-text-primary">
             CV<span className="text-amber-500">ISION</span>
           </span>
-          <span className="ml-2 px-1.5 py-0.5 rounded bg-white/5 border border-border/50 text-[8px] font-black text-text-muted uppercase tracking-[0.2em] group-hover:text-amber-500/50 transition-colors">
-            Labs
-          </span>
         </div>
         {showTagline && (
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted mt-0.5">
