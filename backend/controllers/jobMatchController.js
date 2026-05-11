@@ -1,38 +1,16 @@
 const Resume = require('../models/Resume');
 const AnalysisResult = require('../models/AnalysisResult');
 const { asyncHandler } = require('../middleware/errorHandler');
-const { getOpenAIClient, isMockMode, getAIModel, getJSONResponseFormat, parseAIJSON, getMockAI } = require('../utils/openaiClient');
+const {
+  getOpenAIClient,
+  isMockMode,
+  getAIModel,
+  buildCompletionParams,
+  parseAIJSON,
+  getMockAI
+} = require('../utils/openaiClient');
+const { resumeToText } = require('../utils/resumeProfile');
 
-
-const resumeToText = (content) => {
-  if (!content) return '';
-  const parts = [];
-  const { personalInfo, experience, skills, education, projects } = content;
-  if (personalInfo?.summary) parts.push(`Summary: ${personalInfo.summary}`);
-  if (experience?.length) {
-    experience.forEach(e => {
-      parts.push(`${e.position} at ${e.company}: ${e.description || ''}`);
-      if (e.achievements?.length) parts.push(e.achievements.join('. '));
-    });
-  }
-  if (skills) {
-    const all = [...(skills.technical||[]), ...(skills.soft||[]), ...(skills.certifications||[])];
-    if (all.length) parts.push(`Skills: ${all.join(', ')}`);
-  }
-  if (education?.length) {
-    education.forEach(e => parts.push(`${e.degree} in ${e.field} from ${e.institution}`));
-  }
-  if (projects?.length) {
-    projects.forEach(p => {
-      parts.push(`Project: ${p.name} - ${p.description}`);
-      if (p.technologies?.length) parts.push(`Tech: ${p.technologies.join(', ')}`);
-    });
-  }
-  return parts.join('\n');
-};
-
-// @desc  Match resume against job description
-// @route POST /api/job-match/analyze
 const analyzeJobMatch = asyncHandler(async (req, res) => {
   const { resumeId, jobDescription } = req.body;
 
@@ -49,7 +27,6 @@ const analyzeJobMatch = asyncHandler(async (req, res) => {
 
   let matchData;
 
-  // Use mock AI or real OpenAI
   if (isMockMode()) {
     matchData = getMockAI().generateJobMatch(resumeText, jobDescription);
   } else {
@@ -91,18 +68,18 @@ Scoring guide:
 - 40-59: Moderate match, significant customization needed
 - 0-39: Weak match`;
 
-    const response = await openai.chat.completions.create({
-      model: getAIModel(),
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      max_tokens: 2000,
-      response_format: getJSONResponseFormat()
-    });
+    const response = await openai.chat.completions.create(
+      buildCompletionParams({
+        model: getAIModel(),
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+        max_tokens: 2000
+      })
+    );
 
     matchData = parseAIJSON(response.choices[0].message.content);
   }
 
-  // Save analysis result
   await AnalysisResult.create({
     resumeId: resume._id,
     userId: req.user.id,
@@ -121,8 +98,6 @@ Scoring guide:
   res.json({ success: true, match: matchData });
 });
 
-// @desc  Extract keywords from job description
-// @route POST /api/job-match/keywords
 const extractKeywords = asyncHandler(async (req, res) => {
   const { jobDescription } = req.body;
 
@@ -132,7 +107,6 @@ const extractKeywords = asyncHandler(async (req, res) => {
 
   let keywords;
 
-  // Use mock AI or real OpenAI
   if (isMockMode()) {
     keywords = getMockAI().generateKeywordExtraction(jobDescription);
   } else {
@@ -155,13 +129,14 @@ Respond ONLY with valid JSON:
   "industry": "industry name"
 }`;
 
-    const response = await openai.chat.completions.create({
-      model: getAIModel(),
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.2,
-      max_tokens: 800,
-      response_format: getJSONResponseFormat()
-    });
+    const response = await openai.chat.completions.create(
+      buildCompletionParams({
+        model: getAIModel(),
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.2,
+        max_tokens: 800
+      })
+    );
 
     keywords = parseAIJSON(response.choices[0].message.content);
   }

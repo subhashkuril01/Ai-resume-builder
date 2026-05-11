@@ -1,7 +1,7 @@
 const Resume = require('../models/Resume');
 const ResumeTest = require('../models/ResumeTest');
 const { asyncHandler } = require('../middleware/errorHandler');
-const { getOpenAIClient, isMockMode, getAIProvider, getAIModel, getJSONResponseFormat, parseAIJSON, getMockAI } = require('../utils/openaiClient');
+const { getOpenAIClient, isMockMode, getAIProvider, getAIModel, buildCompletionParams, parseAIJSON, getMockAI } = require('../utils/openaiClient');
 const { resumeToText, extractResumeProfile } = require('../utils/resumeProfile');
 
 const DEFAULT_DURATION_MINUTES = 60;
@@ -235,14 +235,16 @@ const generateWithAI = async (resume, profile, attemptNumber, priorPrompts) => {
   }
 
   const openai = getOpenAIClient();
+  const questionCount = getAssessmentQuestionCount();
   const generationId = `${resume._id}-${attemptNumber}-${Date.now()}`;
-  const response = await openai.chat.completions.create({
-    model: getAIModel(),
-    messages: [{ role: 'user', content: buildPromptForGeneration(resume, profile, attemptNumber, priorPrompts, generationId) }],
-    temperature: 0.7,
-    max_tokens: 12000,
-    response_format: getJSONResponseFormat()
-  });
+  const response = await openai.chat.completions.create(
+    buildCompletionParams({
+      model: getAIModel(),
+      messages: [{ role: 'user', content: buildPromptForGeneration(resume, profile, attemptNumber, priorPrompts, generationId, questionCount) }],
+      temperature: 0.7,
+      max_tokens: getAssessmentMaxTokens(questionCount)
+    })
+  );
 
   return parseAIJSON(response.choices[0].message.content);
 };
@@ -404,27 +406,42 @@ const evaluateWithAI = async (test, resume, previousTest) => {
     return evaluateWithMockRules(test, previousTest);
   }
 
+  // MCQ scoring is deterministic — rule-based evaluation is 100% accurate.
+  // For Groq free tier, the full evaluation prompt exceeds the 12K TPM limit,
+  // so we use rule-based scoring which produces identical results.
   const questionEvaluations = getRuleBasedQuestionEvaluations(test);
   const baseReport = buildReportFromEvaluations(test, questionEvaluations, null, previousTest).report;
-  const openai = getOpenAIClient();
-  const response = await openai.chat.completions.create({
-    model: getAIModel(),
-    messages: [{ role: 'user', content: buildPromptForEvaluation({
-      ...test.toObject(),
-      report: baseReport
-    }, resume) }],
-    temperature: 0.35,
-    max_tokens: 5000,
-    response_format: getJSONResponseFormat()
-  });
-  const aiResult = parseAIJSON(response.choices[0].message.content);
 
-  return buildReportFromEvaluations(
-    test,
-    aiResult.questionEvaluations?.length ? aiResult.questionEvaluations : questionEvaluations,
-    aiResult.report || baseReport,
-    previousTest
-  );
+  // Only use AI-enhanced evaluation for OpenAI (no TPM limit issues)
+  if (getAIProvider() !== 'groq') {
+    try {
+      const openai = getOpenAIClient();
+      const response = await openai.chat.completions.create(
+        buildCompletionParams({
+          model: getAIModel(),
+          messages: [{ role: 'user', content: buildPromptForEvaluation({
+            ...test.toObject(),
+            report: baseReport
+          }, resume) }],
+          temperature: 0.35,
+          max_tokens: 5000
+        })
+      );
+      const aiResult = parseAIJSON(response.choices[0].message.content);
+
+      return buildReportFromEvaluations(
+        test,
+        aiResult.questionEvaluations?.length ? aiResult.questionEvaluations : questionEvaluations,
+        aiResult.report || baseReport,
+        previousTest
+      );
+    } catch (err) {
+      console.warn('AI evaluation failed, falling back to rule-based:', err.message);
+    }
+  }
+
+  // Groq / fallback: return the rule-based report directly
+  return { questionEvaluations, report: baseReport };
 };
 
 const generateTestDocument = async ({ resume, userId, priorTests }) => {
