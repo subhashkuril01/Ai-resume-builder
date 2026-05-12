@@ -45,15 +45,10 @@ if (!isPlaceholderKey(geminiKey)) {
   apiKey = openAIKey;
 }
 
-const defaultModel = provider === 'gemini' ? 'gemini-2.0-flash' : 'gpt-4o-mini';
+const defaultModel = provider === 'gemini' ? 'gemini-1.5-flash' : 'gpt-4o-mini';
 const mockMode = !provider || !apiKey;
 
-if (mockMode) {
-  console.warn('⚠️  Using MOCK AI mode — no real AI API key configured.');
-  console.warn('   Set GEMINI_API_KEY or OPENAI_API_KEY in backend/.env and restart.');
-} else {
-  console.log(`✅ AI provider: ${provider.toUpperCase()} | model: ${process.env.AI_MODEL?.trim() || defaultModel}`);
-}
+// Moved logging below definitions
 
 // ---------------------------------------------------------------------------
 // Lazy-initialized OpenAI client (works for both OpenAI & Gemini via baseURL)
@@ -69,7 +64,30 @@ const getOpenAIClient = () => {
 
 const isMockMode = () => mockMode;
 const getAIProvider = () => provider;
-const getAIModel = () => process.env.AI_MODEL?.trim() || defaultModel;
+const getAIModel = () => {
+  return process.env.AI_MODEL?.trim() || defaultModel;
+};
+
+// ---------------------------------------------------------------------------
+// Initialization Log
+// ---------------------------------------------------------------------------
+if (mockMode) {
+  console.warn('⚠️  AI STATUS: Running in MOCK mode (Generic results).');
+  if (!geminiKey && !openAIKey) {
+    console.warn('   REASON: No API keys found in backend/.env');
+  } else {
+    console.warn('   REASON: Configured keys appear to be placeholders or are missing.');
+  }
+  console.warn('   To enable real AI, set GEMINI_API_KEY or OPENAI_API_KEY in backend/.env and restart.');
+} else {
+  console.log('--------------------------------------------------');
+  console.log('🚀 AI INITIALIZED');
+  console.log(`   Provider: ${provider.toUpperCase()}`);
+  console.log(`   Model:    ${getAIModel()}`);
+  console.log('   Mode:     Production-ready (Real AI)');
+  console.log('--------------------------------------------------');
+}
+
 
 // ---------------------------------------------------------------------------
 // JSON response format — Gemini does NOT support response_format

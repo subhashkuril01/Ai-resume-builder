@@ -65,16 +65,21 @@ Scoring criteria:
 - Education completeness (10pts)
 - Keywords and ATS compatibility (20pts)`;
 
-    const response = await openai.chat.completions.create(
-      buildCompletionParams({
-        model: getAIModel(),
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3,
-        max_tokens: 2000
-      })
-    );
+    try {
+      const response = await openai.chat.completions.create(
+        buildCompletionParams({
+          model: getAIModel(),
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.3,
+          max_tokens: 2000
+        })
+      );
 
-    analysisData = parseAIJSON(response.choices[0].message.content);
+      analysisData = parseAIJSON(response.choices[0].message.content);
+    } catch (error) {
+      console.error('AI Analysis failed, falling back to mock:', error.message);
+      analysisData = getMockAI().generateATSAnalysis(resumeText);
+    }
   }
 
   const analysisResult = await AnalysisResult.create({
@@ -136,16 +141,21 @@ Rules:
 - Be concise but impactful
 - Do not invent false information, only enhance what is provided`;
 
-    const response = await openai.chat.completions.create(
-      buildCompletionParams({
-        model: getAIModel(),
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.5,
-        max_tokens: 1000
-      })
-    );
+    try {
+      const response = await openai.chat.completions.create(
+        buildCompletionParams({
+          model: getAIModel(),
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.5,
+          max_tokens: 1000
+        })
+      );
 
-    result = parseAIJSON(response.choices[0].message.content);
+      result = parseAIJSON(response.choices[0].message.content);
+    } catch (error) {
+      console.error('Text enhancement AI failed, falling back to mock:', error.message);
+      result = getMockAI().generateEnhancedContent(text, type);
+    }
   }
 
   res.json({ success: true, ...result });

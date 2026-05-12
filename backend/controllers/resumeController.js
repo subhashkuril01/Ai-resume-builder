@@ -262,28 +262,33 @@ const generateWithAI = async (resume, profile, attemptNumber, priorPrompts) => {
   const questionCount = getAssessmentQuestionCount(); // FIX: was always defaulting to 50
   const generationId = `${resume._id}-${attemptNumber}-${Date.now()}`;
 
-  const response = await openai.chat.completions.create(
-    buildCompletionParams({
-      model: getAIModel(),
-      messages: [
-        {
-          role: 'user',
-          content: buildPromptForGeneration(
-            resume,
-            profile,
-            attemptNumber,
-            priorPrompts,
-            generationId,
-            questionCount   // FIX: was hardcoded to 50 inside buildPromptForGeneration default
-          )
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: getAssessmentMaxTokens(questionCount) // FIX: was hardcoded to 12000
-    })
-  );
+  try {
+    const response = await openai.chat.completions.create(
+      buildCompletionParams({
+        model: getAIModel(),
+        messages: [
+          {
+            role: 'user',
+            content: buildPromptForGeneration(
+              resume,
+              profile,
+              attemptNumber,
+              priorPrompts,
+              generationId,
+              questionCount
+            )
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: getAssessmentMaxTokens(questionCount)
+      })
+    );
 
-  return parseAIJSON(response.choices[0].message.content);
+    return parseAIJSON(response.choices[0].message.content);
+  } catch (error) {
+    console.error('Assessment Generation AI failed, falling back to mock:', error.message);
+    return getMockAI().generateResumeTest(profile, { attemptNumber, priorPrompts });
+  }
 };
 
 const keywordScore = (answerText = '', expectedConcepts = []) => {
@@ -469,24 +474,30 @@ const evaluateWithAI = async (test, resume, previousTest) => {
   const baseReport = buildReportFromEvaluations(test, questionEvaluations, null, previousTest).report;
   const openai = getOpenAIClient();
 
-  const response = await openai.chat.completions.create(
-    buildCompletionParams({
-      model: getAIModel(),
-      messages: [
-        {
-          role: 'user',
-          content: buildPromptForEvaluation(
-            { ...test.toObject(), report: baseReport },
-            resume
-          )
-        }
-      ],
-      temperature: 0.35,
-      max_tokens: 5000
-    })
-  );
+  let aiResult = {};
+  try {
+    const response = await openai.chat.completions.create(
+      buildCompletionParams({
+        model: getAIModel(),
+        messages: [
+          {
+            role: 'user',
+            content: buildPromptForEvaluation(
+              { ...test.toObject(), report: baseReport },
+              resume
+            )
+          }
+        ],
+        temperature: 0.35,
+        max_tokens: 5000
+      })
+    );
 
-  const aiResult = parseAIJSON(response.choices[0].message.content);
+    aiResult = parseAIJSON(response.choices[0].message.content);
+  } catch (error) {
+    console.error('Assessment Evaluation AI failed, falling back to mock rules:', error.message);
+    return evaluateWithMockRules(test, previousTest);
+  }
 
   return buildReportFromEvaluations(
     test,

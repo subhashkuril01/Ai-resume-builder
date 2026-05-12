@@ -132,9 +132,44 @@ const connectDB = async () => {
 const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+  }).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error('--------------------------------------------------');
+      console.error(`❌ FATAL ERROR: Port ${PORT} is already in use.`);
+      console.error(`   The backend cannot start because another process is using this port.`);
+      console.error(`   To fix this, you can:`);
+      console.error(`   1. Stop any other running instances of the backend.`);
+      console.error(`   2. Run: npx kill-port ${PORT} (if you have it installed)`);
+      console.error(`   3. Change the PORT in backend/.env`);
+      console.error('--------------------------------------------------');
+      process.exit(1);
+    } else {
+      console.error('Server error:', err);
+    }
   });
+
+  // Handle graceful shutdown
+  const shutdown = async () => {
+    console.log('\nShutting down gracefully...');
+    server.close(() => {
+      console.log('HTTP server closed.');
+      mongoose.connection.close(false, () => {
+        console.log('MongoDB connection closed.');
+        process.exit(0);
+      });
+    });
+    
+    // Force exit if shutdown takes too long
+    setTimeout(() => {
+      console.error('Could not close connections in time, forcefully shutting down');
+      process.exit(1);
+    }, 10000);
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
 });
 
 module.exports = app;

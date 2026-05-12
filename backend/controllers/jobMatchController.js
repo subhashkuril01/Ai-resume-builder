@@ -68,16 +68,21 @@ Scoring guide:
 - 40-59: Moderate match, significant customization needed
 - 0-39: Weak match`;
 
-    const response = await openai.chat.completions.create(
-      buildCompletionParams({
-        model: getAIModel(),
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3,
-        max_tokens: 2000
-      })
-    );
+    try {
+      const response = await openai.chat.completions.create(
+        buildCompletionParams({
+          model: getAIModel(),
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.3,
+          max_tokens: 2000
+        })
+      );
 
-    matchData = parseAIJSON(response.choices[0].message.content);
+      matchData = parseAIJSON(response.choices[0].message.content);
+    } catch (error) {
+      console.error('Job Match AI failed, falling back to mock:', error.message);
+      matchData = getMockAI().generateJobMatch(resumeText, jobDescription);
+    }
   }
 
   await AnalysisResult.create({

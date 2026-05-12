@@ -1,10 +1,33 @@
 // Mock AI service for development/demo without real OpenAI key
 // Returns realistic responses for testing without API costs
 
+const simpleExtractKeywords = (text = '') => {
+  if (!text) return [];
+  // Extract common tech keywords
+  const techKeywords = [
+    'javascript', 'react', 'node', 'python', 'java', 'aws', 'docker', 'kubernetes', 'sql', 'mongodb',
+    'typescript', 'angular', 'vue', 'express', 'postgresql', 'cloud', 'devops', 'agile', 'scrum',
+    'project management', 'leadership', 'communication', 'problem solving', 'api', 'rest', 'graphql',
+    'machine learning', 'data science', 'frontend', 'backend', 'fullstack', 'mobile', 'ios', 'android'
+  ];
+  
+  const textLower = text.toLowerCase();
+  const found = techKeywords.filter(kw => textLower.includes(kw));
+  
+  // Also get some capitalized nouns as potential skills
+  const nouns = text.match(/\b[A-Z][a-z]{2,}\b/g) || [];
+  const uniqueNouns = [...new Set(nouns)].filter(n => n.length > 3).map(n => n.toLowerCase());
+  
+  return [...new Set([...found, ...uniqueNouns])].slice(0, 10);
+};
+
 const generateATSAnalysis = (resumeText) => {
   const hasSummary = resumeText.toLowerCase().includes('summary');
   const hasAchievements = resumeText.toLowerCase().includes('achievement') || resumeText.toLowerCase().includes('led') || resumeText.toLowerCase().includes('improved');
   const hasMetrics = /\d+%|\d+x|increased|\$\d+/i.test(resumeText);
+  
+  const extracted = simpleExtractKeywords(resumeText);
+  const foundKeywords = extracted.length > 0 ? extracted : ["leadership", "collaboration"];
   
   const baseScore = 65;
   const summaryBonus = hasSummary ? 10 : 0;
@@ -12,113 +35,152 @@ const generateATSAnalysis = (resumeText) => {
   const metricsBonus = hasMetrics ? 13 : 0;
   const atsScore = Math.min(95, baseScore + summaryBonus + achievementsBonus + metricsBonus);
 
+  // Missing keywords are some common ones NOT in foundKeywords
+  const commonTech = ['agile', 'scrum', 'unit testing', 'ci/cd', 'cloud', 'metrics', 'optimization'];
+  const missingKeywords = commonTech.filter(kw => !foundKeywords.includes(kw)).slice(0, 4);
+
   return {
     atsScore: Math.round(atsScore),
     keywords: {
-      found: ["leadership", "project management", "team collaboration", "problem solving"],
-      missing: ["metrics", "specific achievements", "quantified results", "industry certifications"],
-      recommended: ["increased efficiency", "revenue growth", "system optimization", "cross-functional leadership"]
+      found: foundKeywords.map(k => k.charAt(0).toUpperCase() + k.slice(1)),
+      missing: missingKeywords.length > 0 ? missingKeywords.map(k => k.charAt(0).toUpperCase() + k.slice(1)) : ["Quantified Results", "Specific Tools"],
+      recommended: ["Data-driven outcomes", "System optimization", "Cross-functional impact"]
     },
     sections: {
-      strong: ["contact_info", "experience"],
-      weak: ["skills", "summary"],
-      missing: ["certifications", "metrics"]
+      strong: hasAchievements ? ["experience", "contact_info"] : ["contact_info"],
+      weak: hasSummary ? ["skills"] : ["summary", "skills"],
+      missing: hasMetrics ? ["certifications"] : ["metrics", "certifications"]
     },
     suggestions: [
       {
         category: "summary",
-        priority: "high",
-        issue: "Missing or weak professional summary",
-        suggestion: "Add a compelling 2-3 line professional summary highlighting key achievements and career goals"
+        priority: hasSummary ? "low" : "high",
+        issue: hasSummary ? "Summary is present but could be more punchy" : "Missing professional summary",
+        suggestion: hasSummary ? "Refine your summary to include your top 3 unique selling points." : "Add a compelling 2-3 line professional summary highlighting key achievements."
       },
       {
         category: "experience",
-        priority: "high",
-        issue: "Achievements lack quantifiable metrics",
-        suggestion: "Add percentages, dollar amounts, or time saved to each achievement (e.g., 'Increased sales by 25%')"
+        priority: hasMetrics ? "medium" : "high",
+        issue: hasMetrics ? "Experience section is good" : "Achievements lack quantifiable metrics",
+        suggestion: "Ensure every bullet point includes a result (e.g., 'Reduced costs by 15%')."
       },
       {
         category: "keywords",
         priority: "medium",
-        issue: "Limited industry-specific keywords",
-        suggestion: "Include more technical terms and industry buzzwords relevant to your target role"
-      },
-      {
-        category: "skills",
-        priority: "medium",
-        issue: "Skills section could be more detailed",
-        suggestion: "Organize skills by category (Technical, Languages, Tools) and add proficiency levels"
+        issue: `Only ${foundKeywords.length} key skills detected`,
+        suggestion: "Incorporate more industry-specific terminology relevant to your target roles."
       }
     ],
-    overallFeedback: "Your resume has a solid foundation with good work history. Focus on quantifying achievements with metrics and strengthening your professional summary. Adding more industry keywords will improve ATS compatibility and increase your chances of passing automated screening."
+    overallFeedback: `Your resume shows a ${atsScore > 80 ? 'strong' : 'solid'} foundation. ${hasMetrics ? 'Great job including metrics.' : 'Try to add more percentages and numbers to show your impact.'} Focusing on ${missingKeywords[0] || 'industry keywords'} will further improve your ATS ranking.`
   };
 };
 
 const generateJobMatch = (resumeText, jobDescription) => {
   const resumeLower = resumeText.toLowerCase();
-  const jobLower = jobDescription.toLowerCase();
   
-  const jobKeywords = jobLower.match(/\b[a-z]+\b/g) || [];
-  const resumeKeywords = resumeLower.match(/\b[a-z]+\b/g) || [];
-  const commonKeywords = [...new Set(jobKeywords.filter(k => resumeKeywords.includes(k)))];
-  const matchPercentage = Math.min(95, 45 + (commonKeywords.length * 5));
+  const resumeKeywords = simpleExtractKeywords(resumeText);
+  const jobKeywords = simpleExtractKeywords(jobDescription);
+  
+  const matchedSkills = jobKeywords.filter(kw => resumeLower.includes(kw));
+  const missingSkills = jobKeywords.filter(kw => !resumeLower.includes(kw));
+  
+  const matchPercentage = jobKeywords.length > 0 
+    ? Math.min(95, 35 + (matchedSkills.length / jobKeywords.length) * 60)
+    : 50;
 
   const jobTitleMatch = jobDescription.match(/^(.*?(?:Manager|Engineer|Developer|Analyst|Director|Specialist|Coordinator))/i);
-  const jobTitle = jobTitleMatch ? jobTitleMatch[1].trim().substring(0, 50) : "Job Position";
+  const jobTitle = jobTitleMatch ? jobTitleMatch[1].trim().substring(0, 50) : "Target Role";
 
   return {
     matchPercentage: Math.round(Math.min(95, Math.max(30, matchPercentage))),
     jobTitle,
-    matchedSkills: ["Project Management", "Leadership", "Team Collaboration", "Problem Solving", "Communication"],
-    missingSkills: ["Advanced Analytics", "Python Programming", "Cloud Architecture", "Data Science"],
-    missingExperience: ["5+ years in similar role", "Enterprise-scale project experience", "Team leadership experience"],
+    matchedSkills: matchedSkills.map(k => k.charAt(0).toUpperCase() + k.slice(1)),
+    missingSkills: missingSkills.length > 0 ? missingSkills.map(k => k.charAt(0).toUpperCase() + k.slice(1)) : ["Advanced Niche Skills"],
+    missingExperience: ["Specific domain experience mentioned in job post"],
     keywordAnalysis: {
-      present: ["leadership", "team", "project", "strategy", "innovation"],
-      missing: ["agile", "scrum", "api", "microservices", "kubernetes"]
+      present: matchedSkills.slice(0, 5).map(k => k.charAt(0).toUpperCase() + k.slice(1)),
+      missing: missingSkills.slice(0, 5).map(k => k.charAt(0).toUpperCase() + k.slice(1))
     },
     recommendations: [
-      "Add specific projects demonstrating the key requirements mentioned in the job description",
-      "Highlight any experience with the tools or technologies mentioned in the job posting",
-      "Emphasize leadership and team management experience to match senior-level requirements"
+      `Add more emphasis on ${missingSkills[0] || 'relevant skills'} in your experience section`,
+      "Tailor your professional summary to mention the specific job title",
+      "Include a project that demonstrates your capability with the required tech stack"
     ],
     strengthsForRole: [
-      "Strong project management background",
-      "Proven team leadership and mentoring capabilities",
-      "Solid experience with core technologies mentioned"
+      `Solid background in ${matchedSkills[0] || 'core areas'}`,
+      "Relevant professional experience shown",
+      "Education background aligns with requirements"
     ],
-    overallAssessment: "You're a good match for this role with approximately 70% alignment.",
+    overallAssessment: `You have a ${matchPercentage > 70 ? 'strong' : 'moderate'} alignment for this role. Focus on bridging the gap in ${missingSkills.slice(0, 2).join(', ') || 'specialized areas'}.`,
     interviewTips: [
-      "Prepare specific examples of projects you led that align with their requirements",
-      "Research the company's tech stack and be ready to discuss how your experience applies",
-      "Highlight metrics and measurable outcomes from your previous roles",
-      "Ask about team structure and growth opportunities to gauge company fit"
+      `Be ready to discuss your experience with ${matchedSkills[0] || 'key technologies'}`,
+      "Prepare a story about a challenge you solved using your core skills",
+      "Research the company's recent projects and mention how you can contribute"
     ]
   };
 };
 
 const generateEnhancedContent = (text, type) => {
-  const typeExamples = {
-    summary: "Results-driven professional with 8+ years of experience leading cross-functional teams.",
-    experience_description: "Led cross-functional team of 12+ engineers to deliver enterprise software solution.",
-    achievement: "Spearheaded digital transformation initiative that improved operational efficiency by 45%.",
-    project_description: "Designed and built a scalable microservices architecture using modern tech stack.",
-    skills: "Technical: Python, JavaScript, React, Node.js, PostgreSQL, AWS, Docker"
+  const keywords = simpleExtractKeywords(text);
+  const words = text.trim().split(/\s+/).slice(0, 5);
+  const mainSubject = keywords[0] || words[0] || 'your profile';
+  
+  const templates = {
+    summary: [
+      `Results-oriented professional with a strong foundation in ${keywords.slice(0, 3).join(', ') || mainSubject}. Committed to driving innovation and delivering high-impact solutions in dynamic team environments.`,
+      `Dynamic expert in ${mainSubject} with a proven ability to leverage ${keywords[1] || 'advanced methodologies'} to achieve strategic organizational goals and exceed performance targets.`,
+      `Accomplished specialist focused on ${mainSubject}, bringing extensive experience in ${keywords.slice(1, 3).join(' and ') || 'industry best practices'} to optimize workflows and enhance overall productivity.`
+    ],
+    experience_description: [
+      `Strategically implemented ${mainSubject} solutions that directly contributed to a 20% increase in operational efficiency and significantly reduced turnaround time for key deliverables.`,
+      `Spearheaded the integration of ${keywords.slice(0, 2).join(' and ') || mainSubject} to streamline complex processes, resulting in improved data accuracy and enhanced stakeholder satisfaction.`,
+      `Collaborated with cross-functional teams to deploy ${mainSubject}-driven initiatives, successfully meeting all project milestones and maintaining a 98% quality assurance rating.`
+    ],
+    achievement: [
+      `Recognized for excellence in ${mainSubject} after successfully delivering a mission-critical project that saved the department over $50k in annual operating costs.`,
+      `Awarded "Employee of the Month" for exceptional performance in ${mainSubject}, specifically for resolving long-standing technical bottlenecks using innovative approaches.`,
+      `Successfully completed a high-stakes ${mainSubject} initiative ahead of schedule, garnering praise from senior leadership for technical precision and effective communication.`
+    ],
+    project_description: [
+      `Engineered a high-performance system centered on ${keywords.join(', ') || mainSubject}, utilizing modern architecture to ensure 99.9% uptime and seamless user experiences.`,
+      `Developed a comprehensive ${mainSubject} application from the ground up, incorporating ${keywords[1] || 'advanced security'} features and a highly responsive design for diverse user bases.`,
+      `Architected and built an end-to-one ${mainSubject} platform, leveraging ${keywords.slice(1, 4).join(', ') || 'scalable technologies'} to support concurrent user growth and data integrity.`
+    ],
+    skills: [
+      `Advanced Proficiency: ${keywords.map(k => k.charAt(0).toUpperCase() + k.slice(1)).join(', ') || mainSubject}`,
+      `Technical Stack: ${keywords.map(k => k.charAt(0).toUpperCase() + k.slice(1)).join(', ') || mainSubject}`,
+      `Core Competencies: ${keywords.map(k => k.charAt(0).toUpperCase() + k.slice(1)).join(', ') || mainSubject}`
+    ]
   };
-  const enhanced = typeExamples[type] || text;
-  return { enhanced, improvements: ["Added metrics", "Incorporated action verbs", "Optimized for ATS"], keywords_added: ["achieved", "implemented", "delivered"] };
+  
+  const typeTemplates = templates[type] || [`Enhanced: ${text}`];
+  // Use a simple hash of the text to pick a template so it's consistent for the same input but varied across inputs
+  const hash = text.length % typeTemplates.length;
+  const enhanced = typeTemplates[hash];
+  
+  return { 
+    enhanced, 
+    improvements: [
+      `Strengthened focus on ${mainSubject}`, 
+      "Optimized for ATS relevance", 
+      "Improved professional tone"
+    ], 
+    keywords_added: ["strategic", "streamlined", "impactful", ...keywords.slice(0, 2)] 
+  };
 };
 
 const generateKeywordExtraction = (jobDescription) => {
+  const extracted = simpleExtractKeywords(jobDescription);
   return {
-    technicalSkills: ["JavaScript", "React", "Node.js", "PostgreSQL", "AWS", "Docker", "REST APIs"],
-    softSkills: ["Leadership", "Communication", "Problem Solving", "Team Collaboration"],
-    tools: ["Git", "Jira", "Docker", "Jenkins", "AWS Console"],
-    certifications: ["AWS Solutions Architect", "Scrum Master Certification"],
-    experience: ["5+ years of software development experience", "2+ years of team leadership"],
-    education: ["Bachelor's degree in Computer Science or related field"],
-    keyPhrases: ["full-stack development", "system design", "performance optimization"],
-    jobLevel: "mid",
-    industry: "Technology/Software Development"
+    technicalSkills: extracted.slice(0, 6).map(k => k.charAt(0).toUpperCase() + k.slice(1)),
+    softSkills: ["Leadership", "Communication", "Problem Solving", "Collaboration"],
+    tools: ["Git", "Jira", "Project Management Tools"],
+    certifications: ["Relevant Industry Certification"],
+    experience: ["3+ years of relevant experience"],
+    education: ["Bachelor's degree in related field"],
+    keyPhrases: ["results-oriented", "team collaboration", "strategic planning"],
+    jobLevel: jobDescription.toLowerCase().includes('senior') ? "senior" : "mid",
+    industry: "Information Technology"
   };
 };
 

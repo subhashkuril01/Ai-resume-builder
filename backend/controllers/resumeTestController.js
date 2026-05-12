@@ -237,16 +237,21 @@ const generateWithAI = async (resume, profile, attemptNumber, priorPrompts) => {
   const openai = getOpenAIClient();
   const questionCount = getAssessmentQuestionCount();
   const generationId = `${resume._id}-${attemptNumber}-${Date.now()}`;
-  const response = await openai.chat.completions.create(
-    buildCompletionParams({
-      model: getAIModel(),
-      messages: [{ role: 'user', content: buildPromptForGeneration(resume, profile, attemptNumber, priorPrompts, generationId, questionCount) }],
-      temperature: 0.7,
-      max_tokens: getAssessmentMaxTokens(questionCount)
-    })
-  );
+  try {
+    const response = await openai.chat.completions.create(
+      buildCompletionParams({
+        model: getAIModel(),
+        messages: [{ role: 'user', content: buildPromptForGeneration(resume, profile, attemptNumber, priorPrompts, generationId, questionCount) }],
+        temperature: 0.7,
+        max_tokens: getAssessmentMaxTokens(questionCount)
+      })
+    );
 
-  return parseAIJSON(response.choices[0].message.content);
+    return parseAIJSON(response.choices[0].message.content);
+  } catch (error) {
+    console.error('Resume Test Generation AI failed, falling back to mock:', error.message);
+    return getMockAI().generateResumeTest(profile, { attemptNumber, priorPrompts });
+  }
 };
 
 const keywordScore = (answerText = '', expectedConcepts = []) => {
@@ -414,30 +419,30 @@ const evaluateWithAI = async (test, resume, previousTest) => {
 
   // Only use AI-enhanced evaluation for OpenAI (no TPM limit issues)
   if (getAIProvider() !== 'groq') {
-    try {
-      const openai = getOpenAIClient();
-      const response = await openai.chat.completions.create(
-        buildCompletionParams({
-          model: getAIModel(),
-          messages: [{ role: 'user', content: buildPromptForEvaluation({
-            ...test.toObject(),
-            report: baseReport
-          }, resume) }],
-          temperature: 0.35,
-          max_tokens: 5000
-        })
-      );
-      const aiResult = parseAIJSON(response.choices[0].message.content);
+      try {
+        const openai = getOpenAIClient();
+        const response = await openai.chat.completions.create(
+          buildCompletionParams({
+            model: getAIModel(),
+            messages: [{ role: 'user', content: buildPromptForEvaluation({
+              ...test.toObject(),
+              report: baseReport
+            }, resume) }],
+            temperature: 0.35,
+            max_tokens: 5000
+          })
+        );
+        const aiResult = parseAIJSON(response.choices[0].message.content);
 
-      return buildReportFromEvaluations(
-        test,
-        aiResult.questionEvaluations?.length ? aiResult.questionEvaluations : questionEvaluations,
-        aiResult.report || baseReport,
-        previousTest
-      );
-    } catch (err) {
-      console.warn('AI evaluation failed, falling back to rule-based:', err.message);
-    }
+        return buildReportFromEvaluations(
+          test,
+          aiResult.questionEvaluations?.length ? aiResult.questionEvaluations : questionEvaluations,
+          aiResult.report || baseReport,
+          previousTest
+        );
+      } catch (err) {
+        console.error('Resume Test Evaluation AI failed, falling back to rule-based:', err.message);
+      }
   }
 
   // Groq / fallback: return the rule-based report directly
@@ -479,7 +484,7 @@ const generateTestDocument = async ({ resume, userId, priorTests }) => {
     userId,
     resumeId: resume._id,
     resumeTitle: resume.title,
-    title: generated.title || `${resume.title} Skill Validation Test`,
+    title: `${resume.title}'s Skill Assessment ${attemptNumber > 1 ? `#${attemptNumber}` : ''}`.trim(),
     attemptNumber,
     status: 'draft',
     durationMinutes: generated.durationMinutes || DEFAULT_DURATION_MINUTES,
