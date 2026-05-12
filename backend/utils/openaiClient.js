@@ -4,76 +4,178 @@ const mockAI = require('./mockAI');
 
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
+// ---------------------------------------------------------------------------
+// Key validation — detect placeholder / mock keys
+// ---------------------------------------------------------------------------
 const isPlaceholderKey = (key) => {
   if (!key) return true;
   const normalized = key.trim().toLowerCase();
   return [
     'mock_mode',
+    'your_gemini_api_key_here',
     'your_openai_api_key_here',
     'your_openai_api_key',
     'replace_with_your_openai_api_key',
     'replace_me',
-    'openai_api_key'
+    'openai_api_key',
+    'gemini_api_key',
+    'your_groq_api_key_here',
+    'your_groq_api_key'
   ].includes(normalized);
 };
 
+// ---------------------------------------------------------------------------
+// Provider detection — Gemini > OpenAI > Mock
+// Gemini uses its OpenAI-compatible endpoint so we can keep the OpenAI SDK
+// ---------------------------------------------------------------------------
+const geminiKey = process.env.GEMINI_API_KEY?.trim();
 const openAIKey = process.env.OPENAI_API_KEY?.trim();
-const groqKey = process.env.GROQ_API_KEY?.trim();
-const provider = !isPlaceholderKey(openAIKey) ? 'openai' : (!isPlaceholderKey(groqKey) ? 'groq' : null);
-const apiKey = provider === 'openai' ? openAIKey : groqKey;
-const baseURL = provider === 'groq' ? 'https://api.groq.com/openai/v1' : undefined;
 
-const defaultModel = provider === 'groq' ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
-let mockMode = !provider || !apiKey || isPlaceholderKey(apiKey);
+let provider = null;
+let apiKey = null;
+let baseURL = undefined;
 
-if (mockMode) {
-  console.warn('Using MOCK AI mode - no real AI API key configured.');
-  console.warn('To use real AI, set OPENAI_API_KEY or GROQ_API_KEY in backend/.env and restart.');
-} else {
-  console.log(`AI provider configured: ${provider} (model: ${defaultModel})`);
+if (!isPlaceholderKey(geminiKey)) {
+  provider = 'gemini';
+  apiKey = geminiKey;
+  // Gemini's OpenAI-compatible endpoint
+  baseURL = 'https://generativelanguage.googleapis.com/v1beta/openai/';
+} else if (!isPlaceholderKey(openAIKey)) {
+  provider = 'openai';
+  apiKey = openAIKey;
 }
 
+const defaultModel = provider === 'gemini' ? 'gemini-2.0-flash' : 'gpt-4o-mini';
+const mockMode = !provider || !apiKey;
+
+if (mockMode) {
+  console.warn('⚠️  Using MOCK AI mode — no real AI API key configured.');
+  console.warn('   Set GEMINI_API_KEY or OPENAI_API_KEY in backend/.env and restart.');
+} else {
+  console.log(`✅ AI provider: ${provider.toUpperCase()} | model: ${process.env.AI_MODEL?.trim() || defaultModel}`);
+}
+
+// ---------------------------------------------------------------------------
+// Lazy-initialized OpenAI client (works for both OpenAI & Gemini via baseURL)
+// ---------------------------------------------------------------------------
+let openaiClient = null;
 const getOpenAIClient = () => {
   if (mockMode) return null;
-  return new OpenAI({ apiKey, baseURL });
+  if (!openaiClient) {
+    openaiClient = new OpenAI({ apiKey, baseURL });
+  }
+  return openaiClient;
 };
 
 const isMockMode = () => mockMode;
 const getAIProvider = () => provider;
 const getAIModel = () => process.env.AI_MODEL?.trim() || defaultModel;
 
-// FIX: For Groq, do NOT pass response_format at all (return null, not undefined)
-// Groq ignores it but some SDK versions throw on unexpected keys
+// ---------------------------------------------------------------------------
+// JSON response format — Gemini does NOT support response_format
+// Only return it for native OpenAI
+// ---------------------------------------------------------------------------
 const getJSONResponseFormat = () => {
   if (provider === 'openai') return { type: 'json_object' };
-  return null; // Groq: omit this field entirely
+  return null; // Gemini: omit — we inject JSON instruction into the prompt instead
 };
 
 const getMockAI = () => mockAI;
 
+// ---------------------------------------------------------------------------
+// Robust JSON parser — handles Gemini's markdown-wrapped responses,
+// trailing text, code fences, and other common LLM output quirks
+// ---------------------------------------------------------------------------
 const parseAIJSON = (content = '') => {
   const raw = String(content).trim();
+
+  // 1. Direct parse (clean JSON)
   try {
     return JSON.parse(raw);
-  } catch (error) {
-    const start = raw.indexOf('{');
-    const end = raw.lastIndexOf('}');
-    if (start === -1 || end === -1 || end <= start) throw error;
-    return JSON.parse(raw.slice(start, end + 1));
+  } catch (_) { /* continue */ }
+
+  // 2. Extract from ```json ... ``` or ``` ... ``` code fences (Gemini common)
+  const fenceMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fenceMatch) {
+    try {
+      return JSON.parse(fenceMatch[1].trim());
+    } catch (_) { /* continue */ }
   }
+
+  // 3. Find outermost { ... } block
+  const objStart = raw.indexOf('{');
+  const objEnd = raw.lastIndexOf('}');
+  if (objStart !== -1 && objEnd !== -1 && objEnd > objStart) {
+    try {
+      return JSON.parse(raw.slice(objStart, objEnd + 1));
+    } catch (_) { /* continue */ }
+  }
+
+  // 4. Find outermost [ ... ] block
+  const arrStart = raw.indexOf('[');
+  const arrEnd = raw.lastIndexOf(']');
+  if (arrStart !== -1 && arrEnd !== -1 && arrEnd > arrStart) {
+    try {
+      return JSON.parse(raw.slice(arrStart, arrEnd + 1));
+    } catch (_) { /* continue */ }
+  }
+
+  // 5. Last resort: try to fix common JSON issues (trailing commas, unquoted keys)
+  try {
+    let sanitized = raw
+      .replace(/,\s*}/g, '}')   // trailing comma before }
+      .replace(/,\s*]/g, ']');  // trailing comma before ]
+    // Try to find JSON in sanitized text
+    const sStart = sanitized.indexOf('{');
+    const sEnd = sanitized.lastIndexOf('}');
+    if (sStart !== -1 && sEnd !== -1 && sEnd > sStart) {
+      return JSON.parse(sanitized.slice(sStart, sEnd + 1));
+    }
+  } catch (_) { /* continue */ }
+
+  throw new Error(
+    `Failed to parse AI response as JSON. Raw preview (first 400 chars):\n${raw.substring(0, 400)}`
+  );
 };
 
-// Helper to build chat.completions.create params, safely omitting response_format for Groq
+// ---------------------------------------------------------------------------
+// Build chat completion params
+// For Gemini: injects a JSON-only instruction into the last user message
+// because Gemini's OpenAI-compatible endpoint ignores response_format
+// ---------------------------------------------------------------------------
 const buildCompletionParams = ({ model, messages, temperature, max_tokens }) => {
-  const params = { model, messages, temperature, max_tokens };
-  const fmt = getJSONResponseFormat();
-  if (fmt !== null) params.response_format = fmt;
-  return params;
+  // Deep-clone messages so we don't mutate the caller's array
+  const clonedMessages = messages.map((m) => ({ ...m }));
+
+  if (provider === 'gemini') {
+    // Find the last user message and append JSON instruction
+    const lastUserMsg = [...clonedMessages].reverse().find((m) => m.role === 'user');
+    if (lastUserMsg) {
+      lastUserMsg.content = `${lastUserMsg.content}\n\n⚠️ CRITICAL: Respond with ONLY valid JSON. No markdown formatting, no code fences, no explanatory text outside the JSON. Your entire response must start with { or [ and be parseable by JSON.parse().`;
+    }
+    return { model, messages: clonedMessages, temperature, max_tokens };
+  }
+
+  // OpenAI: use native JSON mode
+  return {
+    model,
+    messages: clonedMessages,
+    temperature,
+    max_tokens,
+    response_format: { type: 'json_object' }
+  };
 };
 
+// ---------------------------------------------------------------------------
+// Resume text validation
+// ---------------------------------------------------------------------------
 const validateResumeText = (resumeText) => {
   if (!resumeText || typeof resumeText !== 'string') {
-    return { valid: false, text: '', error: 'Resume content is empty. Please add content before analyzing.' };
+    return {
+      valid: false,
+      text: '',
+      error: 'Resume content is empty. Please add content before analyzing.'
+    };
   }
 
   const cleaned = resumeText.replace(/\s+/g, ' ').trim();
