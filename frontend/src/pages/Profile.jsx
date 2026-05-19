@@ -59,7 +59,6 @@ export default function Profile() {
               <h2 className="font-display text-2xl font-bold text-text-primary leading-none">{user?.name}</h2>
               <p className="text-sm text-zinc-400 font-medium">{user?.email}</p>
               <div className="flex items-center gap-3 pt-2">
-                <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-bold uppercase tracking-widest">{user?.plan || 'Free'} Plan</span>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Member since {new Date().getFullYear()}</span>
               </div>
             </div>
@@ -68,12 +67,12 @@ export default function Profile() {
           <form onSubmit={handleProfileSave} className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">Full Name</label>
-              <input className="w-full h-12 bg-white/[0.03] border border-border rounded-xl px-4 text-sm text-text-primary focus:border-amber-500/50 transition-all outline-none" 
+              <input className="w-full h-12 bg-white/[0.03] border border-border rounded-xl px-4 text-sm text-text-primary focus:border-amber-500/50 transition-all outline-none"
                 value={name} onChange={e => setName(e.target.value)} placeholder="Jane Smith" />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">Email Address</label>
-              <input className="w-full h-12 bg-white/[0.03] border border-border rounded-xl px-4 text-sm text-text-secondary cursor-not-allowed" 
+              <input className="w-full h-12 bg-white/[0.03] border border-border rounded-xl px-4 text-sm text-text-secondary cursor-not-allowed"
                 value={user?.email || ''} disabled />
             </div>
             <div className="md:col-span-2 pt-2">
@@ -99,8 +98,8 @@ export default function Profile() {
               ].map(f => (
                 <div key={f.key} className="space-y-2">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary ml-1">{f.label}</label>
-                  <input type="password" 
-                    className="w-full h-12 bg-white/[0.03] border border-border rounded-xl px-4 text-sm text-text-primary focus:border-amber-500/50 transition-all outline-none" 
+                  <input type="password"
+                    className="w-full h-12 bg-white/[0.03] border border-border rounded-xl px-4 text-sm text-text-primary focus:border-amber-500/50 transition-all outline-none"
                     placeholder={f.placeholder}
                     value={pwForm[f.key]} onChange={e => setPwForm(p => ({ ...p, [f.key]: e.target.value }))} />
                 </div>

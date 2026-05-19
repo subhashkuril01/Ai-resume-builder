@@ -30,11 +30,6 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Resume'
   }],
-  plan: {
-    type: String,
-    enum: ['free', 'pro'],
-    default: 'free'
-  },
   role: {
     type: String,
     enum: ['user', 'admin'],

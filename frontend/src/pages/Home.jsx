@@ -27,7 +27,7 @@ export default function Home() {
         {/* Ambient Glows */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-amber-500/[0.07] blur-[150px] rounded-full -z-10" />
         <div className="absolute top-[10%] right-[5%] w-[500px] h-[500px] bg-indigo-500/[0.03] blur-[120px] rounded-full -z-10" />
-        
+
         {/* Grid Background */}
         <div className="absolute inset-0 z-[-5] opacity-[0.03] pointer-events-none"
           style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '48px 48px' }} />
@@ -114,57 +114,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section className="py-40 px-6 bg-white/[0.01]">
-        <div className="max-w-5xl mx-auto text-center mb-20">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500 mb-6">Investment</p>
-          <h2 className="font-display text-5xl md:text-7xl font-bold text-text-primary tracking-tight">Zero friction.</h2>
-        </div>
-
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Free Tier */}
-          <div className="card p-12 border-border/50 bg-transparent hover:bg-white/[0.01]">
-             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted mb-4">Standard</p>
-             <h3 className="text-3xl font-display font-bold text-text-primary mb-8">Hobbyist</h3>
-             <div className="flex items-baseline gap-2 mb-10">
-                <span className="text-6xl font-bold font-display">$0</span>
-                <span className="text-text-muted text-sm font-bold uppercase tracking-widest">/ Forever</span>
-             </div>
-             <ul className="space-y-4 mb-12">
-                {['1 Active Artifact', 'Standard Templates', 'Basic AI Scoring', 'Public Sharing'].map(item => (
-                  <li key={item} className="flex items-center gap-3 text-sm text-text-secondary/80">
-                    <span className="text-amber-500 text-xs">✓</span> {item}
-                  </li>
-                ))}
-             </ul>
-             <Link to="/register" className="w-full h-14 flex items-center justify-center rounded-2xl border border-border text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary hover:bg-white/5 transition-all">
-                Get Started
-             </Link>
-          </div>
-
-          {/* Pro Tier */}
-          <div className="card p-12 border-amber-500/30 bg-amber-500/[0.02] relative glow-orange">
-             <div className="absolute top-8 right-8 px-3 py-1 rounded-full bg-amber-500 text-black text-[8px] font-black uppercase tracking-widest">Recommended</div>
-             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500 mb-4">Professional</p>
-             <h3 className="text-3xl font-display font-bold text-text-primary mb-8">Career Pro</h3>
-             <div className="flex items-baseline gap-2 mb-10">
-                <span className="text-6xl font-bold font-display">$19</span>
-                <span className="text-text-muted text-sm font-bold uppercase tracking-widest">/ Month</span>
-             </div>
-             <ul className="space-y-4 mb-12">
-                {['Unlimited Artifacts', 'All Premium Templates', 'Full AI Suite (GPT-4o)', 'Advanced Match Engine', 'Priority Support'].map(item => (
-                  <li key={item} className="flex items-center gap-3 text-sm text-text-primary">
-                    <span className="text-amber-500 text-xs">✓</span> {item}
-                  </li>
-                ))}
-             </ul>
-             <Link to="/register" className="btn-primary w-full h-14 flex items-center justify-center glow-orange text-[10px] font-bold uppercase tracking-widest">
-                Upgrade Now
-             </Link>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-40 px-6">
         <div className="max-w-6xl mx-auto">
@@ -195,27 +144,27 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-8 md:col-span-2">
-             <div className="space-y-4">
-                 <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">Platform</p>
-                <ul className="space-y-2">
-                   {['Dashboard', 'AI Analyzer', 'Job Match', 'Templates'].map(i => <li key={i}><a href="#" className="text-xs text-text-muted hover:text-text-primary transition-colors">{i}</a></li>)}
-                </ul>
-             </div>
-             <div className="space-y-4">
-                 <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">Company</p>
-                <ul className="space-y-2">
-                   {['About', 'Security', 'Privacy', 'Terms'].map(i => <li key={i}><a href="#" className="text-xs text-text-muted hover:text-text-primary transition-colors">{i}</a></li>)}
-                </ul>
-             </div>
+            <div className="space-y-4">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">Platform</p>
+              <ul className="space-y-2">
+                {['Dashboard', 'AI Analyzer', 'Job Match', 'Templates'].map(i => <li key={i}><a href="#" className="text-xs text-text-muted hover:text-text-primary transition-colors">{i}</a></li>)}
+              </ul>
+            </div>
+            <div className="space-y-4">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">Company</p>
+              <ul className="space-y-2">
+                {['About', 'Security', 'Privacy', 'Terms'].map(i => <li key={i}><a href="#" className="text-xs text-text-muted hover:text-text-primary transition-colors">{i}</a></li>)}
+              </ul>
+            </div>
           </div>
           <div className="md:col-span-1 space-y-6">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">Connect</p>
-             <div className="flex gap-4">
-                {[1,2,3,4].map(i => <div key={i} className="w-10 h-10 rounded-xl bg-white/[0.03] border border-border/50 hover:border-amber-500/20 transition-all cursor-pointer" />)}
-             </div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">Connect</p>
+            <div className="flex gap-4">
+              {[1, 2, 3, 4].map(i => <div key={i} className="w-10 h-10 rounded-xl bg-white/[0.03] border border-border/50 hover:border-amber-500/20 transition-all cursor-pointer" />)}
+            </div>
           </div>
         </div>
-        
+
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 pt-12 border-t border-white/[0.03]">
           <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted/30">
             © 2026 CVISION TECHNOLOGY SYSTEMS • ALL RIGHTS RESERVED

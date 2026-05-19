@@ -136,7 +136,7 @@ export default function Dashboard() {
           <div className="animate-fade-up">
             <div className="flex items-center gap-2 mb-4">
               <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-bold uppercase tracking-widest">
-                {user?.role === 'admin' ? 'Elite Admin Access' : 'Pro Member Workspace'}
+                {user?.role === 'admin' ? 'Elite Admin Access' : 'Member Workspace'}
               </span>
             </div>
 
@@ -232,37 +232,6 @@ export default function Dashboard() {
           </div>
 
           <div className="lg:col-span-4 space-y-8 animate-fade-up delay-400 sticky top-28 self-start pb-10">
-            <div className="card p-8 bg-gradient-to-br from-amber-500 to-amber-600 border-none relative overflow-hidden group">
-              <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-              <div className="relative z-10">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-black/60 mb-2">
-                  Pro Insights
-                </p>
-
-                <h3 className="font-display text-2xl font-bold text-black mb-6 leading-tight">
-                  Your Resume is in the <br /> top 15% of candidates.
-                </h3>
-
-                <div className="space-y-4">
-                  <div className="flex justify-between items-end">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-black">
-                      ATS Readiness
-                    </p>
-                    <p className="text-xl font-bold text-black">88%</p>
-                  </div>
-
-                  <div className="h-1.5 w-full bg-black/20 rounded-full">
-                    <div className="h-full bg-[#1a1a1a] w-[88%] rounded-full shadow-sm" />
-                  </div>
-                </div>
-
-                <button className="w-full mt-8 py-3 rounded-xl bg-black text-white text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-900 transition-all">
-                  Run Full Audit
-                </button>
-              </div>
-            </div>
-
             <div className="card p-6 bg-white/[0.02]">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">

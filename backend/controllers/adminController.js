@@ -87,7 +87,7 @@ const getUsers = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
 
   const users = await User.find(query)
-    .select('name email role status plan createdAt')
+    .select('name email role status createdAt')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(parseInt(limit));
@@ -134,7 +134,7 @@ const updateUserStatus = asyncHandler(async (req, res) => {
     req.params.id,
     { status },
     { new: true, runValidators: true }
-  ).select('name email role status plan createdAt');
+  ).select('name email role status createdAt');
 
   if (!user) {
     return res.status(404).json({ error: 'User not found.' });
@@ -164,7 +164,7 @@ const updateUserRole = asyncHandler(async (req, res) => {
     req.params.id,
     { role },
     { new: true, runValidators: true }
-  ).select('name email role status plan createdAt');
+  ).select('name email role status createdAt');
 
   if (!user) {
     return res.status(404).json({ error: 'User not found.' });
