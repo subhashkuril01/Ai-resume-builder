@@ -130,8 +130,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-20 bg-primary">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="min-h-screen pt-24 bg-primary flex flex-col">
+      <div className="max-w-7xl mx-auto px-6 flex-grow w-full mb-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div className="animate-fade-up">
             <div className="flex items-center gap-2 mb-4">
@@ -295,6 +295,27 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Minimal Footer */}
+      <footer className="py-8 px-6 border-t border-border bg-secondary mt-auto">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 w-full">
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+            <span className="font-display font-black text-xl text-text-primary tracking-tighter">
+              CVISION
+            </span>
+            <span className="hidden md:block w-1 h-1 rounded-full bg-border"></span>
+            <p className="text-xs font-semibold text-amber-500/80">
+              Designed & Developed by Subhash
+            </p>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-[10px] font-bold uppercase tracking-widest text-text-muted/50 text-center">
+            <p>© 2026 CVISION TECHNOLOGY SYSTEMS</p>
+            <span className="hidden md:block w-1 h-1 rounded-full bg-border"></span>
+            <p>ALL RIGHTS RESERVED</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

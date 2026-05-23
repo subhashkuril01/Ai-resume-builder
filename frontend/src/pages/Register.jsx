@@ -78,10 +78,10 @@ export default function Register() {
       </div>
 
       {/* Right Panel: Registration Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-primary relative overflow-y-auto">
+      <div className="flex-1 flex flex-col p-8 pt-24 pb-12 bg-primary relative overflow-y-auto">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/[0.03] blur-[120px] rounded-full pointer-events-none" />
         
-        <div className="w-full max-w-md animate-fade-up relative z-10 py-12">
+        <div className="w-full max-w-md animate-fade-up relative z-10 my-auto mx-auto">
           <div className="mb-10 text-center lg:text-left">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500 mb-2">Get Started Free</p>
             <h2 className="font-display text-3xl font-bold text-text-primary tracking-tight">Create your account</h2>

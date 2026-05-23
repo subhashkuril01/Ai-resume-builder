@@ -175,86 +175,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Premium Footer */}
-      <footer className="py-14 px-6 border-t border-border bg-secondary">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
-          
-          <div className="md:col-span-1 space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="font-display font-black text-2xl text-text-primary tracking-tighter">
-                CVISION
-              </span>
-            </div>
-
-            <p className="text-sm text-text-muted leading-relaxed font-medium">
-              Architecting the future of professional identity with advanced neural networks and design excellence.
+      {/* Minimal Footer */}
+      <footer className="py-8 px-6 border-t border-border bg-secondary">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+            <span className="font-display font-black text-xl text-text-primary tracking-tighter">
+              CVISION
+            </span>
+            <span className="hidden md:block w-1 h-1 rounded-full bg-border"></span>
+            <p className="text-xs font-semibold text-amber-500/80">
+              Designed & Developed by Subhash
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 md:col-span-2">
-            <div className="space-y-3">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">
-                Platform
-              </p>
-
-              <ul className="space-y-2">
-                {['Dashboard', 'AI Analyzer', 'Job Match', 'Templates'].map(i => (
-                  <li key={i}>
-                    <a
-                      href="#"
-                      className="text-xs text-text-muted hover:text-text-primary transition-colors"
-                    >
-                      {i}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="space-y-3">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">
-                Company
-              </p>
-
-              <ul className="space-y-2">
-                {['About', 'Security', 'Privacy', 'Terms'].map(i => (
-                  <li key={i}>
-                    <a
-                      href="#"
-                      className="text-xs text-text-muted hover:text-text-primary transition-colors"
-                    >
-                      {i}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-[10px] font-bold uppercase tracking-widest text-text-muted/50 text-center">
+            <p>© 2026 CVISION TECHNOLOGY SYSTEMS</p>
+            <span className="hidden md:block w-1 h-1 rounded-full bg-border"></span>
+            <p>ALL RIGHTS RESERVED</p>
           </div>
-
-          <div className="md:col-span-1 space-y-4">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">
-              Connect
-            </p>
-
-            <div className="flex gap-4">
-              {[1, 2, 3, 4].map(i => (
-                <div
-                  key={i}
-                  className="w-10 h-10 rounded-xl bg-white/[0.03] border border-border/50 hover:border-amber-500/20 transition-all cursor-pointer"
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-white/[0.03]">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted/30">
-            © 2026 CVISION TECHNOLOGY SYSTEMS • ALL RIGHTS RESERVED
-          </p>
-
-          <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted/30">
-            ENCRYPTED WITH AES-256
-          </p>
         </div>
       </footer>
     </div>
