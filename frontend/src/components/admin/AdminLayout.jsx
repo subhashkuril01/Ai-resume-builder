@@ -11,7 +11,6 @@ export default function AdminLayout({ children }) {
     { icon: '📊', label: 'Overview', path: '/admin' },
     { icon: '👥', label: 'User Base', path: '/admin/users' },
     { icon: '📄', label: 'Resumes', path: '/admin/resumes' },
-    { icon: '📈', label: 'Analytics', path: '/admin/analytics' },
   ]
 
   const isActive = (path) => {

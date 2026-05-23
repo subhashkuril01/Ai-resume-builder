@@ -21,8 +21,6 @@ import PublicResume from './pages/PublicResume'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminUsers from './pages/AdminUsers'
 import AdminResumes from './pages/AdminResumes'
-import AdminAnalytics from './pages/AdminAnalytics'
-
 export default function App() {
   return (
     <BrowserRouter>
@@ -66,9 +64,7 @@ export default function App() {
             
             <Route path="/admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
             <Route path="/admin/users" element={<ProtectedAdminRoute><AdminUsers /></ProtectedAdminRoute>} />
-            <Route path="/admin/resumes" element={<ProtectedAdminRoute><AdminResumes /></ProtectedAdminRoute>} />
-            <Route path="/admin/analytics" element={<ProtectedAdminRoute><AdminAnalytics /></ProtectedAdminRoute>} />
-            
+            <Route path="/admin/resumes" element={<ProtectedAdminRoute><AdminResumes /></ProtectedAdminRoute>} />            
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>

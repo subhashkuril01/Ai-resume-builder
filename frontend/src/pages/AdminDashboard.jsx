@@ -71,50 +71,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          {/* AI Usage by Type */}
-          <div className="xl:col-span-2 card p-8 border-border/50 space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="font-display text-xl font-bold text-text-primary">AI Intelligence Breakdown</h3>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Last 7 Days</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {stats?.aiUsageStats.map(item => (
-                <div key={item._id} className="p-6 rounded-2xl bg-white/[0.02] border border-border/50 hover:border-amber-500/30 transition-all group">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary group-hover:text-amber-500 transition-colors">
-                    {item._id.replace('_', ' ')}
-                  </p>
-                  <div className="flex items-end justify-between mt-4">
-                    <p className="text-3xl font-black text-text-primary">{item.count}</p>
-                    <div className="text-right">
-                      <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{item.tokensUsed.toLocaleString()} Tokens</p>
-                      <p className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">${item.totalCost.toFixed(2)} USD</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* System Performance (Placeholder for now) */}
-          <div className="card p-8 border-border bg-amber-500/[0.02] flex flex-col justify-between">
-            <div className="space-y-2">
-              <h3 className="font-display text-xl font-bold text-text-primary">Quick Actions</h3>
-              <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest leading-relaxed">Common administrative tasks and system controls.</p>
-            </div>
-            <div className="space-y-3 mt-8">
-              <button className="w-full py-4 rounded-xl bg-surface border border-border text-[10px] font-bold uppercase tracking-widest text-text-primary hover:border-amber-500/50 hover:text-amber-500 transition-all text-left px-5 flex items-center justify-between group">
-                Generate Report <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-              </button>
-              <button className="w-full py-4 rounded-xl bg-white/5 border border-border text-[10px] font-bold uppercase tracking-widest text-text-primary hover:border-amber-500/50 hover:text-amber-500 transition-all text-left px-5 flex items-center justify-between group">
-                Manage Subscriptions <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-              </button>
-              <button className="w-full py-4 rounded-xl bg-white/5 border border-border text-[10px] font-bold uppercase tracking-widest text-text-primary hover:border-amber-500/50 hover:text-amber-500 transition-all text-left px-5 flex items-center justify-between group">
-                System Settings <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* Recent Activities */}
         {recentActivities && (
