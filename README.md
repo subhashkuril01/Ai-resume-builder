@@ -1,6 +1,6 @@
 # ResumeAI — Full-Stack MERN AI Resume Builder
 
-A production-ready AI-powered resume builder built with the MERN stack. Features real OpenAI integration, ATS scoring, job matching, 6 professional templates, PDF export, and public sharing.
+A production-ready AI-powered resume builder built with the MERN stack. Features real OpenAI integration, ATS scoring, job matching, 36 professional templates, PDF export, and public sharing.
 
 ---
 
